@@ -196,5 +196,6 @@ Daftar lengkap ada di PRD Bagian 17.2. Jangan mengisi `[X]` dengan asumsi tanpa 
 
 - PRD dipindahkan ke `docs/PRD.md` dari `Wattera PRD Terpadu v0.3.1.md`.
 - Issue #1–#53 dibuat dari PRD v0.3.1 dan seluruhnya masuk [Project #3](https://github.com/MahdiHbb1/projects/3); `WAT-xx` = nomor issue.
-- Assignee GitHub baru diisi untuk Mahdi; Dhifansa, Muchsin, dan Yusri dilacak lewat label `owner:*` dan field **Owner** sampai username GitHub mereka tersedia.
+- Assignee GitHub saat ini: Mahdi ([@MahdiHbb1](https://github.com/MahdiHbb1)). Dhifansa ([@Dhifansa](https://github.com/Dhifansa)) dan Yusri ([@yuzhuruuu](https://github.com/yuzhuruuu)) sudah diundang sebagai collaborator repo (write) dan project (writer); issue mereka dapat di-assign setelah undangan diterima. Muchsin belum memiliki username GitHub.
+- Sampai undangan diterima, kepemilikan tetap terlihat dari field **Owner** dan label `owner:*` di board.
 - Bila PRD berubah, buka issue `contract-change`/`docs` dan perbarui indeks ini.
