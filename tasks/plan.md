@@ -6,6 +6,8 @@ Membangun Wattera dari Fase 0 sampai MVP internal: PWA mobile untuk Kios Virtual
 
 **Target:** MVP internal akhir Februari 2027, pilot Maret–April 2027, Demo Day Mei 2027.
 
+**Board:** <https://github.com/users/MahdiHbb1/projects/3> · **Issues:** <https://github.com/MahdiHbb1/wattera/issues> · **Milestones:** <https://github.com/MahdiHbb1/wattera/milestones>
+
 ## Strategi delivery
 
 - **Contract-first.** C1–C6 dibekukan di S1; FE/BE bekerja paralel dari kontrak dan fixture mock.
@@ -19,124 +21,131 @@ Membangun Wattera dari Fase 0 sampai MVP internal: PWA mobile untuk Kios Virtual
 
 | ADR | Keputusan | Status |
 |---|---|---|
-| [ADR-001](docs/decisions/ADR-001-pwa-capacitor.md) | PWA React/Next.js + Capacitor | Proposed (O1) |
-| [ADR-002](docs/decisions/ADR-002-modular-monolith.md) | Modular monolith TypeScript/NestJS + PostgreSQL/Redis/S3 | Proposed (O17) |
-| [ADR-003](docs/decisions/ADR-003-energy-calc-single-source.md) | Satu `energy-calc`; LLM tidak menghasilkan angka | Accepted |
+| [ADR-001](../docs/decisions/ADR-001-pwa-capacitor.md) | PWA React/Next.js + Capacitor | Proposed (O1) |
+| [ADR-002](../docs/decisions/ADR-002-modular-monolith.md) | Modular monolith TypeScript/NestJS + PostgreSQL/Redis/S3 | Proposed (O17) |
+| [ADR-003](../docs/decisions/ADR-003-energy-calc-single-source.md) | Satu `energy-calc`; LLM tidak menghasilkan angka | Accepted |
 
 ## Task index
 
-Issue GitHub adalah sumber status. Tabel ini hanya indeks urutan kerja.
+Issue GitHub adalah sumber status. Tabel ini hanya indeks urutan kerja; `WAT-xx` adalah kunci PRD yang sama dengan nomor issue.
 
-### Fase 0 — Validasi (Nov 2026–Jan 2027)
+**Catatan penjadwalan:** `energy-calc` core P5 dimajukan ke S2 (WAT-21), dan estimate/rekomendasi v0 masuk S3 (WAT-27), agar Laporan Pertama di S4 sudah memakai perhitungan nyata, bukan angka mock.
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-09 | Wawancara 30 UMKM + sintesis | Tim | P1 |
-| WAT-10 | Dataset D-OCR/D-STT + label evaluasi | Yusri | P0 |
+### Fase 0 — Validasi (Nov 2026–Jan 2027) · 16 hari
 
-### S1 — Fondasi & Kontrak (9–22 Nov 2026)
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-01 | [#1 Wawancara 30 UMKM + sintesis](https://github.com/MahdiHbb1/wattera/issues/1) | Tim | P1 | 8 |
+| WAT-02 | [#2 Dataset D-OCR/D-STT + label evaluasi](https://github.com/MahdiHbb1/wattera/issues/2) | Yusri | P0 | 8 |
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-01 | Fondasi monorepo, workspace, CI | Mahdi | P0 |
-| WAT-02 | Bekukan C1–C6 v0 + OpenAPI skeleton | Mahdi | P0 |
-| WAT-03 | Spike O1/O4/O17 | Mahdi | P0 |
-| WAT-04 | Shell FE, design tokens, PWA | Dhifansa | P0 |
-| WAT-05 | Prototipe Kios Virtual 1 template | Dhifansa | P0 |
-| WAT-06 | AI Gateway mock + fixture | Mahdi | P0 |
-| WAT-07 | Fondasi QA + Playwright + smoke CI | Yusri | P0 |
-| WAT-08 | Inventaris placeholder + matriks live | Muchsin | P1 |
-| WAT-11 | Katalog template v0 + verifikasi | Dhifansa | P1 |
+### S1 — Fondasi & Kontrak (9–22 Nov 2026) · 24 hari
+
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-03 | [#3 Fondasi monorepo, workspace, CI](https://github.com/MahdiHbb1/wattera/issues/3) | Mahdi | P0 | 3 |
+| WAT-04 | [#4 Bekukan C1–C6 v0 + OpenAPI](https://github.com/MahdiHbb1/wattera/issues/4) | Mahdi | P0 | 3 |
+| WAT-05 | [#5 Spike O1/O4/O17](https://github.com/MahdiHbb1/wattera/issues/5) | Mahdi | P0 | 1 |
+| WAT-06 | [#6 Shell FE, design token, PWA](https://github.com/MahdiHbb1/wattera/issues/6) | Dhifansa | P0 | 3 |
+| WAT-07 | [#7 Prototipe Kios Virtual 1 template](https://github.com/MahdiHbb1/wattera/issues/7) | Dhifansa | P0 | 4 |
+| WAT-08 | [#8 AI Gateway mock + fixture gagal](https://github.com/MahdiHbb1/wattera/issues/8) | Mahdi | P0 | 3 |
+| WAT-09 | [#9 Fondasi QA + Playwright + smoke CI](https://github.com/MahdiHbb1/wattera/issues/9) | Yusri | P0 | 2 |
+| WAT-10 | [#10 Inventaris placeholder AI + matriks live T0–T5](https://github.com/MahdiHbb1/wattera/issues/10) | Muchsin | P1 | 2 |
+| WAT-11 | [#11 Katalog template v0 + verifikasi sumber](https://github.com/MahdiHbb1/wattera/issues/11) | Dhifansa | P1 | 3 |
 
 **Checkpoint S1:** kontrak beku, CI hijau, FE dan BE dapat bekerja paralel dari mock.
 
-### S2 — Akun & Shell Game (23 Nov–6 Des 2026)
+### S2 — Akun & Shell Game (23 Nov–6 Des 2026) · 31 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-12 | Contract test C1–C6 | Yusri | P0 |
-| WAT-13 | FE mode tamu + klaim akun | Dhifansa | P0 |
-| WAT-14 | BE auth OTP + merge tamu + consent | Mahdi | P0 |
-| WAT-15 | BE profil usaha + tarif | Mahdi | P0 |
-| WAT-16 | BE entitlement + guard server | Mahdi | P0 |
-| WAT-17 | Integrasi shell game + personalisasi | Dhifansa | P1 |
-| WAT-18 | FE M1 foto label + koreksi | Dhifansa | P0 |
-| WAT-19 | BE M1 capture label + OCR mock | Mahdi | P0 |
-| WAT-20 | QA E2E auth/klaim/entitlement | Yusri | P1 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-12 | [#12 Contract test C1–C6 di CI](https://github.com/MahdiHbb1/wattera/issues/12) | Yusri | P0 | 2 |
+| WAT-13 | [#13 FE mode tamu + klaim akun](https://github.com/MahdiHbb1/wattera/issues/13) | Dhifansa | P0 | 3 |
+| WAT-14 | [#14 BE auth OTP + merge tamu + consent](https://github.com/MahdiHbb1/wattera/issues/14) | Mahdi | P0 | 4 |
+| WAT-15 | [#15 BE profil usaha + tarif + tipe pembayaran](https://github.com/MahdiHbb1/wattera/issues/15) | Mahdi | P0 | 3 |
+| WAT-16 | [#16 BE entitlement + guard server](https://github.com/MahdiHbb1/wattera/issues/16) | Mahdi | P0 | 3 |
+| WAT-17 | [#17 Integrasi shell game + personalisasi](https://github.com/MahdiHbb1/wattera/issues/17) | Dhifansa | P1 | 3 |
+| WAT-18 | [#18 FE M1 foto label + koreksi](https://github.com/MahdiHbb1/wattera/issues/18) | Dhifansa | P0 | 3 |
+| WAT-19 | [#19 BE M1 capture label + OCR mock](https://github.com/MahdiHbb1/wattera/issues/19) | Mahdi | P0 | 3 |
+| WAT-20 | [#20 QA E2E auth/klaim/entitlement](https://github.com/MahdiHbb1/wattera/issues/20) | Yusri | P1 | 2 |
+| WAT-21 | [#21 energy-calc core P5 + golden test](https://github.com/MahdiHbb1/wattera/issues/21) | Mahdi | P0 | 5 |
 
-**Checkpoint S2:** pengguna tamu dapat mengklaim progres; entitlement tidak bisa dibypass dari FE.
+**Checkpoint S2:** pengguna tamu dapat mengklaim progres; entitlement tidak bisa dibypass dari FE; mesin hitung P5 lulus golden test.
 
-### S3 — Capture & Antrean (7–20 Des 2026)
+### S3 — Capture & Antrean (7–20 Des 2026) · 26 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-21 | BE upload + storage + status job | Mahdi | P0 |
-| WAT-22 | FE kamera/unggah + fallback manual | Dhifansa | P0 |
-| WAT-23 | FE antrean offline + retry | Dhifansa | P0 |
-| WAT-24 | FE konfirmasi/koreksi + label evaluasi | Dhifansa | P0 |
-| WAT-25 | BE M2 meter + anti-curang | Mahdi | P0 |
-| WAT-26 | QA capture E2E 5 perangkat | Yusri | P0 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-22 | [#22 BE capture upload + storage + status job](https://github.com/MahdiHbb1/wattera/issues/22) | Mahdi | P0 | 4 |
+| WAT-23 | [#23 FE kamera/unggah + fallback manual](https://github.com/MahdiHbb1/wattera/issues/23) | Dhifansa | P0 | 4 |
+| WAT-24 | [#24 FE antrean offline + retry](https://github.com/MahdiHbb1/wattera/issues/24) | Dhifansa | P0 | 3 |
+| WAT-25 | [#25 FE konfirmasi/koreksi + label evaluasi](https://github.com/MahdiHbb1/wattera/issues/25) | Dhifansa | P0 | 3 |
+| WAT-26 | [#26 BE M2 meter + anti-curang](https://github.com/MahdiHbb1/wattera/issues/26) | Mahdi | P0 | 4 |
+| WAT-27 | [#27 Estimate v0 + rekomendasi v0](https://github.com/MahdiHbb1/wattera/issues/27) | Muchsin | P0 | 5 |
+| WAT-28 | [#28 QA capture E2E + matriks 5 perangkat](https://github.com/MahdiHbb1/wattera/issues/28) | Yusri | P0 | 3 |
 
-**Checkpoint S3:** foto/suara masuk antrean, diproses, dikonfirmasi, dan menjadi data berlabel.
+**Checkpoint S3:** foto/suara masuk antrean, diproses, dikonfirmasi, dan menjadi data berlabel; estimate v0 tersedia untuk laporan.
 
-### S4 — Trial & Laporan Pertama (21 Des 2026–3 Jan 2027)
+### S4 — Trial & Laporan Pertama (21 Des 2026–3 Jan 2027) · 17 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-27 | BE trial engine + reminder H-25 | Mahdi | P0 |
-| WAT-28 | FE Laporan Pertama Hari 7 + share | Dhifansa | P0 |
-| WAT-29 | BE notifikasi opt-in + batas harian | Mahdi | P1 |
-| WAT-30 | AI OCR live P1–P3 + gate kualitas | Muchsin | P0 |
-| WAT-31 | QA E2E trial + Laporan Pertama | Yusri | P0 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-29 | [#29 BE trial engine 30 hari + reminder H-25](https://github.com/MahdiHbb1/wattera/issues/29) | Mahdi | P0 | 3 |
+| WAT-30 | [#30 FE Laporan Pertama Hari 7 + share PDF/gambar](https://github.com/MahdiHbb1/wattera/issues/30) | Dhifansa | P0 | 4 |
+| WAT-31 | [#31 BE notifikasi opt-in + batas harian](https://github.com/MahdiHbb1/wattera/issues/31) | Mahdi | P1 | 2 |
+| WAT-32 | [#32 AI OCR live P1–P3 + gate kualitas](https://github.com/MahdiHbb1/wattera/issues/32) | Muchsin | P0 | 5 |
+| WAT-33 | [#33 QA E2E trial + Laporan Pertama](https://github.com/MahdiHbb1/wattera/issues/33) | Yusri | P0 | 3 |
 
-### S5 — OCR/STT Live & Admin (4–17 Jan 2027)
+### S5 — OCR/STT Live & Admin (4–17 Jan 2027) · 16 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-32 | AI STT live P4 + ekstraksi | Muchsin | P0 |
-| WAT-33 | BE admin API v0 | Mahdi | P1 |
-| WAT-34 | FE admin UI v0 | Dhifansa | P1 |
-| WAT-35 | QA evaluasi akurasi OCR/STT | Yusri | P0 |
-| WAT-36 | AI cost guardrails + `ai_usage` | Muchsin | P1 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-34 | [#34 AI STT live P4 + ekstraksi + konfirmasi](https://github.com/MahdiHbb1/wattera/issues/34) | Muchsin | P0 | 4 |
+| WAT-35 | [#35 BE admin API v0 (funnel, akurasi, biaya)](https://github.com/MahdiHbb1/wattera/issues/35) | Mahdi | P1 | 3 |
+| WAT-36 | [#36 FE admin UI v0](https://github.com/MahdiHbb1/wattera/issues/36) | Dhifansa | P1 | 3 |
+| WAT-37 | [#37 QA harness evaluasi akurasi OCR/STT](https://github.com/MahdiHbb1/wattera/issues/37) | Yusri | P0 | 3 |
+| WAT-38 | [#38 AI cost guardrails + kuota + cache + `ai_usage`](https://github.com/MahdiHbb1/wattera/issues/38) | Muchsin | P1 | 3 |
 
 **Checkpoint S5:** gerbang OCR ≥90% dan STT ≥85% terukur pada dataset awal.
 
-### S6 — Estimasi, Rekomendasi & Privasi (18–31 Jan 2027)
+### S6 — Estimasi, Rekomendasi & Privasi (18–31 Jan 2027) · 23 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-37 | `energy-calc` P5/P6 + golden test | Mahdi | P0 |
-| WAT-38 | BE estimate + cross-validation | Mahdi | P0 |
-| WAT-39 | BE rekomendasi P7 + keputusan | Mahdi | P0 |
-| WAT-40 | FE rekomendasi + decision tracking | Dhifansa | P0 |
-| WAT-41 | FE Laporan Hasil Hari 30 | Dhifansa | P0 |
-| WAT-42 | BE privasi + hapus akun/data | Mahdi | P0 |
-| WAT-43 | AI P8 explainer validator | Muchsin | P0 |
-| WAT-44 | QA golden/confidence/privasi E2E | Yusri | P0 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-39 | [#39 Cross-validation P6 + tampilan keyakinan](https://github.com/MahdiHbb1/wattera/issues/39) | Mahdi | P0 | 4 |
+| WAT-40 | [#40 Rekomendasi v1 + keputusan + cooldown](https://github.com/MahdiHbb1/wattera/issues/40) | Muchsin | P0 | 3 |
+| WAT-41 | [#41 FE rekomendasi + decision tracking](https://github.com/MahdiHbb1/wattera/issues/41) | Dhifansa | P0 | 3 |
+| WAT-42 | [#42 FE Laporan Hasil Hari 30 + pisah tarif/volume](https://github.com/MahdiHbb1/wattera/issues/42) | Dhifansa | P0 | 4 |
+| WAT-43 | [#43 BE privasi + lihat/hapus akun dan data](https://github.com/MahdiHbb1/wattera/issues/43) | Mahdi | P0 | 3 |
+| WAT-44 | [#44 AI P8 explainer validator tanpa angka baru](https://github.com/MahdiHbb1/wattera/issues/44) | Muchsin | P0 | 3 |
+| WAT-45 | [#45 QA kalkulasi golden + keyakinan + privasi](https://github.com/MahdiHbb1/wattera/issues/45) | Yusri | P0 | 3 |
 
 **Checkpoint S6:** estimasi, rekomendasi, laporan, dan hapus data berjalan end-to-end; tidak ada angka baru dari LLM.
 
-### S7–S8 — Plus, Hardening & MVP Internal (Februari 2027)
+### S7–S8 — Plus, Hardening & MVP Internal (Februari 2027) · 15 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-45 | BE Plus + payment provider | Mahdi | P0 |
-| WAT-46 | FE paywall/upgrade + locked states | Dhifansa | P0 |
-| WAT-47 | Hardening keamanan | Mahdi | P0 |
-| WAT-48 | QA regression + MVP release gate | Yusri | P0 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-46 | [#46 BE Plus subscription + payment provider](https://github.com/MahdiHbb1/wattera/issues/46) | Mahdi | P0 | 5 |
+| WAT-47 | [#47 FE paywall/upgrade + locked states](https://github.com/MahdiHbb1/wattera/issues/47) | Dhifansa | P0 | 3 |
+| WAT-48 | [#48 Hardening keamanan + akses data](https://github.com/MahdiHbb1/wattera/issues/48) | Mahdi | P0 | 3 |
+| WAT-49 | [#49 QA regression penuh + MVP release gate](https://github.com/MahdiHbb1/wattera/issues/49) | Yusri | P0 | 4 |
 
 **Checkpoint MVP:** seluruh gate di `docs/ROADMAP.md` lulus; demo internal siap.
 
-### Pilot (Mar–Apr 2027)
+### Pilot (Mar–Apr 2027) · 19 hari
 
-| ID | Issue | Owner | Prioritas |
-|---|---|---|---|
-| WAT-49 | AI P10 Tanya Wati + sources | Muchsin | P1 |
-| WAT-50 | AI P11–P13 alert/token/ROI | Muchsin | P1 |
-| WAT-51 | Sensor pilot + kalibrasi ambang | Mahdi | P1 |
-| WAT-52 | QA pilot lapangan | Yusri | P0 |
+| ID | Issue | Owner | Prioritas | Est. |
+|---|---|---|---|---|
+| WAT-50 | [#50 AI P10 Tanya Wati + sources + tool terbatas](https://github.com/MahdiHbb1/wattera/issues/50) | Muchsin | P1 | 5 |
+| WAT-51 | [#51 AI P11–P13 alert, prediksi token, ROI](https://github.com/MahdiHbb1/wattera/issues/51) | Muchsin | P1 | 5 |
+| WAT-52 | [#52 Sensor pembanding 2–3 usaha + kalibrasi ambang](https://github.com/MahdiHbb1/wattera/issues/52) | Mahdi | P1 | 4 |
+| WAT-53 | [#53 QA lapangan + kualitas data + anti-curang](https://github.com/MahdiHbb1/wattera/issues/53) | Yusri | P0 | 5 |
+
+**Total estimasi seluruh fase: 187 hari kerja fokus** (bukan durasi kalender; beberapa orang bekerja paralel).
 
 ## Cara memakai board
+
+Buka [Wattera — Delivery](https://github.com/users/MahdiHbb1/projects/3).
 
 - **Status:** `Backlog → Ready → In Progress → In Review → Blocked → Done`.
 - **Owner:** Dhifansa, Mahdi, Muchsin, Yusri, atau Tim.
@@ -168,7 +177,7 @@ Issue GitHub adalah sumber status. Tabel ini hanya indeks urutan kerja.
 | O1 | Platform: PWA+Capacitor vs RN/Expo vs Flutter | Akhir S1 | Dhifansa/Mahdi |
 | O4 | Engine game | Awal S2 | Dhifansa |
 | O15 | Penyedia OCR/STT/LLM | Awal S4 | Muchsin |
-| O17 | Bahasa/paket `energy-calc` | Awal S6 | Mahdi |
+| O17 | Bahasa/paket `energy-calc` | Awal S2 | Mahdi |
 | O30 | Nilai `hybrid` di feature flag | Akhir S1 | Mahdi |
 | O31 | OpenAPI lengkap P2/P3 | Sebelum live OCR | Mahdi/Muchsin |
 | O32 | Bentuk API P11–P13 | Sebelum pilot | Mahdi/Muchsin |
@@ -179,4 +188,6 @@ Daftar lengkap ada di PRD Bagian 17.2. Jangan mengisi `[X]` dengan asumsi tanpa 
 ## Catatan
 
 - PRD dipindahkan ke `docs/PRD.md` dari `Wattera PRD Terpadu v0.3.1.md`.
-- Issue dibuat dari PRD v0.3.1; bila PRD berubah, buka issue `contract-change`/`docs` dan perbarui indeks ini.
+- Issue #1–#53 dibuat dari PRD v0.3.1 dan seluruhnya masuk [Project #3](https://github.com/MahdiHbb1/projects/3); `WAT-xx` = nomor issue.
+- Assignee GitHub baru diisi untuk Mahdi; Dhifansa, Muchsin, dan Yusri dilacak lewat label `owner:*` dan field **Owner** sampai username GitHub mereka tersedia.
+- Bila PRD berubah, buka issue `contract-change`/`docs` dan perbarui indeks ini.

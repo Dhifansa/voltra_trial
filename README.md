@@ -23,7 +23,7 @@ Jawaban disajikan dalam Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian
 
 ## Tracking
 
-- **Project board:** _diisi setelah GitHub Project dibuat_
+- **Project board:** <https://github.com/users/MahdiHbb1/projects/3> — 53 issue, field Owner/Workstream/Sprint/Priority/QA Gate/Estimate
 - **Issues:** <https://github.com/MahdiHbb1/wattera/issues>
 - **Milestones:** <https://github.com/MahdiHbb1/wattera/milestones>
 

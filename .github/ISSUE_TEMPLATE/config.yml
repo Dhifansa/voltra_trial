@@ -6,3 +6,6 @@ contact_links:
   - name: PRD Wattera
     url: https://github.com/MahdiHbb1/wattera/blob/main/docs/PRD.md
     about: Sumber kebenaran produk, AI, gamifikasi, dan monetisasi.
+  - name: Project board — Wattera Delivery
+    url: https://github.com/users/MahdiHbb1/projects/3
+    about: Status, owner, sprint, prioritas, dan QA gate seluruh issue delivery.

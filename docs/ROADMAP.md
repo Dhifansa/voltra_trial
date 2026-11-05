@@ -24,8 +24,8 @@ Sumber tanggal: PRD v0.3.1 Bagian 16. Tanggal bersifat indikatif dan bergantung 
 | Sprint | Periode | Milestone GitHub | Hasil yang harus terlihat |
 |---|---|---|---|
 | **S1** | 9–22 Nov 2026 | `S1 — Fondasi & Kontrak` | Monorepo/CI, auth OTP skeleton, shell FE, AI Gateway mock, kontrak C1–C6 v0 beku |
-| **S2** | 23 Nov–6 Des 2026 | `S2 — Akun & Shell Game` | Mode tamu + klaim, profil usaha, entitlement, shell game terintegrasi |
-| **S3** | 7–20 Des 2026 | `S3 — Capture & Antrean` | Kamera/unggah, antrean offline, status job, koreksi, M1/M2 |
+| **S2** | 23 Nov–6 Des 2026 | `S2 — Akun & Shell Game` | Mode tamu + klaim, profil usaha, entitlement, shell game terintegrasi, `energy-calc` P5 + golden test |
+| **S3** | 7–20 Des 2026 | `S3 — Capture & Antrean` | Kamera/unggah, antrean offline, status job, koreksi, M1/M2, estimate + rekomendasi v0 |
 | **S4** | 21 Des 2026–3 Jan 2027 | `S4 — Trial & Laporan Pertama` | Trial engine, Laporan Pertama, transisi OCR live, notifikasi |
 | **S5** | 4–17 Jan 2027 | `S5 — OCR/STT Live & Admin` | OCR/STT live, admin dasar, uji akurasi, biaya AI |
 | **S6** | 18–31 Jan 2027 | `S6 — Estimasi, Rekomendasi & Privasi` | Estimasi + cross-validation live, rekomendasi, Laporan Hasil, hapus data |
