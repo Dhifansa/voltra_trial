@@ -2,14 +2,14 @@
 
 ## Peran
 
-| Anggota | Peran | Fokus | Keputusan utama |
-|---|---|---|---|
-| **Dhifansa** | Frontend Engineer | Shell aplikasi, design system, Kios Virtual, gamifikasi, capture/report UI, paywall | UX dan implementasi FE |
-| **Mahdi** | Backend + AI Engineer | API modular monolith, data model, auth/entitlement/trial, kontrak C1–C6, AI Gateway mock, `energy-calc`, infra/CI | Arsitektur backend, kontrak, mesin energi |
-| **Muchsin** | AI Integration & Subscription Engineer | Mengisi placeholder AI dengan layanan live (OCR/STT/LLM), pipeline Plus P10–P13, kuota/biaya AI, `ai_usage` | Pilihan provider AI, kualitas & biaya AI |
-| **Yusri** | QA / E2E Engineer | Test strategy, Playwright E2E, contract test, dataset evaluation, anti-cheat verification, release gate | Kesiapan rilis dan bukti kualitas |
+| Anggota | GitHub | Peran | Fokus | Keputusan utama |
+|---|---|---|---|---|
+| **Dhifansa** | [@Dhifansa](https://github.com/Dhifansa) | Frontend Engineer | Shell aplikasi, design system, Kios Virtual, gamifikasi, capture/report UI, paywall | UX dan implementasi FE |
+| **Mahdi** | [@MahdiHbb1](https://github.com/MahdiHbb1) | Backend + AI Engineer | API modular monolith, data model, auth/entitlement/trial, kontrak C1–C6, AI Gateway mock, `energy-calc`, infra/CI | Arsitektur backend, kontrak, mesin energi |
+| **Muchsin** | — | AI Integration & Subscription Engineer | Mengisi placeholder AI dengan layanan live (OCR/STT/LLM), pipeline Plus P10–P13, kuota/biaya AI, `ai_usage` | Pilihan provider AI, kualitas & biaya AI |
+| **Yusri** | [@yuzhuruuu](https://github.com/yuzhuruuu) | QA / E2E Engineer | Test strategy, Playwright E2E, contract test, dataset evaluation, anti-cheat verification, release gate | Kesiapan rilis dan bukti kualitas |
 
-Mahdi saat ini memegang akses admin repo GitHub (`@MahdiHbb1`). Username GitHub anggota lain dicatat setelah dikonfirmasi.
+Mahdi memegang akses admin repo. Dhifansa dan Yusri sudah diundang sebagai collaborator dengan akses **write**; undangan perlu diterima lewat email/notifikasi GitHub. Username Muchsin belum tersedia.
 
 ## Ownership area
 

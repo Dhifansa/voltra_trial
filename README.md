@@ -9,6 +9,16 @@ Jawaban disajikan dalam Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian
 
 **Status:** Fase 0 — Validasi & Fondasi (November 2026). Repo ini menjadi sumber dokumen produk, kontrak, dan rencana delivery. Scaffold aplikasi dikerjakan pada Sprint S1.
 
+## Mulai dari mana
+
+1. Baca halaman ini untuk gambaran produk dan prinsip kerja.
+2. [`docs/TEAM.md`](docs/TEAM.md) — siapa mengerjakan apa dan batas kerja.
+3. [`docs/ROADMAP.md`](docs/ROADMAP.md) — urutan sprint dan release gate.
+4. [`tasks/plan.md`](tasks/plan.md) — indeks 53 issue dengan owner dan estimasi.
+5. [`CONTRIBUTING.md`](CONTRIBUTING.md) — alur branch, commit, PR, dan definition of done.
+
+Untuk melihat pekerjaan: buka [Project board](https://github.com/users/MahdiHbb1/projects/3), lalu filter **Owner** sesuai nama Anda. Issue GitHub adalah sumber status; dokumen hanya ringkasan.
+
 ## Dokumen utama
 
 | Dokumen | Isi |
@@ -29,12 +39,12 @@ Jawaban disajikan dalam Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian
 
 ## Tim
 
-| Anggota | Peran | Fokus utama |
-|---|---|---|
-| Dhifansa | Frontend Engineer | Aplikasi FE, Kios Virtual, gamifikasi, design system |
-| Mahdi | Backend + AI Engineer | API, data, kontrak, AI Gateway mock, `energy-calc`, infra |
-| Muchsin | AI Integration & Subscription Engineer | Mengisi placeholder AI, OCR/STT/LLM live, fitur Plus AI, biaya AI |
-| Yusri | QA / E2E Engineer | Test strategy, contract/E2E test, dataset evaluation, release gate |
+| Anggota | GitHub | Peran | Fokus utama |
+|---|---|---|---|
+| Dhifansa | [@Dhifansa](https://github.com/Dhifansa) | Frontend Engineer | Aplikasi FE, Kios Virtual, gamifikasi, design system |
+| Mahdi | [@MahdiHbb1](https://github.com/MahdiHbb1) | Backend + AI Engineer | API, data, kontrak, AI Gateway mock, `energy-calc`, infra |
+| Muchsin | — | AI Integration & Subscription Engineer | Mengisi placeholder AI, OCR/STT/LLM live, fitur Plus AI, biaya AI |
+| Yusri | [@yuzhuruuu](https://github.com/yuzhuruuu) | QA / E2E Engineer | Test strategy, contract/E2E test, dataset evaluation, release gate |
 
 Detail ownership ada di [`docs/TEAM.md`](docs/TEAM.md).
 

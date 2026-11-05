@@ -148,11 +148,18 @@ Issue GitHub adalah sumber status. Tabel ini hanya indeks urutan kerja; `WAT-xx`
 Buka [Wattera — Delivery](https://github.com/users/MahdiHbb1/projects/3).
 
 - **Status:** `Backlog → Ready → In Progress → In Review → Blocked → Done`.
-- **Owner:** Dhifansa, Mahdi, Muchsin, Yusri, atau Tim.
+  - **Backlog** = belum siap dikerjakan.
+  - **Ready** = scope dan acceptance criteria sudah jelas, siap diambil.
+  - **In Progress** = sedang dikerjakan.
+  - **In Review** = menunggu review/QA.
+  - **Blocked** = berhenti karena dependensi atau keputusan.
+  - **Done** = acceptance criteria, CI, dan QA gate lulus.
+- **Owner:** Dhifansa ([@Dhifansa](https://github.com/Dhifansa)), Mahdi ([@MahdiHbb1](https://github.com/MahdiHbb1)), Muchsin, Yusri ([@yuzhuruuu](https://github.com/yuzhuruuu)), atau Tim.
 - **Workstream:** Frontend, Gamifikasi, Backend, AI/Energi, AI Subscription, QA/E2E, Docs/PM.
 - **Sprint:** Fase 0, S1–S6, S7–S8, Pilot.
 - **Priority:** P0 = memblokir gate; P1 = penting; P2 = opsional.
 - **Estimate:** perkiraan hari kerja fokus (bukan deadline).
+- **QA Gate:** Pending → Lulus/Gagal; `Tidak perlu` untuk docs/research/chore.
 - Pindahkan ke **Done** hanya setelah acceptance criteria, CI, dan QA gate (bila relevan) lulus.
 
 ## Risiko utama
