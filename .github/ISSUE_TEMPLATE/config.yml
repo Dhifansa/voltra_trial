@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Panduan kontribusi
-    url: https://github.com/MahdiHbb1/wattera/blob/main/CONTRIBUTING.md
+    url: https://github.com/MahdiHbb1/voltra/blob/main/CONTRIBUTING.md
     about: Baca alur branch, commit, PR, dan definition of done sebelum membuka issue.
-  - name: PRD Wattera
-    url: https://github.com/MahdiHbb1/wattera/blob/main/docs/PRD.md
+  - name: PRD Voltra
+    url: https://github.com/MahdiHbb1/voltra/blob/main/docs/PRD.md
     about: Sumber kebenaran produk, AI, gamifikasi, dan monetisasi.
-  - name: Project board — Wattera Delivery
+  - name: Project board — Voltra Delivery
     url: https://github.com/users/MahdiHbb1/projects/3
     about: Status, owner, sprint, prioritas, dan QA gate seluruh issue delivery.

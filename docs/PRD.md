@@ -1,12 +1,12 @@
-# Wattera --- Product Requirements Document (PRD) Terpadu
+# Voltra --- Product Requirements Document (PRD) Terpadu
 
 **Versi dokumen:** 0.3.1 --- Konsolidasi + audit kelengkapan\
 **Tanggal konsolidasi:** 5 November 2026\
 **Pemilik:** Tim d1306 (UNNES)\
 **Status:** Draft kerja untuk validasi dan implementasi\
-**Menggantikan sebagai dokumen kerja:** `wattera-prd-v0.2-index.md`,
-`wattera-prd-1-sistem-app.md`, `wattera-prd-2-gamifikasi.md`, dan
-`wattera-prd-3-ai-e2e.md`
+**Menggantikan sebagai dokumen kerja:** `voltra-prd-v0.2-index.md`,
+`voltra-prd-1-sistem-app.md`, `voltra-prd-2-gamifikasi.md`, dan
+`voltra-prd-3-ai-e2e.md`
 
 > **Catatan status:** Semua angka, harga, target, ambang, dan asumsi
 > yang belum diuji tetap merupakan hipotesis. Penanda `[X]` berarti
@@ -19,7 +19,7 @@
 
 ## 0. Cara menggunakan dokumen ini
 
-Dokumen ini menjadi satu sumber acuan untuk produk Wattera dari sisi
+Dokumen ini menjadi satu sumber acuan untuk produk Voltra dari sisi
 pengalaman pengguna, aplikasi, gamifikasi, AI, data, monetisasi, dan
 rencana rilis.
 
@@ -90,7 +90,7 @@ rencana rilis.
 
 ### 1.1 Tujuan produk
 
-Wattera membantu pemilik UMKM menjawab dua pertanyaan:
+Voltra membantu pemilik UMKM menjawab dua pertanyaan:
 
 -   **Ke mana uang listrik usaha saya pergi?**
 -   **Apa yang harus saya ubah agar pemakaian listrik lebih efisien?**
@@ -99,7 +99,7 @@ Jawaban ditampilkan dalam bahasa yang dekat dengan pemilik usaha,
 terutama Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian atau
 Rp/porsi), disertai estimasi, dasar perhitungan, dan tingkat keyakinan.
 
-Wattera merupakan produk **software-first**. Pada rilis awal, sistem
+Voltra merupakan produk **software-first**. Pada rilis awal, sistem
 tidak mengukur konsumsi tiap alat secara langsung dan terus-menerus
 karena belum menggunakan sensor/AMI.
 
@@ -149,7 +149,7 @@ Nama paket berbayar menggunakan istilah **Plus**, bukan Pro.
 
 ### 1.3 Batas klaim "real-time"
 
-Tanpa sensor/AMI, Wattera tidak boleh mengklaim dapat melacak konsumsi
+Tanpa sensor/AMI, Voltra tidak boleh mengklaim dapat melacak konsumsi
 setiap alat selama 24 jam.
 
   -----------------------------------------------------------------------
@@ -365,7 +365,7 @@ terpisah pada Fase 2.
 
 ### 4.1 Hubungan antarbagian produk
 
-Wattera terdiri dari tiga lapisan yang bekerja sebagai satu alur:
+Voltra terdiri dari tiga lapisan yang bekerja sebagai satu alur:
 
 1.  **Kios Virtual** memperkenalkan konsep biaya listrik per alat
     melalui simulasi.
@@ -2293,7 +2293,7 @@ pengguna.
 ### 15.1 Alasan trial 30 hari
 
 Trial 30 hari dirancang untuk mencakup satu siklus tagihan sehingga
-Wattera dapat membandingkan hasil terhadap baseline. Trial dimulai saat
+Voltra dapat membandingkan hasil terhadap baseline. Trial dimulai saat
 data asli pertama kali terhubung, bukan ketika pengguna pertama kali
 membuka game.
 
@@ -2688,7 +2688,7 @@ serta keputusan platform.
 ## 18. Glosarium
 
   ---------------------------------------------------------------------
-  Istilah                            Arti dalam Wattera
+  Istilah                            Arti dalam Voltra
   ---------------------------------- ----------------------------------
   Kios Virtual                       Game simulasi yang
                                      merepresentasikan usaha pengguna
@@ -2807,6 +2807,6 @@ Dokumen terpadu ini:
 -   Mempertahankan nilai `[X]`, harga, target, dan ambang yang belum
     diuji sebagai hipotesis.
 
-**Prinsip akhir:** Wattera harus terasa sebagai satu produk yang utuh
+**Prinsip akhir:** Voltra harus terasa sebagai satu produk yang utuh
 bagi pengguna, meskipun secara teknis dibangun dari modul aplikasi,
 game, dan AI yang memiliki tanggung jawab berbeda.

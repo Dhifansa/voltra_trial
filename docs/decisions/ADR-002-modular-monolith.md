@@ -7,7 +7,7 @@ Proposed — menunggu keputusan O17 dan scaffold Sprint S1.
 2026-11-05
 
 ## Context
-Wattera memiliki modul auth, business, template, mission, capture, trial, billing, report, notify, admin, analytics, dan AI. Tim kecil, waktu pengembangan singkat, dan kontrak antarmodul harus tetap terjaga. PRD merekomendasikan modular monolith, dengan opsi Node.js (NestJS/Express) atau Python (FastAPI).
+Voltra memiliki modul auth, business, template, mission, capture, trial, billing, report, notify, admin, analytics, dan AI. Tim kecil, waktu pengembangan singkat, dan kontrak antarmodul harus tetap terjaga. PRD merekomendasikan modular monolith, dengan opsi Node.js (NestJS/Express) atau Python (FastAPI).
 
 ## Decision
 Gunakan **TypeScript + NestJS** sebagai modular monolith, **PostgreSQL** sebagai database utama, **Redis + BullMQ** untuk queue/cache, dan **S3-compatible object storage** untuk foto/suara. Paket `energy-calc` dan `contracts` dibagikan dalam monorepo.
