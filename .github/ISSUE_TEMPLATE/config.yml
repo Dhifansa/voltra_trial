@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Panduan kontribusi
+    url: https://github.com/MahdiHbb1/wattera/blob/main/CONTRIBUTING.md
+    about: Baca alur branch, commit, PR, dan definition of done sebelum membuka issue.
+  - name: PRD Wattera
+    url: https://github.com/MahdiHbb1/wattera/blob/main/docs/PRD.md
+    about: Sumber kebenaran produk, AI, gamifikasi, dan monetisasi.

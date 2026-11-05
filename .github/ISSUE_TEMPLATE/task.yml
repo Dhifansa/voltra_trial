@@ -1,0 +1,54 @@
+name: Task / Feature
+description: Pekerjaan implementasi, riset, atau dokumentasi yang terhubung ke PRD.
+title: "[Task] "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Konteks
+      description: Jelaskan masalah/peluang dan mengapa pekerjaan ini perlu.
+      placeholder: "Contoh: FE butuh kontrak upload sebelum kamera bisa diimplementasikan..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Batas pekerjaan. Sebutkan yang tidak termasuk bila perlu.
+      placeholder: "- Endpoint upload\n- Validasi tipe file\n- Tidak termasuk UI kamera"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Kondisi yang dapat diuji. Gunakan checklist.
+      placeholder: "- [ ] Pengguna dapat mengunggah foto <= 10 MB\n- [ ] Job ID dikembalikan"
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verifikasi
+      description: Perintah/test/manual check yang membuktikan pekerjaan selesai.
+      placeholder: "- [ ] pnpm test:contract\n- [ ] E2E upload foto\n- [ ] Cek status job di UI"
+    validations:
+      required: true
+
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependensi
+      description: Issue/PRD lain yang harus selesai lebih dulu.
+      placeholder: "#12, kontrak C3 v0"
+
+  - type: input
+    id: prd_ref
+    attributes:
+      label: Referensi PRD
+      description: Bagian/ID PRD yang relevan.
+      placeholder: "Bagian 7.2 FR-2.1; C3"

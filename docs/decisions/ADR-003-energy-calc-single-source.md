@@ -1,0 +1,42 @@
+# ADR-003: Satu pustaka `energy-calc`, LLM tidak menghasilkan angka
+
+## Status
+Accepted — prinsip inti PRD (C2, P8, Bagian 8 dan 10).
+
+## Date
+2026-11-05
+
+## Context
+Angka kWh/Rupiah muncul di simulasi game, estimasi, rekomendasi, laporan, verifikasi, dan Tanya Wati. Bila setiap modul menghitung sendiri atau LLM mengarang angka, hasil antar-layar tidak konsisten dan klaim penghematan tidak dapat diaudit. PRD menetapkan `energy-calc` sebagai satu-satunya sumber hitung.
+
+## Decision
+1. Semua perhitungan kWh, Rupiah, faktor beban, estimasi, cross-validation, verifikasi, dan ROI berada di `packages/energy-calc`.
+2. Game, backend, laporan, dan Wati memakai keluaran pustaka tersebut; tidak ada rumus duplikat.
+3. LLM hanya menyusun teks dari objek hasil yang sudah berisi angka.
+4. Validator memeriksa bahwa teks LLM tidak memuat angka baru; bila gagal, jawaban diblokir dan diganti template.
+5. Setiap keluaran menyertakan `engine_version` dan tingkat keyakinan.
+
+## Alternatives Considered
+
+### Rumus terpisah per modul
+- Pros: modul mandiri.
+- Cons: angka tidak konsisten, sulit diaudit, game dan laporan bisa berbeda.
+- Rejected: melanggar aturan emas C2.
+
+### LLM menghitung atau membulatkan angka
+- Pros: jawaban lebih fleksibel.
+- Cons: halusinasi, tidak dapat direproduksi, melanggar batas klaim.
+- Rejected.
+
+## Consequences
+- FE dan BE berbagi paket (TypeScript) atau memanggil layanan kecil.
+- Perubahan rumus harus melalui test golden dan review.
+- Mock juga memakai bentuk hasil C2; mock tidak boleh menampilkan penghematan pasti.
+- Validator dan contract test menjadi gate wajib di CI.
+- Bila LLM mengembalikan angka baru, respons gagal dengan aman (fallback template), bukan ditampilkan.
+
+## Enforcement
+- Unit/golden test untuk contoh hitung PRD.
+- Contract test untuk bentuk hasil dan `engine_version`.
+- Code review checklist: cari `kwh`, `rp`, `tariff`, `load_factor` di luar `energy-calc`.
+- E2E memeriksa label **Simulasi/Estimasi/Contoh/Belum cukup data**.
