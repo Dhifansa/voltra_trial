@@ -99,13 +99,19 @@ Sebuah item dianggap selesai bila:
 
 ## Menjalankan pengecekan
 
-Perintah final akan ditambahkan pada Sprint S1. Target perintah:
+Prasyarat: Node.js >=20.9 dan pnpm 10.
 
 ```bash
 pnpm install
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm build
+```
+
+Contract test dan E2E ditambahkan pada issue #12 dan #9; setelah itu perintahnya:
+
+```bash
 pnpm test:contract
 pnpm test:e2e
 ```

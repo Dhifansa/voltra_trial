@@ -115,15 +115,17 @@ Flag per endpoint, misalnya `AI_MODE_OCR_METER=mock|live`. Dukungan nilai `hybri
 
 | Lapisan | Pilihan | Status |
 |---|---|---|
-| Frontend | TypeScript + React + Next.js (PWA) | ADR-001, menunggu O1 |
-| Mobile wrapper | Capacitor | ADR-001, menunggu O1 |
-| Backend | TypeScript + NestJS modular monolith | ADR-002, menunggu O17 |
-| Database | PostgreSQL | ADR-002 |
-| Queue/cache | Redis + BullMQ | ADR-002 |
-| Storage | S3-compatible object storage | ADR-002 |
-| Hitung energi | Paket TypeScript `energy-calc` | ADR-003 |
-| Game 2D | DOM/SVG dulu; engine menyusul | O4 belum diputuskan |
-| Test | Vitest + Playwright + contract test | S1 |
+| Frontend | TypeScript + React + Next.js (PWA) | Accepted — ADR-001 |
+| Mobile wrapper | Capacitor | Accepted — ADR-001 |
+| Backend | TypeScript + NestJS modular monolith | Accepted — ADR-002 |
+| Database | PostgreSQL | Accepted — ADR-002 |
+| Queue/cache | Redis + BullMQ | Accepted — ADR-002 |
+| Storage | S3-compatible object storage | Accepted — ADR-002 |
+| Hitung energi | Paket TypeScript `@voltra/energy-calc` | Accepted — ADR-003 |
+| Game 2D | DOM/SVG/Canvas; PixiJS hanya bila profiling menuntut | Accepted — ADR-004 |
+| Test | Vitest; Playwright menyusul issue #9 | S1 |
+| Monorepo | pnpm workspaces | S1 |
+| CI | GitHub Actions (lint, typecheck, test, build) | S1 |
 | Deploy | TBD | Belum diputuskan |
 
 ## Testing
@@ -152,10 +154,9 @@ Flag per endpoint, misalnya `AI_MODE_OCR_METER=mock|live`. Dukungan nilai `hybri
 
 | ID | Keputusan | Dibutuhkan sebelum | Pemilik |
 |---|---|---|---|
-| O1 | PWA + Capacitor vs RN/Expo vs Flutter | Scaffold FE (S1) | Dhifansa + Mahdi |
-| O4 | Engine game | Kios Virtual produksi (S2) | Dhifansa |
 | O15 | Penyedia OCR/STT/LLM | Live T1/T2 (S4/S5) | Muchsin |
-| O17 | Bahasa/paket `energy-calc` | Implementasi C2 (S2) | Mahdi |
 | O30 | Status `hybrid` di feature flag | Integrasi Gateway (S1) | Mahdi |
 | O31 | Skema OpenAPI P2/P3 | Live OCR (S4) | Mahdi/Muchsin |
 | O32 | Bentuk API P11–P13 | Pilot (S7+) | Mahdi/Muchsin |
+
+O1/O4/O17 sudah ditutup pada 2026-11-06 melalui ADR-001, ADR-004, dan ADR-003. Ringkasan ada di [`docs/decisions/README.md`](decisions/README.md).

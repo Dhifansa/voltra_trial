@@ -7,7 +7,7 @@ Voltra membantu pemilik UMKM menjawab dua pertanyaan:
 
 Jawaban disajikan dalam Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian atau Rp/porsi), lengkap dengan estimasi, dasar perhitungan, dan tingkat keyakinan.
 
-**Status:** Fase 0 — Validasi & Fondasi (November 2026). Repo ini menjadi sumber dokumen produk, kontrak, dan rencana delivery. Scaffold aplikasi dikerjakan pada Sprint S1.
+**Status:** Fase 0 — Validasi & Fondasi (November 2026). Scaffold S1 sudah tersedia: workspace pnpm, PWA shell, API health check, paket bersama, dan CI.
 
 > Repo ini **privat**. Collaborator harus menerima undangan GitHub terlebih dahulu; setelah itu README, dokumen, issue, dan Project board bisa diakses.
 
@@ -50,7 +50,7 @@ Untuk melihat pekerjaan: buka [Project board](https://github.com/users/MahdiHbb1
 | Test | Vitest + Playwright + contract test |
 | CI | GitHub Actions + pnpm |
 
-Stack ini **belum final**. Keputusan O1/O4/O17 dikunci di [#5](https://github.com/MahdiHbb1/voltra/issues/5); detail dan alternatif ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) serta ADR-001/002/003. Provider AI, OTP, pembayaran, dan deployment belum diputuskan.
+Stack ini **sudah dikunci untuk S1**. Keputusan O1/O4/O17 ada di ADR-001/003/004; provider AI, OTP, pembayaran, dan deployment belum diputuskan.
 
 ## Tracking
 
@@ -80,20 +80,20 @@ Detail ownership ada di [`docs/TEAM.md`](docs/TEAM.md).
 - **Mock berlabel "Contoh".** Mock tidak boleh menampilkan penghematan pasti dan tidak boleh dipakai di pilot/produksi.
 - **Privasi default.** Foto, suara, dan data usaha adalah data pribadi; pengguna dapat melihat dan menghapus datanya.
 
-## Struktur repo (target)
+## Struktur repo
 
 ```text
 apps/
   web/                 # PWA React/Next.js + Capacitor (ADR-001)
-  api/                 # Modular monolith TypeScript (ADR-002)
+  api/                 # Modular monolith NestJS (ADR-002)
 packages/
-  contracts/           # Skema C1–C6 + OpenAPI (C3)
+  contracts/           # Versi + tipe C1–C6 (C3)
   energy-calc/         # Satu-satunya pustaka hitung kWh/Rupiah (C2)
 tests/
-  contract/            # Contract test C1–C6
-  e2e/                 # Playwright E2E
+  contract/            # Contract test C1–C6 (issue #12)
+  e2e/                 # Playwright E2E (issue #9)
 docs/
-  decisions/           # ADR
+  decisions/           # ADR + indeks keputusan
   PRD.md
 tasks/
   plan.md              # Rencana + indeks issue
@@ -101,7 +101,28 @@ tasks/
 
 ## Mulai
 
-Belum ada scaffold aplikasi. Sprint S1 akan menambahkan workspace, perintah dev/build/test, dan `.env.example`. Setelah itu README ini akan memuat quick start yang dapat dijalankan.
+Prasyarat: Node.js >=20.9 (disarankan 22, lihat `.nvmrc`) dan pnpm 10.
+
+```bash
+pnpm install
+pnpm dev
+```
+
+- Web: <http://localhost:3000>
+- API health: <http://localhost:3001/health>
+- Salin `.env.example` menjadi `.env` bila mulai memakai layanan eksternal. Scaffold saat ini belum membutuhkan kredensial.
+
+Perintah wajib sebelum membuka PR:
+
+| Perintah | Isi |
+|---|---|
+| `pnpm lint` | ESLint seluruh workspace |
+| `pnpm typecheck` | TypeScript seluruh workspace |
+| `pnpm test` | Vitest (unit) |
+| `pnpm build` | Build paket, API, dan PWA |
+| `pnpm test:contract` | Contract test (diisi issue #12) |
+
+Build semua workspace mengikuti urutan dependensi: `contracts`/`energy-calc` lebih dulu, lalu `api`/`web`.
 
 ## Kontribusi
 
