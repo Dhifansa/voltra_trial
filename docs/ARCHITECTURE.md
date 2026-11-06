@@ -123,7 +123,9 @@ Flag per endpoint, misalnya `AI_MODE_OCR_METER=mock|live`. Dukungan nilai `hybri
 | Storage | S3-compatible object storage | Accepted — ADR-002 |
 | Hitung energi | Paket TypeScript `@voltra/energy-calc` | Accepted — ADR-003 |
 | Game 2D | DOM/SVG/Canvas; PixiJS hanya bila profiling menuntut | Accepted — ADR-004 |
-| Test | Vitest + Playwright + contract test | S1 |
+| Test | Vitest; Playwright menyusul issue #9 | S1 |
+| Monorepo | pnpm workspaces | S1 |
+| CI | GitHub Actions (lint, typecheck, test, build) | S1 |
 | Deploy | TBD | Belum diputuskan |
 
 ## Testing
