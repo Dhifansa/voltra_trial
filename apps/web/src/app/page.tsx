@@ -1,5 +1,6 @@
 import { CONTRACT_VERSION } from '@voltra/contracts';
 import { ENGINE_VERSION } from '@voltra/energy-calc';
+import { AiMockDemo } from './ai-mock-demo';
 
 export default function HomePage() {
   return (
@@ -34,6 +35,8 @@ export default function HomePage() {
           </div>
         </dl>
       </section>
+
+      <AiMockDemo />
 
       <p className="note">
         Semua angka kWh dan Rupiah nantinya berasal dari paket{' '}

@@ -198,8 +198,9 @@ Fixture error wajib tersedia untuk `insufficient_data` dan `provider_error`.
 - `mock`: fixture tetap, label **Contoh**, tidak boleh menghasilkan penghematan pasti.
 - `hybrid`: sebagian endpoint live; status per endpoint.
 - `live`: pipeline sebenarnya.
-- Mock tidak boleh dipakai di pilot/produksi; CI memeriksa flag.
+- Mock tidak boleh dipakai di pilot/produksi; API menolak start bila `APP_ENV`/`NODE_ENV` pilot/produksi dan `AI_MODE=mock`.
 - Setiap respons mock menyertakan `mode: "mock"`, dan UI menampilkan label **Contoh**.
+- Implementasi adapter mock dan cara memaksa skenario: [`docs/AI-GATEWAY.md`](AI-GATEWAY.md).
 
 ### Fixture AI
 
