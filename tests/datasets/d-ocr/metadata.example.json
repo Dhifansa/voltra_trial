@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "created": "2026-11-06",
+  "total": 1,
+  "images": [
+    {
+      "id": "meter-001",
+      "filename": "meter-001.jpg",
+      "groundTruth": {
+        "kwhValue": 12345.6,
+        "unit": "kWh"
+      },
+      "metadata": {
+        "source": "pilot-user-A",
+        "meterType": "analog",
+        "captureDate": "2026-11-05",
+        "lighting": "good",
+        "angle": "front",
+        "notes": "Meter PLN rumah standar, pencahayaan siang hari"
+      }
+    }
+  ]
+}

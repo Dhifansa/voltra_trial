@@ -1,0 +1,8 @@
+# Uncomment jika file terlalu besar (>100MB total)
+# Gunakan Git LFS atau external storage
+
+# d-ocr/images/*.jpg
+# d-ocr/images/*.png
+# d-stt/audio/*.mp3
+# d-stt/audio/*.wav
+# d-stt/audio/*.m4a

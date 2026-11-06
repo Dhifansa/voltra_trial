@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "created": "2026-11-06",
+  "total": 1,
+  "audio": [
+    {
+      "id": "voice-001",
+      "filename": "voice-001.mp3",
+      "groundTruth": {
+        "transcription": "AC nyala delapan jam hari ini",
+        "normalized": "ac nyala 8 jam hari ini"
+      },
+      "metadata": {
+        "speaker": "pilot-user-A",
+        "duration": 3.5,
+        "language": "id",
+        "accent": "jawa",
+        "noiseLevel": "medium",
+        "context": "warung-makan-siang",
+        "keywords": ["ac", "8", "jam"],
+        "notes": "Background noise dari kompor dan pelanggan ngobrol"
+      }
+    }
+  ]
+}

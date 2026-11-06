@@ -4,15 +4,17 @@ import { AiController } from './ai/ai.controller';
 import { AiModule } from './ai/ai.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { BusinessController } from './business/business.controller';
+import { BusinessModule } from './business/business.module';
 import { RequestIdMiddleware } from './ai/request-id.middleware';
 import { AppController } from './app.controller';
 
 @Module({
-  imports: [AiModule, AuthModule],
+  imports: [AiModule, AuthModule, BusinessModule],
   controllers: [AppController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(RequestIdMiddleware).forRoutes(AiController, AuthController, AppController);
+    consumer.apply(RequestIdMiddleware).forRoutes(AiController, AuthController, BusinessController, AppController);
   }
 }
