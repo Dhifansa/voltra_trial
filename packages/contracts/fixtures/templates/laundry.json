@@ -1,0 +1,51 @@
+{
+  "template_id": "laundry",
+  "version": "0.1.0",
+  "display_name": "Laundry Kiloan",
+  "unit": {
+    "id": "kg",
+    "label": "kg cucian",
+    "default_daily": 50
+  },
+  "appliances": [
+    {
+      "id": "washer",
+      "name": "Mesin cuci",
+      "icon": "washer",
+      "power_w": { "min": 300, "typical": 500, "max": 800 },
+      "load_factor": { "typical": 0.8, "range": [0.6, 0.9] },
+      "usage_pattern": {
+        "hours_per_day": { "min": 4, "typical": 6, "max": 10 },
+        "always_on": false,
+        "peak_hours": ["08-12", "14-17"]
+      },
+      "category": "other",
+      "critical": true
+    },
+    {
+      "id": "dryer_gas_electric",
+      "name": "Pengering",
+      "icon": "dryer",
+      "power_w": { "min": 2000, "typical": 3000, "max": 4500 },
+      "load_factor": { "typical": 0.7, "range": [0.5, 0.9] },
+      "usage_pattern": {
+        "hours_per_day": { "min": 2, "typical": 5, "max": 10 },
+        "always_on": false,
+        "peak_hours": ["09-12", "14-17"]
+      },
+      "category": "heater",
+      "critical": false
+    }
+  ],
+  "savings_actions": [
+    {
+      "id": "full_load_dryer",
+      "title": "Isi pengering sampai penuh sebelum menyalakan",
+      "applies_to": ["dryer_gas_electric"],
+      "saving_formula": "reduce_hours_pct * appliance_kwh",
+      "effort": "low",
+      "safety_note": "Jangan melebihi kapasitas mesin."
+    }
+  ],
+  "missions_enabled": ["M1", "M2", "M3", "M4", "M5", "M6"]
+}

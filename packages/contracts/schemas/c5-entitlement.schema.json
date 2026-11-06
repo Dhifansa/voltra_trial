@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voltra.local/schemas/c5-entitlement.schema.json",
+  "title": "C5 Entitlement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "business_id",
+    "status",
+    "trial_started_at",
+    "trial_ends_at",
+    "features",
+    "updated_at"
+  ],
+  "properties": {
+    "business_id": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["free", "trial", "plus", "locked"] },
+    "trial_started_at": { "type": ["string", "null"], "format": "date-time" },
+    "trial_ends_at": { "type": ["string", "null"], "format": "date-time" },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kios",
+        "m1",
+        "ai_analysis",
+        "wati_real_data",
+        "cosmetic_rewards"
+      ],
+      "properties": {
+        "kios": { "type": "boolean" },
+        "m1": { "type": "boolean" },
+        "ai_analysis": { "type": "boolean" },
+        "wati_real_data": { "type": "boolean" },
+        "cosmetic_rewards": { "type": "boolean" }
+      }
+    },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

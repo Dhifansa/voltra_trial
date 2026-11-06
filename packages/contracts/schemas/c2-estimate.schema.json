@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voltra.local/schemas/c2-estimate.schema.json",
+  "title": "C2 Estimate Result",
+  "type": "object",
+  "required": [
+    "window",
+    "meter_delta_kwh",
+    "per_appliance",
+    "explained_kwh",
+    "unexplained_kwh",
+    "gap_ratio",
+    "overall_confidence",
+    "display_level",
+    "engine_version"
+  ],
+  "properties": {
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "type": "string", "format": "date-time" },
+        "to": { "type": "string", "format": "date-time" }
+      }
+    },
+    "meter_delta_kwh": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "per_appliance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["appliance_id", "kwh", "basis", "confidence"],
+        "properties": {
+          "appliance_id": { "type": "string", "minLength": 1 },
+          "kwh": { "type": "number", "minimum": 0 },
+          "basis": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["power_kw", "hours", "load_factor"],
+            "properties": {
+              "power_kw": { "type": "number", "minimum": 0 },
+              "hours": { "type": "number", "minimum": 0 },
+              "load_factor": { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          },
+          "confidence": { "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "explained_kwh": { "type": "number", "minimum": 0 },
+    "unexplained_kwh": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "gap_ratio": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "overall_confidence": { "enum": ["high", "medium", "low"] },
+    "display_level": {
+      "enum": ["appliance", "category", "insufficient_data"]
+    },
+    "next_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "suggested_missions": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^M[1-6]$" }
+    },
+    "engine_version": { "type": "string", "minLength": 1 }
+  }
+}

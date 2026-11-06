@@ -1,0 +1,14 @@
+{
+  "business_id": "b_123",
+  "status": "trial",
+  "trial_started_at": "2026-12-01T06:30:00+07:00",
+  "trial_ends_at": "2026-12-31T06:30:00+07:00",
+  "features": {
+    "kios": true,
+    "m1": true,
+    "ai_analysis": true,
+    "wati_real_data": true,
+    "cosmetic_rewards": true
+  },
+  "updated_at": "2026-12-01T06:30:00+07:00"
+}

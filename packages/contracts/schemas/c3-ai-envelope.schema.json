@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voltra.local/schemas/c3-ai-envelope.schema.json",
+  "title": "C3 AI Response Envelope",
+  "type": "object",
+  "required": [
+    "request_id",
+    "engine_version",
+    "mode",
+    "confidence",
+    "warnings"
+  ],
+  "properties": {
+    "request_id": { "type": "string", "minLength": 1 },
+    "engine_version": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["mock", "hybrid", "live"] },
+    "confidence": { "enum": ["high", "medium", "low"] },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
