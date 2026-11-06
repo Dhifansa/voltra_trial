@@ -125,3 +125,99 @@ code {
   color: var(--muted);
   font-size: 0.95rem;
 }
+
+.demo {
+  margin-top: 1.5rem;
+}
+
+.demo h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.demo-lede {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+button {
+  min-height: 2.75rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.6rem;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+.demo-result,
+.demo-error {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.demo-result p,
+.demo-error p {
+  margin: 0.5rem 0 0;
+}
+
+.demo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.demo-meta code {
+  color: var(--muted);
+}
+
+.badge-mock {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.demo-error {
+  border-top-color: #b3261e;
+  color: #b3261e;
+}
+
+.demo-error button {
+  margin-top: 0.75rem;
+}
+
+.demo-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .demo-error {
+    border-top-color: #ff8a80;
+    color: #ff8a80;
+  }
+}
