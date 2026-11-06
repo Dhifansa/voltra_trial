@@ -108,6 +108,7 @@ interface EstimateInput {
   window: { from: string; to: string };
   appliances: ApplianceInput[];
   meter_delta_kwh?: number;
+  data_days?: number;
   engine_version: string;
 }
 
@@ -131,7 +132,7 @@ interface EstimateResult {
 }
 ```
 
-Fungsi yang dicakup: kWh per alat, Rupiah, faktor beban, estimasi, cross-validation, verifikasi dampak, ROI. Ambang keyakinan (15%/35%) dan parameter lain adalah konfigurasi, bukan angka yang ditulis tersebar di kode.
+Fungsi yang dicakup: kWh per alat, Rupiah, faktor beban, estimasi, cross-validation, verifikasi dampak, ROI. Implementasi saat ini ada di [`docs/ENERGY-CALC.md`](ENERGY-CALC.md) (engine `0.1.0`). Ambang keyakinan (15%/35%) dan parameter lain adalah konfigurasi, bukan angka yang ditulis tersebar di kode.
 
 Aturan:
 

@@ -12,6 +12,8 @@ export interface EstimateInput {
   window: TimeWindow;
   appliances: ApplianceInput[];
   meter_delta_kwh?: number;
+  /** Jumlah hari data yang tersedia. Kurang dari ambang C6 menurunkan keyakinan. */
+  data_days?: number;
   engine_version: string;
 }
 

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "pnpm -r build",
-    "build:packages": "pnpm --filter @voltra/contracts --filter @voltra/energy-calc build",
+    "build:packages": "pnpm --filter @voltra/contracts build && pnpm --filter @voltra/energy-calc build",
     "dev": "pnpm build:packages && pnpm -r --parallel --filter @voltra/web --filter @voltra/api dev",
     "lint": "eslint .",
     "typecheck": "pnpm build:packages && pnpm -r typecheck && tsc -p tsconfig.tests.json --noEmit",

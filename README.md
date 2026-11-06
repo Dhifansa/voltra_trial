@@ -29,6 +29,7 @@ Untuk melihat pekerjaan: buka [Project board](https://github.com/users/MahdiHbb1
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arsitektur sistem, modul, alur data, dan stack usulan |
 | [`docs/CONTRACTS.md`](docs/CONTRACTS.md) | Kontrak C1–C6 v0.1.0, katalog endpoint AI, konvensi respons, aturan versi |
 | [`docs/AI-GATEWAY.md`](docs/AI-GATEWAY.md) | Mode mock/hybrid/live, skenario, endpoint, dan cara memaksa kegagalan |
+| [`docs/ENERGY-CALC.md`](docs/ENERGY-CALC.md) | Rumus kWh/Rupiah, ambang keyakinan, golden test, dan batas paket |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Fase produk, sprint S1–S8, critical path, dan release gate |
 | [`docs/TEAM.md`](docs/TEAM.md) | Peran, ownership, dan protokol handoff |
 | [`tasks/plan.md`](tasks/plan.md) | Rencana implementasi dan indeks issue GitHub |
