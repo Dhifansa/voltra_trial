@@ -3,21 +3,26 @@
  * Owner: Mahdi, Sprint: S2
  */
 
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type {
   OtpRequestPayload,
   OtpRequestResult,
   OtpVerifyPayload,
   OtpVerifyResult,
+  GuestMergePayload,
+  GuestMergeResult,
   SessionClaims,
 } from '@voltra/contracts';
 import type { OtpAdapter } from './adapters/otp.interface';
+import { OtpMockAdapter } from './adapters/otp-mock.adapter';
 
 @Injectable()
 export class AuthService {
+  private readonly mergeCache = new Set<string>(); // ponytail: in-memory, DB nanti
+
   constructor(
-    private readonly otpAdapter: OtpAdapter,
+    @Inject(OtpMockAdapter) private readonly otpAdapter: OtpAdapter,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -68,6 +73,43 @@ export class AuthService {
       user_id: userId,
       consent_at: consentAt.toISOString(),
       consent_version: consentVersion,
+    };
+  }
+
+  async mergeGuest(userId: string, payload: GuestMergePayload): Promise<GuestMergeResult> {
+    let claims: SessionClaims;
+
+    try {
+      claims = this.jwtService.verify<SessionClaims>(payload.guest_token);
+    } catch {
+      throw new UnauthorizedException('Invalid guest token');
+    }
+
+    if (claims.role !== 'guest') {
+      throw new BadRequestException('Token must be a guest session');
+    }
+
+    const mergeKey = `${claims.sub}:${userId}`;
+
+    // Idempoten: cek apakah sudah pernah merge
+    if (this.mergeCache.has(mergeKey)) {
+      return {
+        merged_kiosks: 0,
+        merged_appliances: 0,
+        was_merged: false,
+      };
+    }
+
+    // ponytail: mock merge logic, DB transfer nanti
+    const mergedKiosks = 2;
+    const mergedAppliances = 5;
+
+    this.mergeCache.add(mergeKey);
+
+    return {
+      merged_kiosks: mergedKiosks,
+      merged_appliances: mergedAppliances,
+      was_merged: true,
     };
   }
 }
