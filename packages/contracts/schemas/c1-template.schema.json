@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voltra.local/schemas/c1-template.schema.json",
+  "title": "C1 Kios Template",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "template_id",
+    "version",
+    "display_name",
+    "unit",
+    "appliances",
+    "savings_actions",
+    "missions_enabled"
+  ],
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "default_daily"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "default_daily": { "type": "number", "minimum": 0 }
+      }
+    },
+    "appliances": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "icon",
+          "power_w",
+          "load_factor",
+          "usage_pattern",
+          "category",
+          "critical"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "name": { "type": "string", "minLength": 1 },
+          "icon": { "type": "string", "minLength": 1 },
+          "power_w": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["min", "typical", "max"],
+            "properties": {
+              "min": { "type": "number", "minimum": 0 },
+              "typical": { "type": "number", "minimum": 0 },
+              "max": { "type": "number", "minimum": 0 }
+            }
+          },
+          "load_factor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["typical", "range"],
+            "properties": {
+              "typical": { "type": "number", "minimum": 0, "maximum": 1 },
+              "range": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          },
+          "usage_pattern": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["hours_per_day", "always_on", "peak_hours"],
+            "properties": {
+              "hours_per_day": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["min", "typical", "max"],
+                "properties": {
+                  "min": { "type": "number", "minimum": 0 },
+                  "typical": { "type": "number", "minimum": 0 },
+                  "max": { "type": "number", "minimum": 0 }
+                }
+              },
+              "always_on": { "type": "boolean" },
+              "peak_hours": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "category": {
+            "enum": ["heater", "cooling", "lighting", "other"]
+          },
+          "critical": { "type": "boolean" }
+        }
+      }
+    },
+    "savings_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "applies_to", "saving_formula", "effort"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "applies_to": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "saving_formula": { "type": "string", "minLength": 1 },
+          "effort": { "enum": ["low", "medium", "high"] },
+          "safety_note": { "type": "string" }
+        }
+      }
+    },
+    "missions_enabled": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^M[1-6]$" }
+    }
+  }
+}

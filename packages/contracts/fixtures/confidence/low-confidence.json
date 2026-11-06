@@ -1,0 +1,11 @@
+{
+  "level": "low",
+  "gap_ratio": 0.625,
+  "data_days": 2,
+  "display_level": "category",
+  "thresholds": {
+    "high_max_gap": 0.15,
+    "medium_max_gap": 0.35,
+    "min_data_days": 3
+  }
+}

@@ -7,7 +7,7 @@ Voltra membantu pemilik UMKM menjawab dua pertanyaan:
 
 Jawaban disajikan dalam Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian atau Rp/porsi), lengkap dengan estimasi, dasar perhitungan, dan tingkat keyakinan.
 
-**Status:** Fase 0 — Validasi & Fondasi (November 2026). Scaffold S1 sudah tersedia: workspace pnpm, PWA shell, API health check, paket bersama, dan CI.
+**Status:** Fase 0 — Validasi & Fondasi (November 2026). Scaffold S1 sudah tersedia: workspace pnpm, PWA shell, API health check, paket bersama, CI, dan kontrak C1–C6 release candidate v0.1.0.
 
 > Repo ini **privat**. Collaborator harus menerima undangan GitHub terlebih dahulu; setelah itu README, dokumen, issue, dan Project board bisa diakses.
 
@@ -27,7 +27,7 @@ Untuk melihat pekerjaan: buka [Project board](https://github.com/users/MahdiHbb1
 |---|---|
 | [`docs/PRD.md`](docs/PRD.md) | PRD Terpadu v0.3.1 — sumber kebenaran produk, AI, gamifikasi, dan monetisasi |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arsitektur sistem, modul, alur data, dan stack usulan |
-| [`docs/CONTRACTS.md`](docs/CONTRACTS.md) | Kontrak C1–C6, katalog endpoint AI, konvensi respons, aturan versi |
+| [`docs/CONTRACTS.md`](docs/CONTRACTS.md) | Kontrak C1–C6 v0.1.0, katalog endpoint AI, konvensi respons, aturan versi |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Fase produk, sprint S1–S8, critical path, dan release gate |
 | [`docs/TEAM.md`](docs/TEAM.md) | Peran, ownership, dan protokol handoff |
 | [`tasks/plan.md`](tasks/plan.md) | Rencana implementasi dan indeks issue GitHub |
@@ -87,7 +87,7 @@ apps/
   web/                 # PWA React/Next.js + Capacitor (ADR-001)
   api/                 # Modular monolith NestJS (ADR-002)
 packages/
-  contracts/           # Versi + tipe C1–C6 (C3)
+  contracts/           # Skema C1–C6, OpenAPI, fixture, tipe (v0.1.0)
   energy-calc/         # Satu-satunya pustaka hitung kWh/Rupiah (C2)
 tests/
   contract/            # Contract test C1–C6 (issue #12)
@@ -120,7 +120,7 @@ Perintah wajib sebelum membuka PR:
 | `pnpm typecheck` | TypeScript seluruh workspace |
 | `pnpm test` | Vitest (unit) |
 | `pnpm build` | Build paket, API, dan PWA |
-| `pnpm test:contract` | Contract test (diisi issue #12) |
+| `pnpm test:contract` | Contract test C1–C6: JSON Schema, fixture, dan OpenAPI |
 
 Build semua workspace mengikuti urutan dependensi: `contracts`/`energy-calc` lebih dulu, lalu `api`/`web`.
 

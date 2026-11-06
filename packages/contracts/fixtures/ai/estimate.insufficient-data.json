@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "INSUFFICIENT_DATA",
+    "message": "Data meter belum cukup untuk estimasi. Tambahkan minimal 3 hari data.",
+    "request_id": "r_estimate_insufficient_003",
+    "details": {
+      "data_days": 1,
+      "min_data_days": 3
+    }
+  }
+}

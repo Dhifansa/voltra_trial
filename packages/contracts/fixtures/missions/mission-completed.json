@@ -1,0 +1,21 @@
+{
+  "event_id": "9f1c2f4a-6a1e-4f4f-9a2e-2f6b7c8d9e10",
+  "type": "mission_completed",
+  "mission_id": "M2",
+  "business_id": "b_123",
+  "occurred_at": "2026-12-01T06:30:00+07:00",
+  "payload": {
+    "capture_id": "c_9",
+    "meter_kwh": 12345.6,
+    "window": "open"
+  },
+  "verification": {
+    "status": "verified",
+    "reason": null,
+    "confidence": "high"
+  },
+  "reward": {
+    "points": 10,
+    "badge": null
+  }
+}

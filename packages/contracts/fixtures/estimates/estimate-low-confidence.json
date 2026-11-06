@@ -1,0 +1,27 @@
+{
+  "window": {
+    "from": "2026-12-01T06:00:00+07:00",
+    "to": "2026-12-02T06:00:00+07:00"
+  },
+  "meter_delta_kwh": 28.0,
+  "per_appliance": [
+    {
+      "appliance_id": "dryer",
+      "kwh": 10.5,
+      "basis": {
+        "power_kw": 3.0,
+        "hours": 5.0,
+        "load_factor": 0.7
+      },
+      "confidence": "medium"
+    }
+  ],
+  "explained_kwh": 10.5,
+  "unexplained_kwh": 17.5,
+  "gap_ratio": 0.625,
+  "overall_confidence": "low",
+  "display_level": "category",
+  "next_questions": ["Alat lain apa yang menyala hari ini?"],
+  "suggested_missions": ["M1", "M4"],
+  "engine_version": "0.0.0"
+}

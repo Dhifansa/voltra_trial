@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voltra.local/schemas/c6-confidence.schema.json",
+  "title": "C6 Confidence Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["level", "gap_ratio", "data_days", "display_level", "thresholds"],
+  "properties": {
+    "level": { "enum": ["high", "medium", "low"] },
+    "gap_ratio": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "data_days": { "type": "integer", "minimum": 0 },
+    "display_level": {
+      "enum": ["appliance", "category", "insufficient_data"]
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["high_max_gap", "medium_max_gap", "min_data_days"],
+      "properties": {
+        "high_max_gap": { "const": 0.15 },
+        "medium_max_gap": { "const": 0.35 },
+        "min_data_days": { "const": 3 }
+      }
+    }
+  }
+}

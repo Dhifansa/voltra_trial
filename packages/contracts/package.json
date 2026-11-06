@@ -4,7 +4,7 @@
   "private": true,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "schemas", "fixtures", "openapi.yaml"],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"

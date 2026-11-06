@@ -1,0 +1,780 @@
+openapi: 3.1.0
+info:
+  title: Voltra AI Gateway (C3)
+  version: 0.1.0
+  description: |
+    Kontrak AI Gateway Voltra v0.1.0 (release candidate S1).
+
+    Pipeline P1-P8 dan P10 diekspos sebagai endpoint. P5/P6 digabung pada
+    `/ai/estimate`. P9 adalah verifikasi dampak internal yang dihitung oleh
+    `energy-calc`; bentuk hasilnya tersedia sebagai komponen
+    `ImpactVerificationResult`, bukan endpoint publik. P11-P13 belum termasuk
+    kontrak publik (O32).
+
+    Semua respons sukses memakai envelope C3. Semua error memakai bentuk
+    `ErrorResponse`. Mode `mock` wajib ditampilkan sebagai **Contoh** di UI.
+servers:
+  - url: http://localhost:3001
+    description: Lokal
+  - url: https://api.voltra.local
+    description: Staging (placeholder, belum diputuskan)
+security:
+  - bearerAuth: []
+tags:
+  - name: OCR
+  - name: STT
+  - name: Energi
+  - name: Rekomendasi
+  - name: Wati
+paths:
+  /ai/ocr-meter:
+    post:
+      tags: [OCR]
+      summary: P1 - OCR meter
+      description: Membaca angka meter dari foto. Keyakinan digit rendah meminta foto ulang atau input manual.
+      operationId: ocrMeter
+      x-pipeline: P1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OcrMeterRequest'
+      responses:
+        '200':
+          description: Hasil OCR meter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcrMeterResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/ocr-label:
+    post:
+      tags: [OCR]
+      summary: P2 - OCR label alat
+      description: Membaca nama dan daya alat dari foto label. Nilai template diganti bila label terbaca.
+      operationId: ocrLabel
+      x-pipeline: P2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OcrLabelRequest'
+      responses:
+        '200':
+          description: Hasil OCR label.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcrLabelResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/ocr-token:
+    post:
+      tags: [OCR]
+      summary: P3 - OCR struk/layar token
+      description: Membaca tanggal, nominal, kWh, dan sisa kWh dari struk atau layar token prabayar.
+      operationId: ocrToken
+      x-pipeline: P3
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OcrTokenRequest'
+      responses:
+        '200':
+          description: Hasil OCR token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcrTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/stt-extract:
+    post:
+      tags: [STT]
+      summary: P4 - STT dan ekstraksi catatan suara
+      description: Mentranskripsi audio dan mengekstrak jam alat serta volume usaha. Hasil selalu ditampilkan untuk konfirmasi.
+      operationId: sttExtract
+      x-pipeline: P4
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SttExtractRequest'
+      responses:
+        '200':
+          description: Hasil transkripsi dan ekstraksi.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SttExtractResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/estimate:
+    post:
+      tags: [Energi]
+      summary: P5/P6 - Estimasi dan cross-validation
+      description: Menghitung estimasi per alat dan membandingkannya dengan delta meter. Semua angka berasal dari `energy-calc`.
+      operationId: estimate
+      x-pipeline: P5/P6
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstimateRequest'
+      responses:
+        '200':
+          description: Hasil estimasi dan keyakinan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/recommend:
+    post:
+      tags: [Rekomendasi]
+      summary: P7 - Rekomendasi
+      description: Menghasilkan maksimal 3 saran dari estimasi yang sudah dihitung. Rentang hemat tidak boleh diklaim pasti.
+      operationId: recommend
+      x-pipeline: P7
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendRequest'
+      responses:
+        '200':
+          description: Daftar rekomendasi (maksimal 3).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/explain:
+    post:
+      tags: [Rekomendasi]
+      summary: P8 - Penjelas tanpa angka baru
+      description: Menyusun teks dari objek hasil P5-P7. Validator memblokir angka yang tidak ada di input dan memakai fallback template.
+      operationId: explain
+      x-pipeline: P8
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplainRequest'
+      responses:
+        '200':
+          description: Teks penjelasan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplainResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+  /ai/ask:
+    post:
+      tags: [Wati]
+      summary: P10 - Tanya Wati
+      description: Menjawab pertanyaan dari data yang tersedia. Jawaban numerik wajib punya sumber dan keyakinan; data kurang dijawab "belum cukup data".
+      operationId: askWati
+      x-pipeline: P10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+      responses:
+        '200':
+          description: Jawaban Wati.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          $ref: '#/components/responses/ProviderError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Input tidak valid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Sesi tidak valid atau kedaluwarsa.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Entitlement atau kepemilikan data tidak mengizinkan aksi ini.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnprocessableEntity:
+      description: Keyakinan rendah atau data tidak cukup. Kode error menentukan tindakan UI.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    RateLimited:
+      description: Batas panggilan terlampaui.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ProviderError:
+      description: Penyedia AI gagal. UI menawarkan retry atau input manual.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    AiEnvelope:
+      type: object
+      required: [request_id, engine_version, mode, confidence, warnings]
+      properties:
+        request_id:
+          type: string
+          minLength: 1
+        engine_version:
+          type: string
+          minLength: 1
+        mode:
+          type: string
+          enum: [mock, hybrid, live]
+        confidence:
+          type: string
+          enum: [high, medium, low]
+        warnings:
+          type: array
+          items:
+            type: string
+    ErrorCode:
+      type: string
+      enum:
+        - VALIDATION_ERROR
+        - UNAUTHORIZED
+        - FORBIDDEN
+        - NOT_FOUND
+        - CONFLICT
+        - LOW_CONFIDENCE
+        - PROVIDER_ERROR
+        - RATE_LIMITED
+        - INSUFFICIENT_DATA
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message, request_id]
+          properties:
+            code:
+              $ref: '#/components/schemas/ErrorCode'
+            message:
+              type: string
+              minLength: 1
+            request_id:
+              type: string
+              minLength: 1
+            details:
+              type: object
+              additionalProperties: true
+    TimeWindow:
+      type: object
+      additionalProperties: false
+      required: [from, to]
+      properties:
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+    OcrMeterRequest:
+      type: object
+      additionalProperties: false
+      required: [file, meter_type]
+      properties:
+        file:
+          type: string
+          format: binary
+        meter_type:
+          type: string
+          enum: [prabayar, pascabayar]
+    OcrMeterResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [kwh, unit, digits_confidence, needs_retake]
+          properties:
+            kwh:
+              type: number
+              minimum: 0
+            unit:
+              type: string
+              const: kWh
+            digits_confidence:
+              type: array
+              items:
+                type: number
+                minimum: 0
+                maximum: 1
+            needs_retake:
+              type: boolean
+            bbox:
+              type: array
+              minItems: 4
+              maxItems: 4
+              items:
+                type: number
+    OcrLabelRequest:
+      type: object
+      additionalProperties: false
+      required: [file]
+      properties:
+        file:
+          type: string
+          format: binary
+        appliance_hint:
+          type: string
+    OcrLabelResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [name, power_w, needs_retake]
+          properties:
+            name:
+              type: string
+              minLength: 1
+            power_w:
+              type: number
+              minimum: 0
+            brand:
+              type: string
+            needs_retake:
+              type: boolean
+    OcrTokenRequest:
+      type: object
+      additionalProperties: false
+      required: [file]
+      properties:
+        file:
+          type: string
+          format: binary
+    OcrTokenResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [date, amount_rp, kwh, remaining_kwh, needs_retake]
+          properties:
+            date:
+              type: string
+              format: date
+            amount_rp:
+              type: number
+              minimum: 0
+            kwh:
+              type: [number, 'null']
+              minimum: 0
+            remaining_kwh:
+              type: [number, 'null']
+              minimum: 0
+            needs_retake:
+              type: boolean
+    SttExtractRequest:
+      type: object
+      additionalProperties: false
+      required: [audio_ref, appliances]
+      properties:
+        audio_ref:
+          type: string
+          minLength: 1
+        appliances:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name]
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+        language:
+          type: string
+          default: id-ID
+    SttEntry:
+      type: object
+      additionalProperties: false
+      required: [appliance_id, hours, conf]
+      properties:
+        appliance_id:
+          type: string
+        hours:
+          type: number
+          minimum: 0
+        from:
+          type: string
+          pattern: '^\\d{2}:\\d{2}$'
+        to:
+          type: string
+          pattern: '^\\d{2}:\\d{2}$'
+        conf:
+          type: number
+          minimum: 0
+          maximum: 1
+    WorkVolume:
+      type: object
+      additionalProperties: false
+      required: [value, unit, conf]
+      properties:
+        value:
+          type: number
+          minimum: 0
+        unit:
+          type: string
+        conf:
+          type: number
+          minimum: 0
+          maximum: 1
+    SttExtractResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [transcript, entries, work_volume, confirm_text, unmatched_terms]
+          properties:
+            transcript:
+              type: string
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/SttEntry'
+            work_volume:
+              oneOf:
+                - $ref: '#/components/schemas/WorkVolume'
+                - type: 'null'
+            confirm_text:
+              type: string
+            unmatched_terms:
+              type: array
+              items:
+                type: string
+    ApplianceInput:
+      type: object
+      additionalProperties: false
+      required: [appliance_id, power_kw, hours, load_factor]
+      properties:
+        appliance_id:
+          type: string
+        power_kw:
+          type: number
+          minimum: 0
+        hours:
+          type: number
+          minimum: 0
+        load_factor:
+          type: number
+          minimum: 0
+          maximum: 1
+    EstimateRequest:
+      type: object
+      additionalProperties: false
+      required: [business_id, window, appliances]
+      properties:
+        business_id:
+          type: string
+          minLength: 1
+        window:
+          $ref: '#/components/schemas/TimeWindow'
+        appliances:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ApplianceInput'
+        meter_delta_kwh:
+          type: number
+          minimum: 0
+    EstimateResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - $ref: './schemas/c2-estimate.schema.json'
+    Recommendation:
+      type: object
+      additionalProperties: false
+      required:
+        - action_id
+        - title
+        - est_saving_kwh
+        - est_saving_rp
+        - confidence
+        - effort
+        - score
+      properties:
+        action_id:
+          type: string
+        title:
+          type: string
+        est_saving_kwh:
+          type: object
+          additionalProperties: false
+          required: [min, max]
+          properties:
+            min:
+              type: number
+              minimum: 0
+            max:
+              type: number
+              minimum: 0
+        est_saving_rp:
+          type: object
+          additionalProperties: false
+          required: [min, max]
+          properties:
+            min:
+              type: number
+              minimum: 0
+            max:
+              type: number
+              minimum: 0
+        confidence:
+          type: string
+          enum: [high, medium, low]
+        effort:
+          type: string
+          enum: [low, medium, high]
+        score:
+          type: number
+          minimum: 0
+          maximum: 1
+        safety_note:
+          type: string
+    RecommendRequest:
+      type: object
+      additionalProperties: false
+      required: [business_id, estimate, template_id, unit_label]
+      properties:
+        business_id:
+          type: string
+          minLength: 1
+        estimate:
+          $ref: './schemas/c2-estimate.schema.json'
+        template_id:
+          type: string
+        unit_label:
+          type: string
+    RecommendResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [recommendations]
+          properties:
+            recommendations:
+              type: array
+              maxItems: 3
+              items:
+                $ref: '#/components/schemas/Recommendation'
+    ExplainRequest:
+      type: object
+      additionalProperties: false
+      required: [business_id, kind, result]
+      properties:
+        business_id:
+          type: string
+          minLength: 1
+        kind:
+          type: string
+          enum: [estimate, recommendation, report]
+        result:
+          type: object
+          additionalProperties: true
+    ExplainResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [text, numbers_used, fallback_used]
+          properties:
+            text:
+              type: string
+            numbers_used:
+              type: array
+              items:
+                type: number
+            fallback_used:
+              type: boolean
+    AskSource:
+      type: object
+      additionalProperties: false
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [estimate, usage_notes, recommendation, token_forecast]
+        id:
+          type: string
+        range:
+          type: string
+    AskRequest:
+      type: object
+      additionalProperties: false
+      required: [business_id, question]
+      properties:
+        business_id:
+          type: string
+          minLength: 1
+        question:
+          type: string
+          minLength: 1
+        conversation_id:
+          type: string
+    AskResponse:
+      allOf:
+        - $ref: '#/components/schemas/AiEnvelope'
+        - type: object
+          required: [answer, sources, disclaimer, followup_mission]
+          properties:
+            answer:
+              type: string
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/AskSource'
+            disclaimer:
+              type: string
+            followup_mission:
+              type: [string, 'null']
+    ImpactVerificationResult:
+      description: P9 internal. Dihitung `energy-calc`; bukan endpoint publik pada v0.
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - baseline_kwh_per_unit
+        - after_kwh_per_unit
+        - delta_ratio
+        - tariff_effect_ratio
+        - volume_effect_ratio
+        - confidence
+        - method_version
+      properties:
+        status:
+          type: string
+          enum: [proven, not_proven, insufficient_data]
+        baseline_kwh_per_unit:
+          type: [number, 'null']
+          minimum: 0
+        after_kwh_per_unit:
+          type: [number, 'null']
+          minimum: 0
+        delta_ratio:
+          type: [number, 'null']
+        tariff_effect_ratio:
+          type: [number, 'null']
+        volume_effect_ratio:
+          type: [number, 'null']
+        confidence:
+          type: string
+          enum: [high, medium, low]
+        method_version:
+          type: string

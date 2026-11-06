@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "PROVIDER_ERROR",
+    "message": "Layanan OCR sedang tidak tersedia. Coba lagi atau masukkan angka manual.",
+    "request_id": "r_ocr_meter_provider_004",
+    "details": {
+      "provider": "mock",
+      "retryable": true
+    }
+  }
+}

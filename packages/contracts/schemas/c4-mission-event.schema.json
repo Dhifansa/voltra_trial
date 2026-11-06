@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voltra.local/schemas/c4-mission-event.schema.json",
+  "title": "C4 Mission Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "type",
+    "mission_id",
+    "business_id",
+    "occurred_at",
+    "payload",
+    "verification",
+    "reward"
+  ],
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "type": { "const": "mission_completed" },
+    "mission_id": { "type": "string", "pattern": "^M[1-6]$" },
+    "business_id": { "type": "string", "minLength": 1 },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "capture_id": { "type": "string" },
+        "meter_kwh": { "type": "number", "minimum": 0 },
+        "window": { "type": "string" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "confidence"],
+      "properties": {
+        "status": { "enum": ["verified", "pending", "rejected"] },
+        "reason": { "type": ["string", "null"] },
+        "confidence": { "enum": ["high", "medium", "low"] }
+      }
+    },
+    "reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["points", "badge"],
+      "properties": {
+        "points": { "type": "integer", "minimum": 0 },
+        "badge": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
