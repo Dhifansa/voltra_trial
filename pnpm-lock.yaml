@@ -92,7 +92,11 @@ importers:
 
   packages/contracts: {}
 
-  packages/energy-calc: {}
+  packages/energy-calc:
+    dependencies:
+      '@voltra/contracts':
+        specifier: workspace:*
+        version: link:../contracts
 
 packages:
 

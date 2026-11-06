@@ -67,6 +67,7 @@ export interface EstimateRequest {
     load_factor: number;
   }>;
   meter_delta_kwh?: number;
+  data_days?: number;
 }
 
 export interface EstimateResponse extends AiEnvelope, EstimateResult {}

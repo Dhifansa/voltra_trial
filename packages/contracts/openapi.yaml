@@ -596,6 +596,9 @@ components:
         meter_delta_kwh:
           type: number
           minimum: 0
+        data_days:
+          type: integer
+          minimum: 0
     EstimateResponse:
       allOf:
         - $ref: '#/components/schemas/AiEnvelope'

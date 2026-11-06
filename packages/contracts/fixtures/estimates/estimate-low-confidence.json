@@ -23,5 +23,5 @@
   "display_level": "category",
   "next_questions": ["Alat lain apa yang menyala hari ini?"],
   "suggested_missions": ["M1", "M4"],
-  "engine_version": "0.0.0"
+  "engine_version": "0.1.0"
 }
