@@ -21,9 +21,10 @@ Membangun Voltra dari Fase 0 sampai MVP internal: PWA mobile untuk Kios Virtual,
 
 | ADR | Keputusan | Status |
 |---|---|---|
-| [ADR-001](../docs/decisions/ADR-001-pwa-capacitor.md) | PWA React/Next.js + Capacitor | Proposed (O1) |
-| [ADR-002](../docs/decisions/ADR-002-modular-monolith.md) | Modular monolith TypeScript/NestJS + PostgreSQL/Redis/S3 | Proposed (O17) |
-| [ADR-003](../docs/decisions/ADR-003-energy-calc-single-source.md) | Satu `energy-calc`; LLM tidak menghasilkan angka | Accepted |
+| [ADR-001](../docs/decisions/ADR-001-pwa-capacitor.md) | PWA React/Next.js + Capacitor | Accepted (O1) |
+| [ADR-002](../docs/decisions/ADR-002-modular-monolith.md) | Modular monolith TypeScript/NestJS + PostgreSQL/Redis/S3 | Accepted (O17) |
+| [ADR-003](../docs/decisions/ADR-003-energy-calc-single-source.md) | Satu paket TypeScript `energy-calc`; LLM tidak menghasilkan angka | Accepted (O17) |
+| [ADR-004](../docs/decisions/ADR-004-kios-rendering.md) | Kios Virtual DOM/SVG/Canvas; engine hanya bila perlu | Accepted (O4) |
 
 ## Task index
 
@@ -177,14 +178,19 @@ Buka [Voltra — Delivery](https://github.com/users/MahdiHbb1/projects/3).
 | Data pribadi bocor (R9) | Tinggi | Authz `business_id`, signed URL, retensi, hapus data | Mahdi/Yusri |
 | Scope melebar ke sensor/multi-kios | Sedang | Scope guard roadmap; sensor hanya pilot | Seluruh tim |
 
+## Keputusan yang sudah dikunci (S1)
+
+| ID | Keputusan | Tanggal | ADR |
+|---|---|---|---|
+| O1 | Platform mobile: PWA React/Next.js + Capacitor | 2026-11-06 | [ADR-001](../docs/decisions/ADR-001-pwa-capacitor.md) |
+| O4 | Rendering Kios Virtual: DOM/SVG/Canvas; PixiJS hanya bila profiling menuntut | 2026-11-06 | [ADR-004](../docs/decisions/ADR-004-kios-rendering.md) |
+| O17 | `energy-calc` sebagai paket TypeScript, bukan layanan terpisah | 2026-11-06 | [ADR-003](../docs/decisions/ADR-003-energy-calc-single-source.md) |
+
 ## Keputusan terbuka yang perlu segera
 
 | ID | Keputusan | Deadline | Owner |
 |---|---|---|---|
-| O1 | Platform: PWA+Capacitor vs RN/Expo vs Flutter | Akhir S1 | Dhifansa/Mahdi |
-| O4 | Engine game | Awal S2 | Dhifansa |
 | O15 | Penyedia OCR/STT/LLM | Awal S4 | Muchsin |
-| O17 | Bahasa/paket `energy-calc` | Awal S2 | Mahdi |
 | O30 | Nilai `hybrid` di feature flag | Akhir S1 | Mahdi |
 | O31 | OpenAPI lengkap P2/P3 | Sebelum live OCR | Mahdi/Muchsin |
 | O32 | Bentuk API P11–P13 | Sebelum pilot | Mahdi/Muchsin |

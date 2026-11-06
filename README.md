@@ -50,7 +50,7 @@ Untuk melihat pekerjaan: buka [Project board](https://github.com/users/MahdiHbb1
 | Test | Vitest + Playwright + contract test |
 | CI | GitHub Actions + pnpm |
 
-Stack ini **belum final**. Keputusan O1/O4/O17 dikunci di [#5](https://github.com/MahdiHbb1/voltra/issues/5); detail dan alternatif ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) serta ADR-001/002/003. Provider AI, OTP, pembayaran, dan deployment belum diputuskan.
+Stack ini **sudah dikunci untuk S1**. Keputusan O1/O4/O17 ada di ADR-001/003/004; provider AI, OTP, pembayaran, dan deployment belum diputuskan.
 
 ## Tracking
 
