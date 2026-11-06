@@ -9,6 +9,8 @@ Jawaban disajikan dalam Rupiah dan biaya per satuan usaha (misalnya Rp/kg cucian
 
 **Status:** Fase 0 — Validasi & Fondasi (November 2026). Repo ini menjadi sumber dokumen produk, kontrak, dan rencana delivery. Scaffold aplikasi dikerjakan pada Sprint S1.
 
+> Repo ini **privat**. Collaborator harus menerima undangan GitHub terlebih dahulu; setelah itu README, dokumen, issue, dan Project board bisa diakses.
+
 ## Mulai dari mana
 
 1. Baca halaman ini untuk gambaran produk dan prinsip kerja.
@@ -30,6 +32,25 @@ Untuk melihat pekerjaan: buka [Project board](https://github.com/users/MahdiHbb1
 | [`docs/TEAM.md`](docs/TEAM.md) | Peran, ownership, dan protokol handoff |
 | [`tasks/plan.md`](tasks/plan.md) | Rencana implementasi dan indeks issue GitHub |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Alur branch, commit, PR, review, dan definition of done |
+
+## Tech stack (provisional)
+
+| Lapisan | Pilihan |
+|---|---|
+| Bahasa | TypeScript |
+| Frontend | React + Next.js (PWA) |
+| Mobile wrapper | Capacitor |
+| Backend | NestJS modular monolith |
+| Database | PostgreSQL |
+| Queue/cache | Redis + BullMQ |
+| File storage | S3-compatible object storage |
+| Mesin hitung | Paket `energy-calc` |
+| Game 2D | DOM/SVG/Canvas dulu |
+| AI | AI Gateway `mock`/`hybrid`/`live` |
+| Test | Vitest + Playwright + contract test |
+| CI | GitHub Actions + pnpm |
+
+Stack ini **belum final**. Keputusan O1/O4/O17 dikunci di [#5](https://github.com/MahdiHbb1/voltra/issues/5); detail dan alternatif ada di [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) serta ADR-001/002/003. Provider AI, OTP, pembayaran, dan deployment belum diputuskan.
 
 ## Tracking
 
