@@ -155,7 +155,7 @@ Flag per endpoint, misalnya `AI_MODE_OCR_METER=mock|live`. Dukungan nilai `hybri
 | O1 | PWA + Capacitor vs RN/Expo vs Flutter | Scaffold FE (S1) | Dhifansa + Mahdi |
 | O4 | Engine game | Kios Virtual produksi (S2) | Dhifansa |
 | O15 | Penyedia OCR/STT/LLM | Live T1/T2 (S4/S5) | Muchsin |
-| O17 | Bahasa/paket `energy-calc` | Implementasi C2 (S6) | Mahdi |
+| O17 | Bahasa/paket `energy-calc` | Implementasi C2 (S2) | Mahdi |
 | O30 | Status `hybrid` di feature flag | Integrasi Gateway (S1) | Mahdi |
 | O31 | Skema OpenAPI P2/P3 | Live OCR (S4) | Mahdi/Muchsin |
 | O32 | Bentuk API P11–P13 | Pilot (S7+) | Mahdi/Muchsin |
