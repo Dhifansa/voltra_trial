@@ -4,17 +4,22 @@
  */
 
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import type {
   OtpRequestPayload,
   OtpRequestResult,
   OtpVerifyPayload,
   OtpVerifyResult,
+  SessionClaims,
 } from '@voltra/contracts';
 import type { OtpAdapter } from './adapters/otp.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly otpAdapter: OtpAdapter) {}
+  constructor(
+    private readonly otpAdapter: OtpAdapter,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async requestOtp(payload: OtpRequestPayload): Promise<OtpRequestResult> {
     // Validasi phone format E.164
@@ -24,6 +29,10 @@ export class AuthService {
 
     const requestId = await this.otpAdapter.sendOtp(payload.phone);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
+    // ponytail: simpan consent_version untuk verify nanti (in-memory dulu)
+    (this as any)._consentCache = (this as any)._consentCache || new Map();
+    (this as any)._consentCache.set(requestId, payload.consent_version);
 
     return {
       request_id: requestId,
@@ -39,15 +48,26 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired OTP');
     }
 
-    // ponytail: mock user creation, DB nanti Slice 3
+    // ponytail: mock user creation, DB nanti
     const userId = `usr_mock_${Date.now()}`;
-    const token = `mock_token_${userId}`;
+    const consentAt = new Date();
+    const consentVersion =
+      (this as any)._consentCache?.get(payload.request_id) ?? '2027-01-01';
+
+    const claims: SessionClaims = {
+      sub: userId,
+      role: 'user',
+      iat: Math.floor(consentAt.getTime() / 1000),
+      exp: Math.floor(consentAt.getTime() / 1000) + 86400, // 24 jam
+    };
+
+    const token = this.jwtService.sign(claims);
 
     return {
       token,
       user_id: userId,
-      consent_at: new Date().toISOString(),
-      consent_version: '2027-01-01', // ponytail: hardcoded, dari request nanti
+      consent_at: consentAt.toISOString(),
+      consent_version: consentVersion,
     };
   }
 }
