@@ -59,11 +59,9 @@ export class AuthService {
     const consentVersion =
       (this as any)._consentCache?.get(payload.request_id) ?? '2027-01-01';
 
-    const claims: SessionClaims = {
+    const claims: Omit<SessionClaims, 'iat' | 'exp'> = {
       sub: userId,
       role: 'user',
-      iat: Math.floor(consentAt.getTime() / 1000),
-      exp: Math.floor(consentAt.getTime() / 1000) + 86400, // 24 jam
     };
 
     const token = this.jwtService.sign(claims);
