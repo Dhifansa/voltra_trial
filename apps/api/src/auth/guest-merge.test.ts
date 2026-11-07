@@ -46,7 +46,7 @@ describe('AuthService.mergeGuest', () => {
       exp: Math.floor(Date.now() / 1000) + 3600,
     };
 
-    vi.spyOn(jwtService, 'verify').mockReturnValue(guestClaims as any);
+    vi.spyOn(jwtService, 'verify').mockReturnValue(guestClaims as unknown as never);
 
     const payload: GuestMergePayload = {
       guest_token: 'guest_token_123',
@@ -68,7 +68,7 @@ describe('AuthService.mergeGuest', () => {
       exp: Math.floor(Date.now() / 1000) + 3600,
     };
 
-    vi.spyOn(jwtService, 'verify').mockReturnValue(guestClaims as any);
+    vi.spyOn(jwtService, 'verify').mockReturnValue(guestClaims as unknown as never);
 
     const payload: GuestMergePayload = {
       guest_token: 'guest_token_456',
@@ -91,7 +91,7 @@ describe('AuthService.mergeGuest', () => {
       exp: Math.floor(Date.now() / 1000) + 86400,
     };
 
-    vi.spyOn(jwtService, 'verify').mockReturnValue(userClaims as any);
+    vi.spyOn(jwtService, 'verify').mockReturnValue(userClaims as unknown as never);
 
     const payload: GuestMergePayload = {
       guest_token: 'user_token_789',

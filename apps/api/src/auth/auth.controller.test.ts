@@ -63,7 +63,9 @@ describe('AuthController', () => {
         new Error('VALIDATION_ERROR: Invalid phone format')
       );
 
-      await expect(controller.requestOtp(payload as any)).rejects.toThrow();
+      await expect(
+        controller.requestOtp(payload as unknown as OtpRequestPayload)
+      ).rejects.toThrow();
     });
   });
 });

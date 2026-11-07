@@ -5,12 +5,11 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import type { OcrLabelResponse, OcrMeterResponse } from '@voltra/contracts';
 import { Bezel, ConfidenceBadge, Eyebrow, IslandButton, MockBadge } from '@/components/ui/primitives';
 import { Icon, type IconName } from '@/components/ui/icon';
+import { useVoltraApp } from '@/context/app-context';
+import { getTemplate } from '@/features/kios/templates';
 import {
-  MOCK_APPLIANCES,
-  OCR_LABEL,
   OCR_METER,
   PROVIDER_ERROR,
-  STT_RESULT,
   WARNING_TEXT,
   type CaptureScenario,
 } from '@/lib/mock-data';
@@ -34,6 +33,8 @@ const SCENARIOS: Array<{ id: CaptureScenario; label: string }> = [
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function CaptureFlow() {
+  const { profile } = useVoltraApp();
+  const template = getTemplate(profile.templateId);
   const [mode, setMode] = useState<Mode>('meter');
   const [scenario, setScenario] = useState<CaptureScenario>('success');
   const [manualPrefill, setManualPrefill] = useState<string>('');
@@ -45,6 +46,16 @@ export function CaptureFlow() {
 
   return (
     <>
+      <div className="row-between kios-toolbar" style={{ marginBottom: '0.75rem' }}>
+        <div className="row-gap">
+          <span className="chip">{profile.businessName}</span>
+          <span className="chip chip--high">{template.display_name}</span>
+        </div>
+        <Link href="/kios" className="textlink">
+          Lihat Kios 2D
+        </Link>
+      </div>
+
       <div className="modes" role="tablist" aria-label="Cara mencatat">
         {MODES.map((m) => (
           <button
@@ -77,7 +88,7 @@ export function CaptureFlow() {
         </div>
       )}
 
-      <div key={mode} className="swap">
+      <div key={`${profile.templateId}-${mode}`} className="swap">
         {mode === 'meter' && <PhotoCapture kind="meter" scenario={scenario} onManual={toManual} />}
         {mode === 'label' && <PhotoCapture kind="label" scenario={scenario} onManual={toManual} />}
         {mode === 'voice' && <VoiceCapture scenario={scenario} onManual={() => toManual()} />}
@@ -122,6 +133,7 @@ function PhotoCapture({
   scenario: CaptureScenario;
   onManual: (prefill?: string) => void;
 }) {
+  const { analytics, addCustomAppliance } = useVoltraApp();
   const [phase, setPhase] = useState<PhotoPhase>({ kind: 'pick' });
   const [preview, setPreview] = useState<string | null>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -140,10 +152,10 @@ function PhotoCapture({
 
   async function read() {
     setPhase({ kind: 'processing' });
-    await wait(1600);
+    await wait(1400);
     if (scenario === 'provider_error') return setPhase({ kind: 'error' });
     if (kind === 'meter') setPhase({ kind: 'meter', data: OCR_METER[scenario] });
-    else setPhase({ kind: 'label', data: OCR_LABEL[scenario] });
+    else setPhase({ kind: 'label', data: analytics.ocrLabelExamples[scenario] });
   }
 
   function reset() {
@@ -188,6 +200,9 @@ function PhotoCapture({
           <IslandButton variant="ghost" icon="image" onClick={() => galleryRef.current?.click()}>
             Dari galeri
           </IslandButton>
+          <IslandButton variant="ghost" icon="bolt" onClick={read}>
+            Simulasi langsung
+          </IslandButton>
         </div>
         <button type="button" className="textlink" onClick={() => onManual()}>
           Kamera tidak bisa? Isi manual
@@ -200,25 +215,31 @@ function PhotoCapture({
 
   return (
     <div className="stack-gap">
-      <Bezel coreClassName="photo">
-        {inputs}
-        <div className={`photo__frame ${processing ? 'is-scanning' : ''}`}>
-          {preview && (
+      {preview && (
+        <Bezel coreClassName="photo">
+          {inputs}
+          <div className={`photo__frame ${processing ? 'is-scanning' : ''}`}>
             <img src={preview} alt="Pratinjau foto" />
-          )}
-          <span className="photo__scan" aria-hidden="true" />
-        </div>
-        {(phase.kind === 'preview' || processing) && (
-          <div className="capture__actions">
-            <IslandButton icon="bolt" onClick={read} disabled={processing}>
-              {processing ? 'Membaca…' : copy.action}
-            </IslandButton>
-            <IslandButton variant="ghost" icon="retry" onClick={reset} disabled={processing}>
-              Ganti foto
-            </IslandButton>
+            <span className="photo__scan" aria-hidden="true" />
           </div>
-        )}
-      </Bezel>
+          {(phase.kind === 'preview' || processing) && (
+            <div className="capture__actions">
+              <IslandButton icon="bolt" onClick={read} disabled={processing}>
+                {processing ? 'Membaca…' : copy.action}
+              </IslandButton>
+              <IslandButton variant="ghost" icon="retry" onClick={reset} disabled={processing}>
+                Ganti foto
+              </IslandButton>
+            </div>
+          )}
+        </Bezel>
+      )}
+
+      {!preview && processing && (
+        <Bezel coreClassName="result">
+          <p className="hint">Membaca dengan AI Gateway mock…</p>
+        </Bezel>
+      )}
 
       {phase.kind === 'meter' && (
         <MeterResult
@@ -231,7 +252,13 @@ function PhotoCapture({
         <LabelResult
           data={phase.data}
           onRetake={reset}
-          onSave={(name, w) => setPhase({ kind: 'saved', summary: `${name} (${w} W) ditambahkan ke kios` })}
+          onSave={(name, w) => {
+            addCustomAppliance(name, Number(w));
+            setPhase({
+              kind: 'saved',
+              summary: `${name} (${w} W) telah ditambahkan ke Kios 2D & Rincian Biaya`,
+            });
+          }}
         />
       )}
       {phase.kind === 'error' && <ErrorCard onRetry={read} onManual={() => onManual()} />}
@@ -284,7 +311,10 @@ function MeterResult({
         {digits.map((d, i) => {
           const c = data.digits_confidence[i] ?? 1;
           return (
-            <span key={i} className={`digits__cell ${c < 0.8 ? 'is-unsure' : ''} ${i === digits.length - 1 ? 'is-decimal' : ''}`}>
+            <span
+              key={i}
+              className={`digits__cell ${c < 0.8 ? 'is-unsure' : ''} ${i === digits.length - 1 ? 'is-decimal' : ''}`}
+            >
               {d}
             </span>
           );
@@ -364,7 +394,7 @@ function LabelResult({
       {data.brand && <p className="hint">Merek terbaca: {data.brand}</p>}
       <div className="capture__actions">
         <IslandButton icon="check" onClick={() => onSave(name, watt)}>
-          Tambah ke kios
+          Tambah ke Kios 2D
         </IslandButton>
         <IslandButton variant="ghost" icon="retry" onClick={onRetake}>
           Foto ulang
@@ -404,14 +434,18 @@ function ErrorCard({ onRetry, onManual }: { onRetry: () => void; onManual: () =>
 
 type VoicePhase = 'idle' | 'recording' | 'processing' | 'result' | 'error' | 'saved';
 const MAX_SECONDS = 60;
-const nameOf = (id: string) => MOCK_APPLIANCES.find((a) => a.id === id)?.name ?? id;
 
 function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onManual: () => void }) {
+  const { kios, analytics, applyVoiceHours } = useVoltraApp();
+  const sttData = analytics.sttExample;
   const [phase, setPhase] = useState<VoicePhase>('idle');
   const [seconds, setSeconds] = useState(0);
   const [micError, setMicError] = useState<string | null>(null);
   const [hours, setHours] = useState<Record<string, string>>({});
   const streamRef = useRef<MediaStream | null>(null);
+
+  const nameOfSlot = (uid: string) =>
+    kios.slots.find((s) => s.uid === uid)?.appliance.name ?? uid;
 
   useEffect(() => {
     if (phase !== 'recording') return;
@@ -434,7 +468,7 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
       setSeconds(0);
       setPhase('recording');
     } catch {
-      setMicError('Izin mikrofon ditolak atau tidak tersedia. Anda tetap bisa mengetik catatan secara manual.');
+      setMicError('Izin mikrofon ditolak atau tidak tersedia. Anda bisa klik "Simulasi Suara" atau isi manual.');
     }
   }
 
@@ -442,23 +476,28 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setPhase('processing');
-    await wait(1800);
+    await wait(1400);
     if (scenario === 'provider_error') return setPhase('error');
-    setHours(Object.fromEntries(STT_RESULT.entries.map((e) => [e.appliance_id, String(e.hours)])));
+    setHours(Object.fromEntries(sttData.entries.map((e) => [e.appliance_id, String(e.hours)])));
     setPhase('result');
   }
 
   if (phase === 'saved') {
-    return <Saved summary="Catatan jam pakai tersimpan" onAgain={() => setPhase('idle')} />;
+    return (
+      <Saved
+        summary="Catatan jam pakai berhasil disimpan & diterapkan ke Kios 2D serta Biaya"
+        onAgain={() => setPhase('idle')}
+      />
+    );
   }
 
   if (phase === 'result') {
     const lowConf = scenario === 'low_confidence';
     return (
       <Bezel coreClassName="result">
-        <ResultHead confidence={lowConf ? 'low' : STT_RESULT.confidence} />
-        <blockquote className="transcript">“{STT_RESULT.transcript}”</blockquote>
-        <p className="confirm">{STT_RESULT.confirm_text}</p>
+        <ResultHead confidence={lowConf ? 'low' : sttData.confidence} />
+        <blockquote className="transcript">“{sttData.transcript}”</blockquote>
+        <p className="confirm">{sttData.confirm_text}</p>
         {lowConf && (
           <div className="notice notice--soft">
             <Icon name="alert" size={18} />
@@ -468,10 +507,10 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
           </div>
         )}
         <ul className="entries">
-          {STT_RESULT.entries.map((e) => (
+          {sttData.entries.map((e) => (
             <li key={e.appliance_id}>
               <span className="entries__name">
-                {nameOf(e.appliance_id)}
+                {nameOfSlot(e.appliance_id)}
                 {e.from && e.to && (
                   <small>
                     {e.from}–{e.to}
@@ -481,7 +520,7 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
               <div className="field__control field__control--sm">
                 <input
                   inputMode="decimal"
-                  aria-label={`Jam pakai ${nameOf(e.appliance_id)}`}
+                  aria-label={`Jam pakai ${nameOfSlot(e.appliance_id)}`}
                   value={hours[e.appliance_id] ?? ''}
                   onChange={(ev) => setHours((h) => ({ ...h, [e.appliance_id]: ev.target.value }))}
                 />
@@ -489,17 +528,26 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
               </div>
             </li>
           ))}
-          {STT_RESULT.work_volume && (
+          {sttData.work_volume && (
             <li>
               <span className="entries__name">Volume kerja</span>
               <span className="entries__val">
-                {STT_RESULT.work_volume.value} {STT_RESULT.work_volume.unit}
+                {sttData.work_volume.value} {sttData.work_volume.unit}
               </span>
             </li>
           )}
         </ul>
         <div className="capture__actions">
-          <IslandButton icon="check" onClick={() => setPhase('saved')}>
+          <IslandButton
+            icon="check"
+            onClick={() => {
+              const numericMap = Object.fromEntries(
+                Object.entries(hours).map(([k, v]) => [k, Number(v.replace(',', '.'))]),
+              );
+              applyVoiceHours(numericMap, sttData.work_volume?.value);
+              setPhase('saved');
+            }}
+          >
             Sudah benar, simpan
           </IslandButton>
           <IslandButton variant="ghost" icon="mic" onClick={() => setPhase('idle')}>
@@ -522,11 +570,13 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
   return (
     <Bezel coreClassName="voice">
       <p className="voice__prompt">
-        {processing ? 'Mengubah suara jadi catatan…' : recording ? 'Silakan bicara…' : 'Ceritakan pemakaian alat hari ini'}
+        {processing
+          ? 'Mengubah suara jadi catatan…'
+          : recording
+            ? 'Silakan bicara…'
+            : 'Ceritakan pemakaian alat hari ini'}
       </p>
-      <p className="voice__example">
-        Contoh: “Pengering nyala dari jam 9 sampai jam 2, setrika sekitar 4 jam, cucian 50 kilo.”
-      </p>
+      <p className="voice__example">{analytics.voicePromptExample}</p>
 
       <div className={`wave ${recording ? 'is-live' : ''} ${processing ? 'is-busy' : ''}`} aria-hidden="true">
         {Array.from({ length: 28 }, (_, i) => (
@@ -558,9 +608,15 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
         </div>
       )}
 
-      <button type="button" className="textlink" onClick={onManual}>
-        Lebih suka mengetik? Isi manual
-      </button>
+      <div className="row-gap">
+        <button type="button" className="textlink" onClick={stop} disabled={processing}>
+          Simulasi Suara Langsung
+        </button>
+        <span>·</span>
+        <button type="button" className="textlink" onClick={onManual}>
+          Isi manual
+        </button>
+      </div>
     </Bezel>
   );
 }
@@ -570,7 +626,10 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
 /* ====================================================================== */
 
 function ManualForm({ prefill }: { prefill: string }) {
-  const [kind, setKind] = useState<'meter' | 'token'>('meter');
+  const { profile } = useVoltraApp();
+  const [kind, setKind] = useState<'meter' | 'token'>(
+    profile.billingType === 'prepaid' ? 'token' : 'meter',
+  );
   const [time, setTime] = useState<'pagi' | 'malam'>('malam');
   const [value, setValue] = useState(prefill);
   const [note, setNote] = useState('');
@@ -579,7 +638,7 @@ function ManualForm({ prefill }: { prefill: string }) {
   if (saved) {
     return (
       <Saved
-        summary={kind === 'meter' ? `Meter ${time} ${value} kWh tersimpan` : `Token ${value} tersimpan`}
+        summary={kind === 'meter' ? `Meter ${time} ${value} kWh tersimpan` : `Token Rp ${value} tersimpan`}
         onAgain={() => {
           setSaved(false);
           setValue('');
@@ -593,7 +652,7 @@ function ManualForm({ prefill }: { prefill: string }) {
 
   return (
     <Bezel coreClassName="result" as="form">
-      <Eyebrow>Isi manual</Eyebrow>
+      <Eyebrow>Isi manual · {profile.businessName}</Eyebrow>
 
       <div className="pillset" role="radiogroup" aria-label="Jenis data">
         {(['meter', 'token'] as const).map((k) => (
@@ -641,11 +700,11 @@ function ManualForm({ prefill }: { prefill: string }) {
       </label>
 
       <label className="field">
-        <span>Catatan (opsional)</span>
+        <span>Catatan ({profile.unitLabel}, opsional)</span>
         <div className="field__control">
           <textarea
             rows={3}
-            placeholder="Mis. pengering nyala 5 jam, cucian 50 kg"
+            placeholder={`Mis. target hari ini ${profile.dailyVolume} ${profile.unitLabel}`}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
@@ -672,12 +731,18 @@ function Saved({ summary, onAgain }: { summary: string; onAgain: () => void }) {
       <h2 className="saved__title">
         Tersimpan, <em>terima kasih</em>
       </h2>
-      <p className="saved__text">{summary}. Estimasi akan diperbarui beberapa saat lagi.</p>
+      <p className="saved__text">{summary}.</p>
       <div className="capture__actions">
         <Link href="/biaya" className="island island--solid">
           <span>Lihat biaya</span>
           <span className="island__icon">
             <Icon name="arrow" size={16} />
+          </span>
+        </Link>
+        <Link href="/kios" className="island island--ghost">
+          <span>Kios 2D</span>
+          <span className="island__icon">
+            <Icon name="store" size={16} />
           </span>
         </Link>
         <IslandButton variant="ghost" icon="retry" onClick={onAgain}>

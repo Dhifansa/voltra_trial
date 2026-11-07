@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "@voltra/contracts": ["./packages/contracts/src/index.ts"],
+      "@voltra/energy-calc": ["./packages/energy-calc/src/index.ts"],
+      "@nestjs/*": ["./apps/api/node_modules/@nestjs/*"]
+    }
+  },
+  "include": ["tests/**/*.ts"],
+  "exclude": ["node_modules", "**/dist/**", "**/.next/**"]
+}

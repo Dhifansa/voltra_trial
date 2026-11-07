@@ -50,9 +50,16 @@ type IslandProps = {
   className?: string;
 };
 
-export function IslandLink({ href, children, icon = 'arrow', variant = 'solid', className = '' }: IslandProps & { href: string }) {
+export function IslandLink({
+  href,
+  children,
+  icon = 'arrow',
+  variant = 'solid',
+  className = '',
+  onClick,
+}: IslandProps & { href: string; onClick?: () => void }) {
   return (
-    <Link href={href} className={`island island--${variant} ${className}`}>
+    <Link href={href} className={`island island--${variant} ${className}`} onClick={onClick}>
       <span>{children}</span>
       <span className="island__icon">
         <Icon name={icon} size={16} />

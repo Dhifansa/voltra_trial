@@ -1,12 +1,11 @@
+'use client';
+
 import { Bezel, ConfidenceBadge, Eyebrow, IslandLink, MockBadge, Reveal } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/icon';
+import { TerraAvatar } from '@/components/ui/terra-mascot';
+import { useVoltraApp } from '@/context/app-context';
+import { getTemplate } from '@/features/kios/templates';
 import { formatKwh, formatRp } from '@/lib/format';
-import { COST_SCENARIOS, MOCK_BUSINESS, MOCK_RECOMMENDATIONS, MOCK_WEEK } from '@/lib/mock-data';
-
-const today = COST_SCENARIOS.appliance;
-const top = today.rows[0];
-const rec = MOCK_RECOMMENDATIONS[0]!;
-const maxWeek = Math.max(...MOCK_WEEK.map((d) => d.kwh));
 
 const MISSION_STEPS = [
   { label: 'Foto meter pagi', done: true },
@@ -15,13 +14,24 @@ const MISSION_STEPS = [
 ];
 
 export default function HomePage() {
+  const { user, profile, analytics } = useVoltraApp();
+  const template = getTemplate(profile.templateId);
+  const today = analytics.scenarios.appliance;
+  const top = today.rows[0];
+  const rec = analytics.recommendations[0];
+  const maxWeek = Math.max(1, ...analytics.week.map((d) => d.kwh));
   const doneCount = MISSION_STEPS.filter((s) => s.done).length;
 
   return (
     <main className="page page--wide">
       <section className="page-head">
         <Reveal>
-          <Eyebrow>Rabu, 6 November · {MOCK_BUSINESS.name}</Eyebrow>
+          <div className="row-gap">
+            <Eyebrow>
+              {profile.businessName} · {template.display_name}
+            </Eyebrow>
+            <span className="chip">{profile.tariffName}</span>
+          </div>
         </Reveal>
         <Reveal delay={80}>
           <h1 className="display">
@@ -31,16 +41,45 @@ export default function HomePage() {
         <Reveal delay={160}>
           <p className="lede">
             Sekitar <strong>{today.per_unit_rp !== null ? formatRp(today.per_unit_rp) : '—'}</strong> per{' '}
-            {MOCK_BUSINESS.unit_label}. Estimasi dari foto meter dan catatan suara — bukan pemantauan real-time.
+            {profile.unitLabel} ({profile.dailyVolume} {profile.unitLabel}/hari). Estimasi dari foto meter dan catatan
+            suara — bukan pemantauan real-time.
           </p>
         </Reveal>
       </section>
+
+      {!user.onboarded && (
+        <Reveal>
+          <Bezel tone="moss" coreClassName="onboard-banner">
+            <div className="terra-guide__main">
+              <div className="terra-guide__figure">
+                <TerraAvatar mood="hallo" size={68} />
+              </div>
+              <div className="onboard-banner__text">
+                <Eyebrow>Alur Pengenalan bersama Terra</Eyebrow>
+                <p className="twin__title">Belum mengatur profil usaha Anda?</p>
+                <p className="hint">
+                  Mulai dari Login → Profiling Jenis Usaha → Simulasi Kios 2D bersama maskot Terra agar semua alat di
+                  aplikasi menyesuaikan usaha Anda.
+                </p>
+                <div className="capture__actions">
+                  <IslandLink href="/masuk" icon="store">
+                    Mulai Login & Profiling
+                  </IslandLink>
+                  <IslandLink href="/kios" variant="ghost" icon="arrow">
+                    Buka Kios 2D
+                  </IslandLink>
+                </div>
+              </div>
+            </div>
+          </Bezel>
+        </Reveal>
+      )}
 
       <section className="bento">
         <Reveal className="bento__hero">
           <Bezel tone="ink" coreClassName="hero-card">
             <div className="row-between">
-              <Eyebrow tone="light">24 jam terakhir</Eyebrow>
+              <Eyebrow tone="light">24 jam terakhir · {template.display_name}</Eyebrow>
               <div className="row-gap">
                 <MockBadge />
               </div>
@@ -49,13 +88,13 @@ export default function HomePage() {
             <div className="hero-card__figure">
               <span className="hero-card__rp">{today.total_rp !== null ? formatRp(today.total_rp) : '—'}</span>
               <span className="hero-card__kwh">
-                {formatKwh(today.result.meter_delta_kwh ?? 0)} · tarif {MOCK_BUSINESS.tariff_name}
+                {formatKwh(today.result.meter_delta_kwh ?? 0)} · tarif {profile.tariffName}
               </span>
             </div>
 
             <div className="week" role="img" aria-label="Pemakaian 7 hari terakhir">
-              {MOCK_WEEK.map((d, i) => (
-                <div key={d.day} className={`week__col ${i === MOCK_WEEK.length - 1 ? 'is-today' : ''}`}>
+              {analytics.week.map((d, i) => (
+                <div key={d.day} className={`week__col ${i === analytics.week.length - 1 ? 'is-today' : ''}`}>
                   <div className="week__track">
                     <span
                       className="week__bar"
@@ -69,15 +108,15 @@ export default function HomePage() {
 
             <div className="row-between hero-card__foot">
               <ConfidenceBadge level={today.confidence} />
-              <span className="muted-light">{MOCK_BUSINESS.data_days} hari data</span>
+              <span className="muted-light">{profile.dataDays} hari data</span>
             </div>
           </Bezel>
         </Reveal>
 
         <Reveal className="bento__a" delay={80}>
           <Bezel coreClassName="stat-card">
-            <Eyebrow>Paling boros</Eyebrow>
-            <p className="stat-card__name">{top?.label}</p>
+            <Eyebrow>Paling boros di {template.display_name}</Eyebrow>
+            <p className="stat-card__name">{top?.label ?? 'Belum ada alat'}</p>
             <p className="stat-card__value">
               {top ? formatRp(top.rp) : '—'}
               <span>/hari</span>
@@ -88,16 +127,21 @@ export default function HomePage() {
             <p className="stat-card__note">
               {top ? Math.round(top.share * 100) : 0}% dari pemakaian kemarin
             </p>
-            <IslandLink href="/biaya" variant="ghost">
-              Lihat rincian
-            </IslandLink>
+            <div className="row-gap">
+              <IslandLink href="/biaya" variant="ghost">
+                Lihat rincian
+              </IslandLink>
+              <IslandLink href="/kios" variant="ghost" icon="store">
+                Atur di Kios 2D
+              </IslandLink>
+            </div>
           </Bezel>
         </Reveal>
 
         <Reveal className="bento__b" delay={140}>
           <Bezel tone="moss" coreClassName="mission-card">
             <div className="row-between">
-              <Eyebrow>Misi Meter · hari 5/7</Eyebrow>
+              <Eyebrow>Misi Meter · hari {profile.dataDays}/7</Eyebrow>
               <span className="mission-card__count">
                 {doneCount}/{MISSION_STEPS.length}
               </span>
@@ -116,24 +160,26 @@ export default function HomePage() {
           </Bezel>
         </Reveal>
 
-        <Reveal className="bento__c" delay={100}>
-          <Bezel coreClassName="rec-card">
-            <div className="row-between">
-              <Eyebrow>Saran #1</Eyebrow>
-              <ConfidenceBadge level={rec.confidence} short />
-            </div>
-            <p className="rec-card__title">{rec.title}</p>
-            <p className="rec-card__save">
-              Hemat {formatRp(rec.est_saving_rp.min)}–{formatRp(rec.est_saving_rp.max)}
-              <span> per hari</span>
-            </p>
-            {rec.safety_note && (
-              <p className="rec-card__note">
-                <Icon name="info" size={14} /> {rec.safety_note}
+        {rec && (
+          <Reveal className="bento__c" delay={100}>
+            <Bezel coreClassName="rec-card">
+              <div className="row-between">
+                <Eyebrow>Saran #1 · {template.display_name}</Eyebrow>
+                <ConfidenceBadge level={rec.confidence} short />
+              </div>
+              <p className="rec-card__title">{rec.title}</p>
+              <p className="rec-card__save">
+                Hemat {formatRp(rec.est_saving_rp.min)}–{formatRp(rec.est_saving_rp.max)}
+                <span> per hari</span>
               </p>
-            )}
-          </Bezel>
-        </Reveal>
+              {rec.safety_note && (
+                <p className="rec-card__note">
+                  <Icon name="info" size={14} /> {rec.safety_note}
+                </p>
+              )}
+            </Bezel>
+          </Reveal>
+        )}
 
         <Reveal className="bento__d" delay={160}>
           <Bezel coreClassName="gap-card">
@@ -142,7 +188,8 @@ export default function HomePage() {
               {today.unexplained_rp !== null ? formatRp(today.unexplained_rp) : '—'}
             </p>
             <p className="gap-card__note">
-              Selisih antara meter dan alat yang tercatat. Kami tidak membaginya paksa ke alat lain.
+              Selisih antara meter dan alat {template.display_name.toLowerCase()} yang tercatat. Kami tidak membaginya
+              paksa ke alat lain.
             </p>
           </Bezel>
         </Reveal>

@@ -20,6 +20,7 @@ import { OtpMockAdapter } from './adapters/otp-mock.adapter';
 @Injectable()
 export class AuthService {
   private readonly mergeCache = new Set<string>(); // ponytail: in-memory, DB nanti
+  private readonly consentCache = new Map<string, string>();
 
   constructor(
     @Inject(OtpMockAdapter) private readonly otpAdapter: OtpAdapter,
@@ -36,8 +37,7 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
     // ponytail: simpan consent_version untuk verify nanti (in-memory dulu)
-    (this as any)._consentCache = (this as any)._consentCache || new Map();
-    (this as any)._consentCache.set(requestId, payload.consent_version);
+    this.consentCache.set(requestId, payload.consent_version);
 
     return {
       request_id: requestId,
@@ -56,8 +56,7 @@ export class AuthService {
     // ponytail: mock user creation, DB nanti
     const userId = `usr_mock_${Date.now()}`;
     const consentAt = new Date();
-    const consentVersion =
-      (this as any)._consentCache?.get(payload.request_id) ?? '2027-01-01';
+    const consentVersion = this.consentCache.get(payload.request_id) ?? '2027-01-01';
 
     const claims: Omit<SessionClaims, 'iat' | 'exp'> = {
       sub: userId,

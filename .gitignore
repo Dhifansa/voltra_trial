@@ -51,3 +51,15 @@ venv/
 # Uploads lokal / data pribadi
 uploads/
 tmp/
+
+# Package managers lock conflicts
+package-lock.json
+
+# Local agent & editor metadata
+.agents/
+.autohand/
+.claude/
+.codeartsdoer/
+skills-lock.json
+skills/
+

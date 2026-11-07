@@ -3,7 +3,7 @@
  * Owner: Mahdi, Sprint: S2
  */
 
-import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import type {
   OtpRequestPayload,
@@ -13,6 +13,12 @@ import type {
   GuestMergePayload,
   GuestMergeResult,
 } from '@voltra/contracts';
+
+interface RequestWithUser {
+  user?: {
+    sub?: string;
+  };
+}
 
 @Controller('auth')
 export class AuthController {
@@ -30,7 +36,7 @@ export class AuthController {
 
   @Post('guest-merge')
   async mergeGuest(
-    @Request() req: any,
+    @Request() req: RequestWithUser,
     @Body() payload: GuestMergePayload,
   ): Promise<GuestMergeResult> {
     // ponytail: extract user_id dari JWT guard nanti, mock dulu

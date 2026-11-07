@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { AppShell } from '@/components/shell/app-shell';
+import { AppProvider } from '@/context/app-context';
 import './globals.css';
 
 const sans = Plus_Jakarta_Sans({
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
     'Voltra membantu UMKM memahami biaya listrik dan menemukan cara pemakaian yang lebih efisien.',
   applicationName: 'Voltra',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/Logo.png',
+    apple: '/Logo.png',
   },
   appleWebApp: { capable: true, title: 'Voltra', statusBarStyle: 'default' },
 };
@@ -27,7 +28,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#f8fafc',
+  themeColor: '#1a2945',
 };
 
 export default function RootLayout({
@@ -36,7 +37,9 @@ export default function RootLayout({
   return (
     <html lang="id" className={sans.variable}>
       <body>
-        <AppShell>{children}</AppShell>
+        <AppProvider>
+          <AppShell>{children}</AppShell>
+        </AppProvider>
       </body>
     </html>
   );

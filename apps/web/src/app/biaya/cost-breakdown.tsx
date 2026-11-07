@@ -3,25 +3,34 @@
 import { useState } from 'react';
 import { Bezel, ConfidenceBadge, Eyebrow, IslandLink, MockBadge, Reveal } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/icon';
+import { useVoltraApp } from '@/context/app-context';
+import { getTemplate } from '@/features/kios/templates';
 import { formatKwh, formatRp } from '@/lib/format';
-import {
-  COST_SCENARIOS,
-  MOCK_BUSINESS,
-  MOCK_RECOMMENDATIONS,
-  type CostScenario,
-  type ScenarioId,
-} from '@/lib/mock-data';
+import type { CostScenario, ScenarioId } from '@/lib/mock-data';
 
 const SCENARIO_ORDER: ScenarioId[] = ['appliance', 'category', 'insufficient'];
 const SEGMENT_TONES = ['seg-1', 'seg-2', 'seg-3', 'seg-4', 'seg-5'];
 const EFFORT_LABEL = { low: 'Mudah', medium: 'Sedang', high: 'Butuh usaha' } as const;
 
 export function CostBreakdown() {
+  const { profile, analytics } = useVoltraApp();
+  const template = getTemplate(profile.templateId);
   const [id, setId] = useState<ScenarioId>('appliance');
-  const s = COST_SCENARIOS[id];
+  const s = analytics.scenarios[id];
 
   return (
     <>
+      <div className="row-between kios-toolbar">
+        <div className="row-gap">
+          <span className="chip">{profile.businessName}</span>
+          <span className="chip chip--high">{template.display_name}</span>
+          <span className="chip">{profile.tariffName}</span>
+        </div>
+        <IslandLink href="/kios" variant="ghost" icon="store">
+          Atur Kios 2D
+        </IslandLink>
+      </div>
+
       <div className="segmented" role="tablist" aria-label="Pratinjau keadaan data (contoh)">
         {SCENARIO_ORDER.map((key) => (
           <button
@@ -32,7 +41,7 @@ export function CostBreakdown() {
             className={`segmented__item ${id === key ? 'is-active' : ''}`}
             onClick={() => setId(key)}
           >
-            {COST_SCENARIOS[key].label}
+            {analytics.scenarios[key].label}
           </button>
         ))}
       </div>
@@ -40,14 +49,23 @@ export function CostBreakdown() {
         <Icon name="info" size={14} /> Pratinjau keadaan UI: {s.hint}
       </p>
 
-      <div key={id} className="swap">
-        {s.display_level === 'insufficient_data' ? <Insufficient s={s} /> : <Breakdown s={s} />}
+      <div key={`${profile.templateId}-${id}`} className="swap">
+        {s.display_level === 'insufficient_data' ? (
+          <Insufficient s={s} />
+        ) : (
+          <Breakdown
+            s={s}
+            unitLabel={profile.unitLabel}
+            templateName={template.display_name}
+            recommendations={analytics.recommendations}
+          />
+        )}
       </div>
     </>
   );
 }
 
-function Summary({ s }: { s: CostScenario }) {
+function Summary({ s, unitLabel }: { s: CostScenario; unitLabel: string }) {
   const meter = s.result.meter_delta_kwh ?? 0;
   const unexplainedShare = meter > 0 && s.result.unexplained_kwh ? s.result.unexplained_kwh / meter : 0;
 
@@ -61,7 +79,7 @@ function Summary({ s }: { s: CostScenario }) {
       </div>
       <p className="summary__rp">{s.total_rp !== null ? formatRp(s.total_rp) : '—'}</p>
       <p className="summary__meta">
-        {formatKwh(meter)} · {s.per_unit_rp !== null ? formatRp(s.per_unit_rp) : '—'}/{MOCK_BUSINESS.unit_label.split(' ')[0]}
+        {formatKwh(meter)} · {s.per_unit_rp !== null ? formatRp(s.per_unit_rp) : '—'}/{unitLabel.split(' ')[0]}
       </p>
 
       <div className="stack" role="img" aria-label="Komposisi biaya">
@@ -86,14 +104,24 @@ function Summary({ s }: { s: CostScenario }) {
   );
 }
 
-function Breakdown({ s }: { s: CostScenario }) {
+function Breakdown({
+  s,
+  unitLabel,
+  templateName,
+  recommendations,
+}: {
+  s: CostScenario;
+  unitLabel: string;
+  templateName: string;
+  recommendations: ReturnType<typeof useVoltraApp>['analytics']['recommendations'];
+}) {
   const [openId, setOpenId] = useState<string | null>(null);
   const isCategory = s.display_level === 'category';
 
   return (
     <>
       <Reveal>
-        <Summary s={s} />
+        <Summary s={s} unitLabel={unitLabel} />
       </Reveal>
 
       {isCategory && (
@@ -111,8 +139,8 @@ function Breakdown({ s }: { s: CostScenario }) {
 
       <section className="section">
         <div className="section__head">
-          <Eyebrow>{isCategory ? 'Per kelompok alat' : 'Per alat'}</Eyebrow>
-          <span className="section__aside">diurutkan dari terbesar</span>
+          <Eyebrow>{isCategory ? 'Per kelompok alat' : `Per alat (${templateName})`}</Eyebrow>
+          <span className="section__aside">ketuk baris untuk lihat rumus</span>
         </div>
 
         <ol className="rows">
@@ -169,9 +197,14 @@ function Breakdown({ s }: { s: CostScenario }) {
                 <p className="gap-row__note">
                   Tidak kami bagi paksa ke alat lain. Tambahkan alat yang belum tercatat agar angka ini mengecil.
                 </p>
-                <IslandLink href="/catat" variant="ghost" icon="tag">
-                  Tambah alat
-                </IslandLink>
+                <div className="row-gap">
+                  <IslandLink href="/catat" variant="ghost" icon="tag">
+                    Foto label alat
+                  </IslandLink>
+                  <IslandLink href="/kios" variant="ghost" icon="store">
+                    Atur alat di Kios
+                  </IslandLink>
+                </div>
               </div>
             </Reveal>
           )}
@@ -180,11 +213,11 @@ function Breakdown({ s }: { s: CostScenario }) {
 
       <section className="section">
         <div className="section__head">
-          <Eyebrow>Yang bisa diubah</Eyebrow>
+          <Eyebrow>Yang bisa diubah di {templateName}</Eyebrow>
           <span className="section__aside">maks. 3 saran</span>
         </div>
         <ol className="recs">
-          {MOCK_RECOMMENDATIONS.map((rec, i) => (
+          {recommendations.map((rec, i) => (
             <Reveal as="li" key={rec.action_id} delay={i * 70}>
               <Bezel coreClassName="rec-row">
                 <span className="rec-row__rank">{String(i + 1).padStart(2, '0')}</span>
@@ -241,4 +274,3 @@ function Insufficient({ s }: { s: CostScenario }) {
     </Reveal>
   );
 }
-
