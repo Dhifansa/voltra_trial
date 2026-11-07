@@ -22,6 +22,14 @@ export default function HomePage() {
   const maxWeek = Math.max(1, ...analytics.week.map((d) => d.kwh));
   const doneCount = MISSION_STEPS.filter((s) => s.done).length;
 
+  // Fallback nominal jika scenario 'insufficient_data' (misal data hari < 3)
+  const displayTotalRp =
+    today.total_rp !== null ? formatRp(today.total_rp) : formatRp(analytics.kiosResult.rp_day);
+  const displayPerUnitRp =
+    today.per_unit_rp !== null
+      ? formatRp(today.per_unit_rp)
+      : formatRp(Math.round(analytics.kiosResult.rp_day / Math.max(1, profile.dailyVolume)));
+
   return (
     <main className="page page--wide">
       <section className="page-head">
@@ -35,12 +43,12 @@ export default function HomePage() {
         </Reveal>
         <Reveal delay={80}>
           <h1 className="display">
-            Kemarin listrik kios Anda <em>{today.total_rp !== null ? formatRp(today.total_rp) : '—'}</em>
+            Kemarin listrik kios Anda <em>{displayTotalRp}</em>
           </h1>
         </Reveal>
         <Reveal delay={160}>
           <p className="lede">
-            Sekitar <strong>{today.per_unit_rp !== null ? formatRp(today.per_unit_rp) : '—'}</strong> per{' '}
+            Sekitar <strong>{displayPerUnitRp}</strong> per{' '}
             {profile.unitLabel} ({profile.dailyVolume} {profile.unitLabel}/hari). Estimasi dari foto meter dan catatan
             suara — bukan pemantauan real-time.
           </p>
@@ -86,9 +94,9 @@ export default function HomePage() {
             </div>
 
             <div className="hero-card__figure">
-              <span className="hero-card__rp">{today.total_rp !== null ? formatRp(today.total_rp) : '—'}</span>
+              <span className="hero-card__rp">{displayTotalRp}</span>
               <span className="hero-card__kwh">
-                {formatKwh(today.result.meter_delta_kwh ?? 0)} · tarif {profile.tariffName}
+                {formatKwh(today.result.meter_delta_kwh ?? analytics.kiosResult.kwh_day)} · tarif {profile.tariffName}
               </span>
             </div>
 
