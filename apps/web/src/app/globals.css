@@ -3351,10 +3351,50 @@ em {
   margin-bottom: 1rem;
 }
 
+.onboard-banner__header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.onboard-banner__mascot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px var(--hair-strong);
+  flex: none;
+}
+
 .onboard-banner__text {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.25rem;
   justify-items: start;
+  min-width: 0;
+}
+
+.onboard-banner__text .twin__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.onboard-banner__text .hint {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.onboard-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
 }
 
 .profile-hero {
@@ -4262,6 +4302,30 @@ body.is-game-tutorial .topbar,
 
   .terra-chat-cloud__msg {
     font-size: 0.74rem;
+  }
+
+  .onboard-banner__header {
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .onboard-banner__mascot {
+    padding: 0.25rem;
+    border-radius: 0.85rem;
+  }
+
+  .onboard-banner__mascot .terra-avatar {
+    width: 3.5rem;
+    height: auto;
+  }
+
+  .onboard-banner__text .twin__title {
+    font-size: 0.95rem;
+  }
+
+  .onboard-banner__text .hint {
+    font-size: 0.76rem;
   }
 
   .terra-guide__main {

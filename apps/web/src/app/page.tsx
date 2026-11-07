@@ -50,9 +50,9 @@ export default function HomePage() {
       {!user.onboarded && (
         <Reveal>
           <Bezel tone="moss" coreClassName="onboard-banner">
-            <div className="terra-guide__main">
-              <div className="terra-guide__figure">
-                <TerraAvatar mood="hallo" size={68} />
+            <div className="onboard-banner__header">
+              <div className="onboard-banner__mascot">
+                <TerraAvatar mood="hallo" size={72} />
               </div>
               <div className="onboard-banner__text">
                 <Eyebrow>Alur Pengenalan bersama Terra</Eyebrow>
@@ -61,15 +61,15 @@ export default function HomePage() {
                   Mulai dari Login → Profiling Jenis Usaha → Simulasi Kios 2D bersama maskot Terra agar semua alat di
                   aplikasi menyesuaikan usaha Anda.
                 </p>
-                <div className="capture__actions">
-                  <IslandLink href="/masuk" icon="store">
-                    Mulai Login & Profiling
-                  </IslandLink>
-                  <IslandLink href="/kios" variant="ghost" icon="arrow">
-                    Buka Kios 2D
-                  </IslandLink>
-                </div>
               </div>
+            </div>
+            <div className="capture__actions onboard-banner__actions">
+              <IslandLink href="/masuk" icon="store">
+                Mulai Login & Profiling
+              </IslandLink>
+              <IslandLink href="/kios" variant="ghost" icon="arrow">
+                Buka Kios 2D
+              </IslandLink>
             </div>
           </Bezel>
         </Reveal>
