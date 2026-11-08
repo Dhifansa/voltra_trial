@@ -12,7 +12,6 @@ import {
 } from '@/lib/subscription-config';
 import { FeatureComparison } from './feature-comparison';
 import { PricingCard } from './pricing-card';
-import { StatePreviewSelector } from './state-preview-selector';
 import { SubscriptionStatusBadge } from './subscription-status-badge';
 
 export function SubscriptionPageContent() {
@@ -84,9 +83,6 @@ export function SubscriptionPageContent() {
           <div>{notice}</div>
         </div>
       )}
-
-      {/* State Preview Switcher (Khusus testing & demo 6 subscription states) */}
-      <StatePreviewSelector current={status} onChange={handleStatusChange} lang={lang} />
 
       {/* HEADER SECTION */}
       <section className="page-head sub-header">
@@ -251,7 +247,7 @@ export function SubscriptionPageContent() {
                       onClick={handleUpgradeClick}
                       className="sub-pricing-card__btn sub-pricing-card__btn--upgrade"
                     >
-                      <Icon name="crown" size={17} />
+                      <Icon name="arrowRight" size={15} />
                       <span>{t.subscription.upgradeBtn}</span>
                     </button>
                   </div>
@@ -311,7 +307,7 @@ export function SubscriptionPageContent() {
           >
             <div className="outlet-modal-header">
               <div className="row-gap" style={{ alignItems: 'center' }}>
-                <Icon name="crown" size={18} style={{ color: '#FBBF24' }} />
+                <Icon name="bolt" size={17} />
                 <span className="outlet-modal-title">{t.subscription.checkoutTitle}</span>
               </div>
               <button

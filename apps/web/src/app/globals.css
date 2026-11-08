@@ -5675,8 +5675,8 @@ body.is-game-tutorial .topbar,
 
 .sub-status-badge--plus {
   background: #1a2945;
-  color: #2dd4bf;
-  box-shadow: 0 2px 8px rgba(26, 41, 69, 0.25);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(26, 41, 69, 0.2);
 }
 
 .sub-status-badge--pending {
@@ -5845,7 +5845,7 @@ body.is-game-tutorial .topbar,
 
 .sub-pricing-card--plus {
   position: relative;
-  box-shadow: 0 0 0 1.5px rgba(45, 212, 191, 0.4), 0 16px 36px -12px rgba(26, 41, 69, 0.45);
+  box-shadow: 0 0 0 1.5px var(--blue), 0 4px 16px -4px rgba(26, 41, 69, 0.12);
 }
 
 .sub-pricing-card__core {
@@ -5882,14 +5882,11 @@ body.is-game-tutorial .topbar,
   gap: 0.5rem;
 }
 
-.sub-pricing-card__crown-icon {
-  color: #2dd4bf;
-}
-
 .sub-pricing-card__name {
   font-size: 1.45rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 @media (max-width: 679px) {
@@ -5899,15 +5896,14 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-pricing-card__recommended-pill {
-  padding: 0.2rem 0.65rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
-  background: #2dd4bf;
-  color: #0f172a;
-  font-size: 0.68rem;
-  font-weight: 800;
+  background: var(--blue);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 750;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  box-shadow: 0 2px 6px rgba(45, 212, 191, 0.3);
+  letter-spacing: 0.03em;
 }
 
 .sub-pricing-card__current-pill {
@@ -5929,10 +5925,6 @@ body.is-game-tutorial .topbar,
   color: var(--muted);
 }
 
-.sub-pricing-card--plus .sub-pricing-card__desc {
-  color: #cbd5e1;
-}
-
 @media (max-width: 679px) {
   .sub-pricing-card__desc {
     font-size: 0.76rem;
@@ -5944,11 +5936,6 @@ body.is-game-tutorial .topbar,
   padding: 0.9rem 0;
   border-top: 1px solid var(--hair);
   border-bottom: 1px solid var(--hair);
-}
-
-.sub-pricing-card--plus .sub-pricing-card__pricing {
-  border-top-color: rgba(255, 255, 255, 0.12);
-  border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
 @media (max-width: 679px) {
@@ -5967,7 +5954,7 @@ body.is-game-tutorial .topbar,
 .sub-pricing-card__currency {
   font-size: 1.15rem;
   font-weight: 700;
-  color: inherit;
+  color: var(--ink);
 }
 
 .sub-pricing-card__amount {
@@ -5976,6 +5963,7 @@ body.is-game-tutorial .topbar,
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 
 @media (max-width: 679px) {
@@ -5995,10 +5983,6 @@ body.is-game-tutorial .topbar,
   margin-left: 0.15rem;
 }
 
-.sub-pricing-card--plus .sub-pricing-card__period {
-  color: #94a3b8;
-}
-
 @media (max-width: 679px) {
   .sub-pricing-card__period {
     font-size: 0.76rem;
@@ -6007,9 +5991,9 @@ body.is-game-tutorial .topbar,
 
 .sub-pricing-card__billing-note {
   margin: 0.35rem 0 0;
-  font-size: 0.76rem;
-  color: #2dd4bf;
-  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 500;
 }
 
 @media (max-width: 679px) {
@@ -6069,7 +6053,7 @@ body.is-game-tutorial .topbar,
   height: 1.15rem;
   border-radius: 999px;
   background: var(--paper-2);
-  color: #10b981;
+  color: var(--accent);
 }
 
 @media (max-width: 679px) {
@@ -6081,16 +6065,12 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-pricing-card__check.is-plus {
-  background: rgba(45, 212, 191, 0.18);
-  color: #2dd4bf;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .sub-pricing-card__text {
   color: var(--ink-soft);
-}
-
-.sub-pricing-card--plus .sub-pricing-card__text {
-  color: #f1f5f9;
 }
 
 .sub-pricing-card__action {
@@ -6114,15 +6094,14 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-pricing-card__btn--upgrade {
-  background: #2dd4bf;
-  color: #0f172a;
-  box-shadow: 0 4px 14px -3px rgba(45, 212, 191, 0.45);
+  background: var(--blue);
+  color: #ffffff;
+  box-shadow: 0 2px 8px -2px rgba(26, 41, 69, 0.3);
 }
 
 .sub-pricing-card__btn--upgrade:hover {
-  background: #5eead4;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px -3px rgba(45, 212, 191, 0.55);
+  background: var(--blue-ink);
+  transform: translateY(-1px);
 }
 
 .sub-pricing-card__btn--upgrade:active {
@@ -6140,12 +6119,6 @@ body.is-game-tutorial .topbar,
   color: var(--muted);
   cursor: default;
   box-shadow: inset 0 0 0 1px var(--hair-strong);
-}
-
-.sub-pricing-card--plus .sub-pricing-card__btn--active {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .sub-spinner {
@@ -6252,7 +6225,7 @@ body.is-game-tutorial .topbar,
 
   .sub-comp-mobile-tab--plus.is-active {
     background: #1a2945;
-    color: #2dd4bf;
+    color: #ffffff;
   }
 }
 
@@ -6347,7 +6320,7 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-feature-row.is-highlight {
-  background: rgba(45, 212, 191, 0.03);
+  background: rgba(26, 41, 69, 0.025);
 }
 
 .sub-cell-feature {
@@ -6388,8 +6361,8 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-comp-icon--check.is-plus {
-  background: #ccfbf1;
-  color: #0f766e;
+  background: var(--accent-soft, #e6f4f1);
+  color: var(--accent, #0f766e);
 }
 
 .sub-comp-icon--dash {
@@ -6690,7 +6663,7 @@ body.is-game-tutorial .topbar,
 .sub-checkout-price strong {
   font-size: 1.25rem;
   font-weight: 850;
-  color: #2dd4bf;
+  color: #ffffff;
 }
 
 .sub-checkout-price span {
@@ -6703,7 +6676,7 @@ body.is-game-tutorial .topbar,
   padding-top: 0.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.75rem;
-  color: #2dd4bf;
+  color: #e2e8f0;
   font-weight: 600;
 }
 

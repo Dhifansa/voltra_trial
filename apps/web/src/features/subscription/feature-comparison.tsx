@@ -89,7 +89,6 @@ export function FeatureComparison({ lang = 'id' }: FeatureComparisonProps) {
             className={`sub-comp-mobile-tab sub-comp-mobile-tab--plus ${mobileTab === 'plus' ? 'is-active' : ''}`}
             onClick={() => setMobileTab('plus')}
           >
-            <Icon name="crown" size={13} />
             <span>Plus</span>
           </button>
         </div>
@@ -113,7 +112,6 @@ export function FeatureComparison({ lang = 'id' }: FeatureComparisonProps) {
               </th>
               <th scope="col" className="sub-col-plus">
                 <div className="sub-col-plus-head">
-                  <Icon name="crown" size={15} />
                   <span>Plus</span>
                 </div>
               </th>

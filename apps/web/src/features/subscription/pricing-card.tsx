@@ -34,7 +34,7 @@ export function PricingCard({
 
   return (
     <Bezel
-      tone={isPlus ? 'ink' : 'paper'}
+      tone="paper"
       className={`sub-pricing-card ${isPlus ? 'sub-pricing-card--plus' : 'sub-pricing-card--free'} ${
         isCurrentActive ? 'sub-pricing-card--active' : ''
       }`}
@@ -44,7 +44,6 @@ export function PricingCard({
       <div className="sub-pricing-card__head">
         <div className="row-between card-head-wrap">
           <div className="sub-pricing-card__title-row">
-            {isPlus && <Icon name="crown" size={20} className="sub-pricing-card__crown-icon" />}
             <span className="sub-pricing-card__name">{plan.name}</span>
           </div>
 
@@ -74,7 +73,7 @@ export function PricingCard({
           </span>
           <span className="sub-pricing-card__period">
             {price === 0
-              ? ` (${isEn ? 'Free Forever' : 'Gratis Selamanya'})`
+              ? ` / ${isEn ? 'free' : 'gratis'}`
               : `/${isEn ? 'mo' : 'bln'}`}
           </span>
         </div>
@@ -83,18 +82,18 @@ export function PricingCard({
           <p className="sub-pricing-card__billing-note">
             {isEn
               ? 'Billed monthly, cancel anytime'
-              : 'Ditagih per bulan, bisa dibatalkan kapan saja'}
+              : 'Ditagih bulanan, batalkan kapan saja'}
           </p>
         )}
       </div>
 
       {/* Feature Checklist */}
       <div className="sub-pricing-card__features">
-        <Eyebrow tone={isPlus ? 'light' : 'default'}>
+        <Eyebrow tone="default">
           {isPlus
             ? isEn
               ? 'Included in Plus:'
-              : 'Fitur Unggulan Plus:'
+              : 'Fitur Utama Plus:'
             : isEn
               ? 'Included in Free:'
               : 'Fitur Paket Free:'}
@@ -104,7 +103,7 @@ export function PricingCard({
           {highlights.map((feat, idx) => (
             <li key={idx} className="sub-pricing-card__item">
               <span className={`sub-pricing-card__check ${isPlus ? 'is-plus' : ''}`}>
-                <Icon name="check" size={14} />
+                <Icon name="check" size={13} />
               </span>
               <span className="sub-pricing-card__text">{feat}</span>
             </li>
@@ -121,8 +120,8 @@ export function PricingCard({
               disabled
               className="sub-pricing-card__btn sub-pricing-card__btn--active"
             >
-              <Icon name="check" size={16} />
-              <span>{isEn ? 'Current Active Plan' : 'Paket Saat Ini (Aktif)'}</span>
+              <Icon name="check" size={15} />
+              <span>{isEn ? 'Current Active Plan' : 'Paket Aktif Saat Ini'}</span>
             </button>
           ) : currentStatus === 'pending' ? (
             <IslandButton
@@ -156,7 +155,7 @@ export function PricingCard({
                 </>
               ) : (
                 <>
-                  <Icon name="crown" size={17} />
+                  <Icon name="arrowRight" size={15} />
                   <span>{isEn ? 'Upgrade to Plus' : 'Upgrade ke Plus'}</span>
                 </>
               )}
