@@ -1027,28 +1027,8 @@ function KiosPlay({
 
             {/* Karpet & Penanda Area Lantai Sesuai Jenis Usaha */}
             <div className="outlet-zones" aria-hidden="true">
-              <div className="outlet-zone outlet-zone--back">
-                <span>
-                  {state.templateId === 'laundry'
-                    ? '💧 ZONA CUCI & PENGERING'
-                    : state.templateId === 'warung'
-                      ? '🍲 DAPUR MASAK & PENDINGIN'
-                      : state.templateId === 'roti'
-                        ? '🔥 DAPUR PANGGANG & ADONAN'
-                        : '⚡ AREA MESIN UTAMA'}
-                </span>
-              </div>
-              <div className="outlet-zone outlet-zone--front-left">
-                <span>
-                  {state.templateId === 'laundry'
-                    ? '👕 AREA SETRIKA & SORTIR'
-                    : state.templateId === 'warung'
-                      ? '🍽️ AREA MAKAN & MINUMAN'
-                      : state.templateId === 'roti'
-                        ? '🥐 ETALASE ROTI HANGAT'
-                        : '🛍️ AREA PELAYANAN'}
-                </span>
-              </div>
+              <div className="outlet-zone outlet-zone--back" />
+              <div className="outlet-zone outlet-zone--front-left" />
             </div>
 
             {/* Aksesoris & Properti Interaktif Sesuai Jenis Kios */}

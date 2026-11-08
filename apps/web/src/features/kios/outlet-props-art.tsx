@@ -54,7 +54,7 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
       id: 'breadrack',
       name: 'Rak Roti Hangat',
       zone: 'Dinding Bakery',
-      x: 33,
+      x: 20,
       y: 21,
       badge: '🥐 Fresh Baked',
       tip: 'Panggang beberapa loyang berurutan saat Oven sudah panas—pemanasan awal Oven memakan listrik terbesar!',
