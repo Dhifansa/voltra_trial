@@ -294,7 +294,7 @@ export function SubscriptionPageContent() {
       {/* CHECKOUT MODAL PLACEHOLDER (Ready for Stripe / Midtrans Backend) */}
       {showCheckoutModal && (
         <div
-          className="outlet-modal-backdrop"
+          className="sub-modal-backdrop"
           onClick={() => setShowCheckoutModal(false)}
           role="presentation"
         >

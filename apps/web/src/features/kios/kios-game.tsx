@@ -102,10 +102,10 @@ const TEMPLATE_STATION_MAP: Record<string, Record<string, StationCoord>> = {
   },
   warung: {
     lamp: { x: 50, y: 19, zone: 'Plafon Warung' },
-    freezer: { x: 17, y: 44, zone: 'Sudut Beku' },
-    fridge: { x: 47, y: 44, zone: 'Dapur Bahan' },
-    ricecooker: { x: 78, y: 44, zone: 'Meja Saji Nasi' },
-    fan: { x: 18, y: 74, zone: 'Area Meja Makan' },
+    freezer: { x: 13, y: 44, zone: 'Sudut Beku' },
+    fridge: { x: 47, y: 48, zone: 'Dapur Bahan' },
+    ricecooker: { x: 82, y: 44, zone: 'Meja Saji Nasi' },
+    fan: { x: 18, y: 78, zone: 'Area Meja Makan' },
     blender: { x: 64, y: 74, zone: 'Bar Minuman' },
   },
   roti: {
@@ -1169,7 +1169,7 @@ function KiosPlay({
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handlePickAppliance(s.uid, false);
+                      handlePickAppliance(s.uid, true);
                     }}
                     aria-pressed={active}
                     aria-label={`${s.appliance.name} di ${pos.zone}, ${
