@@ -4127,8 +4127,16 @@ body.is-game-tutorial .topbar,
 }
 
 /* ====================================================================== */
-/*  Game Ruangan Outlet 2.5D Interaktif + Karakter Terra Bergerak         */
+/*  Game Dunia Kios 2.5D Interaktif Sesuai Jenis Usaha + Terra Bergerak   */
 /* ====================================================================== */
+
+.scene__awning--warung span:nth-child(odd) {
+  background: #0f766e;
+}
+
+.scene__awning--roti span:nth-child(odd) {
+  background: #b45309;
+}
 
 .outlet-top-banner {
   display: flex;
@@ -4146,6 +4154,30 @@ body.is-game-tutorial .topbar,
   flex: 1;
 }
 
+.outlet-top-banner__badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.15rem;
+}
+
+.outlet-top-banner__badges .wati__name {
+  margin-bottom: 0;
+}
+
+.outlet-watt-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.48rem;
+  border-radius: 999px;
+  background: #1a2945;
+  color: #2dd4bf;
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 .outlet-top-banner__info p {
   margin: 0;
   font-size: 0.78rem;
@@ -4153,39 +4185,118 @@ body.is-game-tutorial .topbar,
   color: var(--ink-soft);
 }
 
-.outlet-top-banner__hint {
+.outlet-top-banner__right {
   flex: none;
-  padding: 0.22rem 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.outlet-time-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.28rem 0.65rem;
   border-radius: 999px;
   background: #ffffff;
-  color: var(--blue);
-  font-size: 0.66rem;
+  color: var(--ink);
+  font-size: 0.68rem;
   font-weight: 700;
   box-shadow: inset 0 0 0 1px var(--hair-strong);
-  white-space: nowrap;
+  transition: transform 180ms var(--ease), background-color 180ms var(--ease);
+}
+
+.outlet-time-btn:hover {
+  background: var(--blue);
+  color: #ffffff;
 }
 
 .outlet-arena {
   position: relative;
   width: 100%;
-  height: 22.5rem;
+  height: 24rem;
   overflow: hidden;
   cursor: pointer;
   user-select: none;
-  background:
-    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 27%, #e2e8f0 27.5%, #f1f5f9 28%, #f8fafc 100%);
+  background: #e2e8f0;
+  transition: filter 450ms var(--ease);
 }
 
-/* Grid ubin lantai kios di bawah garis dinding (top > 28%) */
-.outlet-arena::before {
+/* Tema Lantai & Suasana Dunia Sesuai Pilihan Kios */
+/* 1. Laundry: Ubin keramik biru-bersih bergaya ruang cuci */
+.outlet-arena--laundry::before {
   content: '';
   position: absolute;
   inset: 28% 0 0 0;
+  background-color: #e0f2fe;
   background-image:
-    linear-gradient(to right, rgba(26, 41, 69, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(26, 41, 69, 0.06) 1px, transparent 1px);
+    linear-gradient(45deg, rgba(255, 255, 255, 0.65) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.65) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.65) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.65) 75%);
+  background-size: 3.2rem 3.2rem;
+  background-position: 0 0, 0 1.6rem, 1.6rem -1.6rem, -1.6rem 0;
+  pointer-events: none;
+}
+
+/* 2. Warung Makan: Ubin terakota / krem hangat khas kedai makan */
+.outlet-arena--warung::before {
+  content: '';
+  position: absolute;
+  inset: 28% 0 0 0;
+  background-color: #fef3c7;
+  background-image:
+    linear-gradient(to right, rgba(180, 83, 9, 0.1) 2px, transparent 2px),
+    linear-gradient(to bottom, rgba(180, 83, 9, 0.1) 2px, transparent 2px);
+  background-size: 2.8rem 2.4rem;
+  pointer-events: none;
+}
+
+/* 3. Toko Roti & Kue: Lantai parket kayu hangat khas bakery */
+.outlet-arena--roti::before {
+  content: '';
+  position: absolute;
+  inset: 28% 0 0 0;
+  background-color: #fde68a;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(146, 64, 14, 0.08) 0 4.2rem,
+      rgba(146, 64, 14, 0.18) 4.2rem 4.35rem
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.35) 0 1.4rem,
+      rgba(180, 83, 9, 0.07) 1.4rem 1.5rem
+    );
+  pointer-events: none;
+}
+
+/* 4. Kustom: Lantai studio grid modern */
+.outlet-arena--kustom::before {
+  content: '';
+  position: absolute;
+  inset: 28% 0 0 0;
+  background-color: #f1f5f9;
+  background-image:
+    linear-gradient(to right, rgba(26, 41, 69, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(26, 41, 69, 0.07) 1px, transparent 1px);
   background-size: 2.5rem 2.25rem;
   pointer-events: none;
+}
+
+/* Suasana Waktu Sore & Malam */
+.outlet-arena--sore {
+  filter: sepia(0.12) saturate(1.08);
+}
+
+.outlet-arena--malam::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.18);
+  pointer-events: none;
+  z-index: 3;
 }
 
 /* Efek lampu utama dimatikan */
@@ -4193,9 +4304,22 @@ body.is-game-tutorial .topbar,
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.24);
+  background: rgba(15, 23, 42, 0.28);
   pointer-events: none;
   z-index: 3;
+}
+
+/* Sorot Cahaya Lampu Plafon */
+.outlet-light-cone {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68%;
+  height: 75%;
+  background: radial-gradient(ellipse at top, rgba(254, 240, 138, 0.26), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .outlet-wall {
@@ -4203,15 +4327,68 @@ body.is-game-tutorial .topbar,
   inset: 0 0 72% 0;
   background:
     repeating-linear-gradient(90deg, #f8fafc 0 2.75rem, #f1f5f9 2.75rem 2.85rem);
-  border-bottom: 3px solid #cbd5e1;
-  pointer-events: none;
+  border-bottom: 4px solid #1a2945;
+  z-index: 1;
 }
 
-.outlet-wall .scene__window {
+.outlet-arena--warung .outlet-wall {
+  background:
+    repeating-linear-gradient(90deg, #fffbeb 0 2.75rem, #fef3c7 2.75rem 2.85rem);
+}
+
+.outlet-arena--roti .outlet-wall {
+  background:
+    repeating-linear-gradient(90deg, #fff7ed 0 2.75rem, #ffedd5 2.75rem 2.85rem);
+}
+
+/* Pipa / Lis Dekorasi Dinding Kios */
+.outlet-wall__trim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.35rem;
+  height: 0.35rem;
+  background: rgba(26, 41, 69, 0.12);
+}
+
+.outlet-window-btn {
+  position: absolute;
   top: 0.65rem;
   right: 0.85rem;
-  width: 4.2rem;
-  height: 2.85rem;
+  width: 4.5rem;
+  height: 3.1rem;
+  cursor: pointer;
+  transition: transform 200ms var(--ease);
+}
+
+.outlet-window-btn:hover {
+  transform: scale(1.05);
+}
+
+.scene__sky--sore {
+  background: linear-gradient(180deg, #fdba74, #fde68a) !important;
+}
+
+.scene__sky--malam {
+  background: linear-gradient(180deg, #0f172a, #1e293b) !important;
+}
+
+.scene__celestial {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.35rem;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.scene__window-sill {
+  position: absolute;
+  left: -0.2rem;
+  right: -0.2rem;
+  bottom: -0.2rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: #1a2945;
 }
 
 .outlet-meter-box {
@@ -4221,19 +4398,27 @@ body.is-game-tutorial .topbar,
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.28rem 0.55rem;
-  border-radius: 0.45rem;
+  padding: 0.32rem 0.6rem;
+  border-radius: 0.5rem;
   background: #1a2945;
   color: #ffffff;
   font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  box-shadow: 0 2px 6px rgba(26, 41, 69, 0.22);
+  letter-spacing: 0.02em;
+  box-shadow: 0 3px 8px rgba(26, 41, 69, 0.28);
+  cursor: pointer;
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
+}
+
+.outlet-meter-box:hover,
+.outlet-meter-box.is-active {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 0 0 2px #2dd4bf, 0 6px 12px rgba(26, 41, 69, 0.35);
 }
 
 .outlet-meter-box__led {
-  width: 0.42rem;
-  height: 0.42rem;
+  width: 0.44rem;
+  height: 0.44rem;
   border-radius: 999px;
   background: #2dd4bf;
   animation: art-pulse 1100ms var(--ease) infinite alternate;
@@ -4244,13 +4429,14 @@ body.is-game-tutorial .topbar,
   position: absolute;
   inset: 28% 0 0 0;
   pointer-events: none;
+  z-index: 1;
 }
 
 .outlet-zone {
   position: absolute;
-  border-radius: 0.75rem;
-  border: 1.5px dashed rgba(26, 41, 69, 0.18);
-  background: rgba(255, 255, 255, 0.48);
+  border-radius: 0.9rem;
+  border: 1.5px dashed rgba(26, 41, 69, 0.2);
+  background: rgba(255, 255, 255, 0.42);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -4258,172 +4444,342 @@ body.is-game-tutorial .topbar,
 }
 
 .outlet-zone span {
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: rgba(26, 41, 69, 0.48);
+  color: rgba(26, 41, 69, 0.58);
   text-transform: uppercase;
 }
 
 .outlet-zone--back {
   top: 4%;
-  left: 4%;
-  right: 4%;
-  height: 40%;
+  left: 3.5%;
+  right: 3.5%;
+  height: 38%;
 }
 
 .outlet-zone--front-left {
-  bottom: 8%;
-  left: 4%;
-  width: 56%;
+  bottom: 9%;
+  left: 3.5%;
+  width: 60%;
   height: 40%;
 }
 
-.outlet-counter {
-  position: absolute;
-  bottom: 10%;
-  right: 4%;
-  width: 33%;
-  height: 36%;
-  border-radius: 0.7rem;
-  background: rgba(26, 41, 69, 0.07);
-  border: 1.5px solid rgba(26, 41, 69, 0.2);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0.28rem;
-}
-
-.outlet-counter span {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: rgba(26, 41, 69, 0.55);
-}
-
-.outlet-door {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.12rem 0.65rem;
-  border-radius: 0.45rem 0.45rem 0 0;
-  background: #1a2945;
-  color: #ffffff;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-/* Titik Alat di Dalam Kios */
-.outlet-station {
+/* Aksesoris & Properti Interaktif Sesuai Jenis Kios */
+.outlet-prop {
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.12rem;
-  width: 5.5rem;
-  padding: 1.05rem 0.3rem 0.38rem;
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow:
-    0 0 0 1px rgba(26, 41, 69, 0.14),
-    0 6px 14px -8px rgba(15, 23, 42, 0.28);
-  transition:
-    transform 280ms var(--ease),
-    box-shadow 280ms var(--ease),
-    background-color 280ms var(--ease);
-}
-
-.outlet-station:hover {
-  transform: translate(-50%, -53%);
-  background: #ffffff;
-}
-
-.outlet-station:active {
-  transform: translate(-50%, -50%) scale(0.96);
-}
-
-.outlet-station--ceiling {
-  width: 4.8rem;
-  padding-top: 0.9rem;
-  background: rgba(255, 255, 255, 0.9);
+  gap: 0.05rem;
+  padding: 0.15rem;
+  background: transparent;
   border-radius: 0.75rem;
+  cursor: pointer;
+  transition: transform 240ms var(--ease), filter 240ms var(--ease);
 }
 
-.outlet-station.is-active {
+.outlet-prop:hover {
+  transform: translate(-50%, -55%) scale(1.06);
+}
+
+.outlet-prop:active,
+.outlet-prop.is-active {
+  animation: prop-bounce 420ms var(--ease);
+}
+
+@keyframes prop-bounce {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  45% {
+    transform: translate(-50%, -60%) scale(1.09);
+  }
+}
+
+.outlet-prop__badge {
+  padding: 0.06rem 0.38rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 0.52rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(26, 41, 69, 0.18);
+  opacity: 0.92;
+}
+
+.outlet-prop.is-active .outlet-prop__badge {
+  background: #2dd4bf;
+  color: #0f172a;
+}
+
+.outlet-prop__art {
+  width: 3.35rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 5px 8px rgba(15, 23, 42, 0.18));
+}
+
+.outlet-prop--wall .outlet-prop__art {
+  width: 3.1rem;
+  height: 2.45rem;
+}
+
+.outlet-prop__name {
+  padding: 0.05rem 0.35rem;
+  border-radius: 0.35rem;
+  background: rgba(26, 41, 69, 0.82);
+  color: #ffffff;
+  font-size: 0.52rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Kucing Penjaga Pintu Masuk Kios */
+.outlet-door-cat {
+  position: absolute;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 220ms var(--ease);
+}
+
+.outlet-door-cat:hover {
+  transform: translateX(-50%) translateY(-2px) scale(1.05);
+}
+
+.outlet-door-cat__art {
+  width: 3.2rem;
+  height: 2.2rem;
+  display: block;
+}
+
+.outlet-door-cat__label {
+  margin-top: -0.15rem;
+  padding: 0.08rem 0.55rem;
+  border-radius: 0.45rem;
+  background: #1a2945;
+  color: #ffffff;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* Efek Lingkaran Target Saat Lantai Diklik */
+.outlet-click-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 2.2rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  border: 2px solid #1a2945;
+  background: rgba(45, 212, 191, 0.25);
+  pointer-events: none;
+  z-index: 2;
+  animation: click-ripple 520ms var(--ease) forwards;
+}
+
+@keyframes click-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.35);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.45);
+    opacity: 0;
+  }
+}
+
+/* Stasiun Alat Listrik di Dalam Dunia Kios (Tidak Kaku, dengan Pedestal & Efek Hidup) */
+.outlet-station-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.outlet-station-wrap.is-active,
+.outlet-station-wrap.is-near-terra {
   z-index: 4;
-  background: #ffffff;
-  box-shadow:
-    0 0 0 2px var(--blue),
-    0 10px 20px -10px rgba(26, 41, 69, 0.5);
 }
 
-.outlet-station.is-near-terra {
-  box-shadow:
-    0 0 0 2px var(--accent),
-    0 10px 20px -10px rgba(15, 118, 110, 0.45);
+/* Tombol Power Cepat ON/OFF di Atas Stasiun Alat */
+.outlet-station__pwr {
+  margin-bottom: -0.25rem;
+  z-index: 3;
+  padding: 0.08rem 0.42rem;
+  border-radius: 999px;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 160ms var(--ease), background-color 160ms var(--ease);
 }
 
-.outlet-station.is-off .outlet-station__art {
-  filter: grayscale(1);
-  opacity: 0.45;
+.outlet-station__pwr.is-on {
+  background: #2dd4bf;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.35);
 }
 
-.outlet-station .unit__tag {
-  top: 0.22rem;
-  font-size: 0.55rem;
-  padding: 0.08rem 0.38rem;
-}
-
-.outlet-station.is-top .unit__tag {
-  background: var(--blue);
+.outlet-station__pwr.is-off {
+  background: #64748b;
   color: #ffffff;
 }
 
+.outlet-station__pwr:hover {
+  transform: scale(1.1);
+}
+
+.outlet-station {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem 0.25rem 0.15rem;
+  border-radius: 0.9rem;
+  background: transparent;
+  transition: transform 260ms var(--ease);
+}
+
+.outlet-station:hover {
+  transform: translateY(-4px) scale(1.04);
+}
+
+.outlet-station:active {
+  transform: scale(0.95);
+}
+
 .outlet-station__art {
-  width: 2.75rem;
-  height: 2.95rem;
+  position: relative;
+  z-index: 2;
+  width: 3.3rem;
+  height: 3.45rem;
   display: grid;
   place-items: center;
+  filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.24));
+  transition: opacity 300ms var(--ease), filter 300ms var(--ease);
 }
 
 .outlet-station--ceiling .outlet-station__art {
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.65rem;
+  height: 2.65rem;
+}
+
+.outlet-station.is-off .outlet-station__art {
+  filter: grayscale(1) drop-shadow(0 3px 4px rgba(15, 23, 42, 0.14));
+  opacity: 0.52;
+}
+
+/* Alas Karpet / Pedestal Isometrik di Bawah Alat */
+.outlet-station__pad {
+  width: 4.1rem;
+  height: 1.15rem;
+  margin-top: -0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(26, 41, 69, 0.28);
+  box-shadow: 0 5px 10px -3px rgba(26, 41, 69, 0.28);
+  z-index: 1;
+  transition: border-color 240ms var(--ease), background-color 240ms var(--ease), box-shadow 240ms var(--ease);
+}
+
+.outlet-station.is-active .outlet-station__pad {
+  background: #ffffff;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(26, 41, 69, 0.22), 0 6px 12px rgba(26, 41, 69, 0.35);
+}
+
+.outlet-station.is-near-terra .outlet-station__pad {
+  background: #f0fdfa;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.38);
+}
+
+/* Partikel Efek Alat Menyala (Uap / Busa / Dingin) */
+.outlet-station__fx {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+  z-index: 3;
+  font-size: 0.72rem;
+  line-height: 1;
+  animation: fx-float 1300ms var(--ease) infinite alternate;
+}
+
+@keyframes fx-float {
+  from {
+    transform: translateY(0) scale(0.92);
+  }
+  to {
+    transform: translateY(-5px) scale(1.08);
+  }
+}
+
+/* Papan Nama HUD Alat di Bawah Pedestal */
+.outlet-station__hud {
+  margin-top: 0.12rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.14rem 0.45rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 0 1px rgba(26, 41, 69, 0.18),
+    0 4px 10px -4px rgba(15, 23, 42, 0.24);
+}
+
+.outlet-station.is-active .outlet-station__hud {
+  background: #1a2945;
 }
 
 .outlet-station__name {
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 700;
   color: var(--ink);
-  text-align: center;
   line-height: 1.15;
-  max-width: 100%;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.outlet-station__zone {
-  font-size: 0.54rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.1;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.outlet-station.is-active .outlet-station__name {
+  color: #ffffff;
 }
 
-/* Karakter Terra yang Bisa Digerakkan di Lantai Outlet */
+.outlet-station__meta {
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--blue);
+  line-height: 1.15;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.outlet-station.is-active .outlet-station__meta {
+  color: #2dd4bf;
+}
+
+/* Karakter Terra yang Bisa Digerakkan di Dalam Dunia Kios */
 .outlet-terra {
   position: absolute;
   transform: translate(-50%, -62%);
-  z-index: 5;
+  z-index: 6;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4433,13 +4789,47 @@ body.is-game-tutorial .topbar,
   pointer-events: auto;
 }
 
+/* Balon Dialog Interaktif di Atas Kepala Terra */
+.outlet-terra__speech {
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 13.5rem;
+  padding: 0.38rem 0.6rem;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.32;
+  text-align: center;
+  box-shadow:
+    0 0 0 1.5px #1a2945,
+    0 8px 16px -6px rgba(15, 23, 42, 0.32);
+  pointer-events: none;
+  z-index: 8;
+}
+
+.outlet-terra__speech::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1a2945 transparent transparent transparent;
+}
+
 .outlet-terra__badge {
-  margin-bottom: 0.12rem;
-  padding: 0.12rem 0.48rem;
+  margin-bottom: 0.1rem;
+  padding: 0.1rem 0.48rem;
   border-radius: 999px;
   background: #1a2945;
   color: #ffffff;
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 700;
   white-space: nowrap;
   box-shadow: 0 3px 8px rgba(26, 41, 69, 0.35);
@@ -4463,16 +4853,29 @@ body.is-game-tutorial .topbar,
   transform: scaleX(-1);
 }
 
+.outlet-terra.is-idle .outlet-terra__btn {
+  animation: terra-breathe 1800ms var(--ease) infinite alternate;
+}
+
 .outlet-terra.is-walking .outlet-terra__btn {
-  animation: terra-step 220ms var(--ease) infinite alternate;
+  animation: terra-step 210ms var(--ease) infinite alternate;
+}
+
+@keyframes terra-breathe {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-3px);
+  }
 }
 
 @keyframes terra-step {
   from {
-    transform: translateY(0) rotate(-3deg);
+    transform: translateY(0) rotate(-4deg);
   }
   to {
-    transform: translateY(-5px) rotate(3deg);
+    transform: translateY(-6px) rotate(4deg);
   }
 }
 
@@ -4481,7 +4884,7 @@ body.is-game-tutorial .topbar,
   height: 0.48rem;
   margin-top: -0.22rem;
   border-radius: 999px;
-  background: rgba(26, 41, 69, 0.22);
+  background: rgba(26, 41, 69, 0.24);
 }
 
 /* Baris Kendali D-Pad + Aksi Cepat di Bawah Ruangan */
@@ -4799,36 +5202,56 @@ body.is-game-tutorial .topbar,
   }
 
   .outlet-arena {
-    height: 19.75rem;
+    height: 21.5rem;
   }
 
-  .outlet-station {
-    width: 4.55rem;
-    padding: 0.9rem 0.22rem 0.3rem;
-    border-radius: 0.7rem;
+  .outlet-prop__art {
+    width: 2.6rem;
+    height: 2.2rem;
   }
 
-  .outlet-station--ceiling {
-    width: 4.1rem;
-    padding-top: 0.75rem;
+  .outlet-prop--wall .outlet-prop__art {
+    width: 2.4rem;
+    height: 2rem;
+  }
+
+  .outlet-prop__badge,
+  .outlet-prop__name {
+    font-size: 0.47rem;
   }
 
   .outlet-station__art {
-    width: 2.25rem;
-    height: 2.4rem;
+    width: 2.6rem;
+    height: 2.75rem;
+  }
+
+  .outlet-station--ceiling .outlet-station__art {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .outlet-station__pad {
+    width: 3.35rem;
+    height: 0.95rem;
   }
 
   .outlet-station__name {
-    font-size: 0.6rem;
+    font-size: 0.56rem;
   }
 
-  .outlet-station__zone {
-    font-size: 0.5rem;
+  .outlet-station__meta {
+    font-size: 0.48rem;
   }
 
   .outlet-terra .terra-avatar {
     width: 3.1rem;
     height: auto;
+  }
+
+  .outlet-terra__speech {
+    max-width: 10.5rem;
+    font-size: 0.56rem;
+    padding: 0.3rem 0.48rem;
   }
 
   .outlet-controls {

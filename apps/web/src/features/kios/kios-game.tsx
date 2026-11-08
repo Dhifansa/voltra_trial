@@ -10,6 +10,12 @@ import { useVoltraApp } from '@/context/app-context';
 import { formatKwh, formatRp } from '@/lib/format';
 import { ApplianceArt } from './appliance-art';
 import {
+  TEMPLATE_PROPS,
+  OutletPropArt,
+  ShopCatArt,
+  type InteractivePropDef,
+} from './outlet-props-art';
+import {
   CHALLENGE_TARGET,
   addSlot,
   challengeProgress,
@@ -64,30 +70,30 @@ interface StationCoord {
 
 const TEMPLATE_STATION_MAP: Record<string, Record<string, StationCoord>> = {
   laundry: {
-    lamp: { x: 50, y: 20, zone: 'Plafon Kios' },
-    pump: { x: 18, y: 43, zone: 'pipa & Tandon Air' },
-    washer: { x: 46, y: 43, zone: 'Area Cuci Basah' },
-    dryer: { x: 77, y: 43, zone: 'Area Pengering' },
-    iron: { x: 28, y: 74, zone: 'Meja Setrika Uap' },
+    lamp: { x: 50, y: 19, zone: 'Plafon Kios' },
+    pump: { x: 17, y: 44, zone: 'Pipa & Tandon Air' },
+    washer: { x: 47, y: 44, zone: 'Area Cuci Basah' },
+    dryer: { x: 78, y: 44, zone: 'Area Pengering' },
+    iron: { x: 24, y: 74, zone: 'Meja Setrika Uap' },
   },
   warung: {
-    lamp: { x: 50, y: 20, zone: 'Plafon Warung' },
-    freezer: { x: 18, y: 43, zone: 'Sudut Beku' },
-    fridge: { x: 45, y: 43, zone: 'Dapur Bahan' },
-    ricecooker: { x: 76, y: 43, zone: 'Meja Saji Nasi' },
-    fan: { x: 24, y: 74, zone: 'Area Meja Makan' },
+    lamp: { x: 50, y: 19, zone: 'Plafon Warung' },
+    freezer: { x: 17, y: 44, zone: 'Sudut Beku' },
+    fridge: { x: 47, y: 44, zone: 'Dapur Bahan' },
+    ricecooker: { x: 78, y: 44, zone: 'Meja Saji Nasi' },
+    fan: { x: 18, y: 74, zone: 'Area Meja Makan' },
     blender: { x: 64, y: 74, zone: 'Bar Minuman' },
   },
   roti: {
-    lamp: { x: 50, y: 20, zone: 'Plafon Bakery' },
-    oven: { x: 20, y: 43, zone: 'Dapur Panggang' },
-    mixer: { x: 49, y: 43, zone: 'Meja Adonan' },
-    chiller: { x: 78, y: 43, zone: 'Pendingin Bahan' },
-    display: { x: 30, y: 74, zone: 'Etalase Depan' },
+    lamp: { x: 50, y: 19, zone: 'Plafon Bakery' },
+    oven: { x: 18, y: 44, zone: 'Dapur Panggang' },
+    mixer: { x: 48, y: 44, zone: 'Meja Adonan' },
+    chiller: { x: 78, y: 44, zone: 'Pendingin Bahan' },
+    display: { x: 35, y: 74, zone: 'Etalase Depan' },
   },
   kustom: {
-    lamp: { x: 50, y: 20, zone: 'Plafon Utama' },
-    fan: { x: 24, y: 74, zone: 'Area Depan' },
+    lamp: { x: 50, y: 19, zone: 'Plafon Utama' },
+    fan: { x: 28, y: 74, zone: 'Area Depan' },
   },
 };
 
@@ -382,6 +388,23 @@ function KiosPlay({
   const walkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const floorArenaRef = useRef<HTMLDivElement>(null);
 
+  // Elemen interaktif dunia game: Waktu (Siang/Sore/Malam), Aksesoris Aktif, Kucing Kios, Efek Klik Lantai, & Balon Dialog Terra
+  const [timeOfDay, setTimeOfDay] = useState<'siang' | 'sore' | 'malam'>('siang');
+  const [activePropId, setActivePropId] = useState<string | null>(null);
+  const [catAwake, setCatAwake] = useState(false);
+  const [clickMarker, setClickMarker] = useState<{ x: number; y: number; id: number } | null>(null);
+  const [terraSpeech, setTerraSpeech] = useState<string | null>(null);
+  const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const worldProps = useMemo(
+    () => TEMPLATE_PROPS[state.templateId] ?? TEMPLATE_PROPS.kustom ?? [],
+    [state.templateId],
+  );
+  const totalActiveWatts = useMemo(
+    () => state.slots.reduce((acc, s) => (s.on ? acc + s.appliance.power_w.typical : acc), 0),
+    [state.slots],
+  );
+
   // tutorialRunning menjaga sesi panduan tetap aktif walau pop-up ditutup sementara (close)
   const [tutorialRunning, setTutorialRunning] = useState<boolean>(initialTutorial);
   const [popupOpen, setPopupOpen] = useState<boolean>(initialTutorial);
@@ -394,6 +417,14 @@ function KiosPlay({
   const sceneRef = useRef<HTMLDivElement>(null);
   const controlRef = useRef<HTMLDivElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
+
+  const showTerraBubble = useCallback((text: string, durationMs = 4500) => {
+    setTerraSpeech(text);
+    if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
+    speechTimerRef.current = setTimeout(() => {
+      setTerraSpeech(null);
+    }, durationMs);
+  }, []);
 
   useEffect(() => {
     if (!state.slots.some((s) => s.uid === selectedUid)) {
@@ -409,12 +440,15 @@ function KiosPlay({
       setTutorialRunning(true);
       setPopupOpen(true);
       setTerraPos({ x: 52, y: 66 });
+      setActivePropId(null);
+      setTerraSpeech(null);
     }
   }, [state.templateId]);
 
   useEffect(() => {
     return () => {
       if (walkTimerRef.current) clearTimeout(walkTimerRef.current);
+      if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
     };
   }, []);
 
@@ -464,15 +498,27 @@ function KiosPlay({
   const handlePickAppliance = useCallback(
     (uid: string, openControlStage = true) => {
       const targetPos = stationPositions[uid];
+      const slotObj = state.slots.find((s) => s.uid === uid);
+      setActivePropId(null);
+
       if (targetPos) {
         setTerraPos((prev) => {
           const nextX = clampCoord(targetPos.x + (targetPos.x > 50 ? -6 : 6), 14, 86);
-          const nextY = clampCoord(targetPos.y + (targetPos.y < 30 ? 14 : 9), 26, 84);
+          const nextY = clampCoord(targetPos.y + (targetPos.y < 30 ? 15 : 9), 28, 84);
           if (nextX < prev.x - 1) setTerraFacing('left');
           else if (nextX > prev.x + 1) setTerraFacing('right');
           return { x: nextX, y: nextY };
         });
         triggerWalkAnimation(420);
+      }
+
+      if (slotObj) {
+        showTerraBubble(
+          `${slotObj.appliance.name} (${slotObj.appliance.power_w.typical}W) — ${
+            slotObj.on ? `Menyala ${slotObj.hours} jam/hari` : 'Sedang dimatikan'
+          }.`,
+          3800,
+        );
       }
 
       if (tutorialRunning && stage === 'set-hours' && selectedUid && selectedUid !== uid) {
@@ -488,8 +534,71 @@ function KiosPlay({
         }, 260);
       }
     },
-    [stationPositions, triggerWalkAnimation, tutorialRunning, stage, selectedUid],
+    [stationPositions, state.slots, triggerWalkAnimation, showTerraBubble, tutorialRunning, stage, selectedUid],
   );
+
+  // Interaksi dengan aksesoris/properti kios (Rak, Keranjang, Meja Makan, Kasir, dll.)
+  const handleInteractProp = useCallback(
+    (prop: InteractivePropDef) => {
+      setActivePropId(prop.id);
+      setTerraPos((prev) => {
+        const nextX = clampCoord(prop.x + (prop.x > 50 ? -5 : 5), 14, 86);
+        const nextY = clampCoord(prop.y + (prop.y < 30 ? 15 : 7), 28, 84);
+        if (nextX < prev.x - 1) setTerraFacing('left');
+        else if (nextX > prev.x + 1) setTerraFacing('right');
+        return { x: nextX, y: nextY };
+      });
+      triggerWalkAnimation(400);
+      showTerraBubble(`${prop.badge} · ${prop.tip}`, 5200);
+    },
+    [triggerWalkAnimation, showTerraBubble],
+  );
+
+  // Interaksi dengan Meteran PLN di dinding
+  const handleInteractMeter = useCallback(() => {
+    setActivePropId('pln-meter');
+    setTerraPos((prev) => {
+      if (18 < prev.x) setTerraFacing('left');
+      return { x: 18, y: 34 };
+    });
+    triggerWalkAnimation(380);
+    showTerraBubble(
+      `⚡ Meteran PLN: Beban aktif ${totalActiveWatts.toLocaleString('id-ID')} Watt (${formatKwh(result.kwh_day)}/hari).`,
+      4800,
+    );
+  }, [totalActiveWatts, result.kwh_day, triggerWalkAnimation, showTerraBubble]);
+
+  // Interaksi dengan Kucing Penjaga Kios di Pintu Masuk
+  const handleInteractCat = useCallback(() => {
+    setCatAwake((v) => !v);
+    setActivePropId('doorcat');
+    setTerraPos((prev) => {
+      const nextX = 46;
+      if (nextX < prev.x) setTerraFacing('left');
+      else setTerraFacing('right');
+      return { x: nextX, y: 80 };
+    });
+    triggerWalkAnimation(360);
+    showTerraBubble(
+      '🐱 Meow! Kucing penjaga kios senang kalau suhu ruangan sejuk & tagihan listrik tetap hemat!',
+      4500,
+    );
+  }, [triggerWalkAnimation, showTerraBubble]);
+
+  // Ganti waktu dunia game (Siang -> Sore -> Malam)
+  const handleCycleTimeOfDay = useCallback(() => {
+    setTimeOfDay((prev) => {
+      const next = prev === 'siang' ? 'sore' : prev === 'sore' ? 'malam' : 'siang';
+      const label =
+        next === 'siang'
+          ? '☀️ Suasana Siang: Manfaatkan cahaya alami dari jendela kios!'
+          : next === 'sore'
+            ? '🌅 Suasana Sore: Jam sibuk sore hari, pantau pemakaian alat pemanas!'
+            : '🌙 Suasana Malam: Jangan lupa matikan alat yang tidak dipakai sebelum tutup kios!';
+      showTerraBubble(label, 4200);
+      return next;
+    });
+  }, [showTerraBubble]);
 
   // Gerakkan Terra dengan langkah D-Pad atau Keyboard (WASD / Arrow)
   const moveTerraByDelta = useCallback(
@@ -501,12 +610,12 @@ function KiosPlay({
       setTerraPos((prev) => {
         const next = {
           x: clampCoord(prev.x + dx, 12, 88),
-          y: clampCoord(prev.y + dy, 22, 84),
+          y: clampCoord(prev.y + dy, 26, 84),
         };
 
         // Cek apakah posisi baru berada di dekat salah satu alat
         let closestUid: string | null = null;
-        let closestDist = 18;
+        let closestDist = 17;
         for (const s of state.slots) {
           const p = stationPositions[s.uid];
           if (!p) continue;
@@ -518,11 +627,22 @@ function KiosPlay({
         }
         if (closestUid) {
           setSelectedUid(closestUid);
+          setActivePropId(null);
+        } else {
+          // Cek apakah dekat dengan salah satu aksesoris interaktif
+          for (const prop of worldProps) {
+            const dProp = Math.hypot(prop.x - next.x, prop.y - next.y);
+            if (dProp < 15) {
+              setActivePropId(prop.id);
+              showTerraBubble(`${prop.badge} · ${prop.tip}`, 4200);
+              break;
+            }
+          }
         }
         return next;
       });
     },
-    [state.slots, stationPositions, triggerWalkAnimation],
+    [state.slots, stationPositions, worldProps, triggerWalkAnimation, showTerraBubble],
   );
 
   // Keyboard listener (Arrow keys / WASD) untuk menggerakkan Terra
@@ -553,25 +673,25 @@ function KiosPlay({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [moveTerraByDelta, nearestSlot, handlePickAppliance]);
 
-  // Klik di lantai outlet -> Terra berjalan ke titik tersebut
+  // Klik di lantai outlet -> Terra berjalan ke titik tersebut + efek ripple langkah
   function handleArenaClick(e: React.MouseEvent<HTMLDivElement>) {
-    // Abaikan jika yang diklik adalah tombol alat atau kontrol HUD
     if ((e.target as HTMLElement).closest('button')) return;
     const rect = floorArenaRef.current?.getBoundingClientRect();
     if (!rect) return;
 
     const clickX = clampCoord(((e.clientX - rect.left) / rect.width) * 100, 12, 88);
-    const clickY = clampCoord(((e.clientY - rect.top) / rect.height) * 100, 24, 84);
+    const clickY = clampCoord(((e.clientY - rect.top) / rect.height) * 100, 26, 84);
 
     if (clickX < terraPos.x - 1) setTerraFacing('left');
     else if (clickX > terraPos.x + 1) setTerraFacing('right');
 
+    setClickMarker({ x: clickX, y: clickY, id: Date.now() });
     setTerraPos({ x: clickX, y: clickY });
     triggerWalkAnimation(400);
 
     // Jika titik klik dekat dengan salah satu alat, pilih alat tersebut
     let closestUid: string | null = null;
-    let closestDist = 17;
+    let closestDist = 16;
     for (const s of state.slots) {
       const p = stationPositions[s.uid];
       if (!p) continue;
@@ -583,6 +703,7 @@ function KiosPlay({
     }
     if (closestUid) {
       setSelectedUid(closestUid);
+      setActivePropId(null);
     }
   }
 
@@ -663,9 +784,9 @@ function KiosPlay({
       </div>
 
       {/* ==================================================================== */}
-      {/* BAGIAN SCREEN 1: Game Rumah / Outlet Kios 2D Interaktif              */}
-      {/* - Posisi alat sesuai tata letak outlet asli (Plafon, Area Kerja, dll)*/}
-      {/* - Karakter Terra bisa digerakkan (Tap lantai, D-Pad, atau WASD)      */}
+      {/* BAGIAN SCREEN 1: Dunia Game Kios 2D Interaktif Sesuai Jenis Usaha    */}
+      {/* - Dunia & Aksesoris mengikuti jenis kios (Laundry/Warung/Roti/Kustom)*/}
+      {/* - Karakter Terra bebas berjalan, menyentuh alat & aksesoris          */}
       {/* ==================================================================== */}
       <div
         ref={sceneRef}
@@ -677,9 +798,13 @@ function KiosPlay({
             : ''
         }
       >
-        <Bezel coreClassName={`scene scene--${mood} ${roomLit ? 'is-lit' : 'is-dimmed'}`}>
+        <Bezel
+          coreClassName={`scene scene--${mood} scene--time-${timeOfDay} ${
+            roomLit ? 'is-lit' : 'is-dimmed'
+          }`}
+        >
           {/* Kanopi & Papan Nama Outlet */}
-          <div className="scene__awning" aria-hidden="true">
+          <div className={`scene__awning scene__awning--${state.templateId}`} aria-hidden="true">
             {Array.from({ length: 10 }, (_, i) => (
               <span key={i} />
             ))}
@@ -688,71 +813,165 @@ function KiosPlay({
             <span>{state.shopName}</span>
           </div>
 
-          {/* Balon Status / Dialog Singkat di Atas Ruangan */}
+          {/* HUD Status Dunia Kios di Atas Ruangan */}
           <div className="outlet-top-banner">
             <div className="outlet-top-banner__info">
-              <strong className="wati__name">Denah Outlet · {template.display_name}</strong>
+              <div className="outlet-top-banner__badges">
+                <strong className="wati__name">Dunia Kios · {template.display_name}</strong>
+                <span className="outlet-watt-pill">
+                  ⚡ {totalActiveWatts.toLocaleString('id-ID')} W Aktif
+                </span>
+              </div>
               <p>
                 {nearestSlot
-                  ? `Terra berada di dekat ${nearestSlot.appliance.name} (${nearestSlot.on ? `${nearestSlot.hours} jam/hari` : 'Mati'}).`
+                  ? `Terra memeriksa ${nearestSlot.appliance.name} (${nearestSlot.on ? `${nearestSlot.hours} jam/hari` : 'Mati'}).`
                   : MOOD_COPY[mood].line(top?.appliance.name)}
               </p>
             </div>
-            <span className="outlet-top-banner__hint">Ketuk lantai / gunakan tombol arah</span>
+            <div className="outlet-top-banner__right">
+              <button
+                type="button"
+                className="outlet-time-btn"
+                onClick={handleCycleTimeOfDay}
+                title="Ganti suasana waktu kios (Siang / Sore / Malam)"
+              >
+                {timeOfDay === 'siang' ? '☀️ Siang' : timeOfDay === 'sore' ? '🌅 Sore' : '🌙 Malam'}
+              </button>
+            </div>
           </div>
 
-          {/* Arena Interior Outlet 2.5D (Dinding + Lantai + Alat + Karakter Terra) */}
+          {/* Arena Dunia Game Kios 2.5D Sesuai Pilihan Usaha */}
           <div
             ref={floorArenaRef}
-            className="outlet-arena"
+            className={`outlet-arena outlet-arena--${state.templateId} outlet-arena--${timeOfDay}`}
             onClick={handleArenaClick}
             role="region"
-            aria-label={`Ruangan Outlet ${state.shopName}. Ketuk lantai atau gunakan tombol arah untuk menggerakkan Terra.`}
+            aria-label={`Dunia Game ${state.shopName}. Ketuk lantai, alat, atau aksesoris untuk menggerakkan Terra.`}
           >
-            {/* Dinding Belakang Outlet: Meteran PLN, Jendela, & Garis Plafon */}
-            <div className="outlet-wall" aria-hidden="true">
-              <div className="outlet-meter-box">
+            {/* Dinding Belakang: Pipa/Dekorasi, Meteran PLN Interaktif, & Jendela Waktu Interaktif */}
+            <div className="outlet-wall">
+              <div className="outlet-wall__trim" aria-hidden="true" />
+
+              {/* Meteran Listrik PLN Interaktif */}
+              <button
+                type="button"
+                className={`outlet-meter-box ${activePropId === 'pln-meter' ? 'is-active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleInteractMeter();
+                }}
+                title="Ketuk untuk memeriksa beban Meteran Listrik PLN bersama Terra"
+              >
                 <span className="outlet-meter-box__led" />
-                <span className="outlet-meter-box__label">kWh PLN</span>
-              </div>
-              <div className="scene__window">
-                <span className={`scene__sky scene__sky--${mood}`} />
-              </div>
+                <span className="outlet-meter-box__label">
+                  PLN {totalActiveWatts.toLocaleString('id-ID')}W
+                </span>
+              </button>
+
+              {/* Jendela Kios Interaktif (Klik untuk ganti Siang / Sore / Malam) */}
+              <button
+                type="button"
+                className="scene__window outlet-window-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCycleTimeOfDay();
+                }}
+                title="Ketuk jendela untuk mengganti waktu Siang / Sore / Malam"
+              >
+                <span className={`scene__sky scene__sky--${timeOfDay} scene__sky--${mood}`}>
+                  <span className="scene__celestial" aria-hidden="true">
+                    {timeOfDay === 'siang' ? '☀️' : timeOfDay === 'sore' ? '🌤️' : '🌙'}
+                  </span>
+                </span>
+                <span className="scene__window-sill" aria-hidden="true" />
+              </button>
             </div>
 
-            {/* Karpet / Zona Area Kerja Sesuai Jenis Outlet */}
+            {/* Sorot Cahaya Lampu Plafon Saat Menyala */}
+            {roomLit && <div className="outlet-light-cone" aria-hidden="true" />}
+
+            {/* Karpet & Penanda Area Lantai Sesuai Jenis Usaha */}
             <div className="outlet-zones" aria-hidden="true">
               <div className="outlet-zone outlet-zone--back">
                 <span>
                   {state.templateId === 'laundry'
-                    ? 'ZONA CUCI & PENGERING'
+                    ? '💧 ZONA CUCI & PENGERING'
                     : state.templateId === 'warung'
-                      ? 'ZONA DAPUR & PENDINGIN'
+                      ? '🍲 DAPUR MASAK & PENDINGIN'
                       : state.templateId === 'roti'
-                        ? 'ZONA PANGGANG & ADONAN'
-                        : 'AREA UTAMA OUTLET'}
+                        ? '🔥 DAPUR PANGGANG & ADONAN'
+                        : '⚡ AREA MESIN UTAMA'}
                 </span>
               </div>
               <div className="outlet-zone outlet-zone--front-left">
                 <span>
                   {state.templateId === 'laundry'
-                    ? 'MEJA SETRIKA & LIPAT'
+                    ? '👕 AREA SETRIKA & SORTIR'
                     : state.templateId === 'warung'
-                      ? 'AREA PELANGGAN & MINUMAN'
+                      ? '🍽️ AREA MAKAN & MINUMAN'
                       : state.templateId === 'roti'
-                        ? 'ETALASE ROTI DEPAN'
-                        : 'AREA DEPAN'}
+                        ? '🥐 ETALASE ROTI HANGAT'
+                        : '🛍️ AREA PELAYANAN'}
                 </span>
-              </div>
-              <div className="outlet-counter">
-                <span>MEJA KASIR</span>
-              </div>
-              <div className="outlet-door">
-                <span>PINTU MASUK</span>
               </div>
             </div>
 
-            {/* Alat-Alat yang Ditempatkan Sesuai Posisi Kios Asli */}
+            {/* Aksesoris & Properti Interaktif Sesuai Jenis Kios */}
+            {worldProps.map((prop) => {
+              const isPropActive = activePropId === prop.id;
+              const isWallProp = prop.y <= 26;
+              return (
+                <button
+                  key={prop.id}
+                  type="button"
+                  style={{ left: `${prop.x}%`, top: `${prop.y}%` }}
+                  className={`outlet-prop ${isWallProp ? 'outlet-prop--wall' : 'outlet-prop--floor'} ${
+                    isPropActive ? 'is-active' : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleInteractProp(prop);
+                  }}
+                  title={`${prop.name} — Ketuk agar Terra memeriksa`}
+                >
+                  <span className="outlet-prop__badge">{prop.badge}</span>
+                  <span className="outlet-prop__art">
+                    <OutletPropArt id={prop.id} active={isPropActive} />
+                  </span>
+                  <span className="outlet-prop__name">{prop.name}</span>
+                </button>
+              );
+            })}
+
+            {/* Pintu Masuk & Kucing Maskot Penjaga Kios Interaktif */}
+            <button
+              type="button"
+              className={`outlet-door-cat ${catAwake ? 'is-awake' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleInteractCat();
+              }}
+              title="Ketuk kucing penjaga pintu kios!"
+            >
+              <span className="outlet-door-cat__art">
+                <ShopCatArt awake={catAwake} />
+              </span>
+              <span className="outlet-door-cat__label">
+                {catAwake ? '😺 Meow! Selamat Datang' : '🐾 Pintu Masuk Kios'}
+              </span>
+            </button>
+
+            {/* Lingkaran Efek Target Langkah di Lantai Saat Diklik */}
+            {clickMarker && (
+              <span
+                key={clickMarker.id}
+                className="outlet-click-marker"
+                style={{ left: `${clickMarker.x}%`, top: `${clickMarker.y}%` }}
+                aria-hidden="true"
+              />
+            )}
+
+            {/* Stasiun Alat Listrik di Dalam Dunia Kios (Tidak Kaku, dengan Pedestal & Efek Hidup) */}
             {state.slots.map((s) => {
               const r = result.per_slot[s.uid];
               const active = s.uid === selectedUid;
@@ -763,48 +982,115 @@ function KiosPlay({
               const isCeiling = s.appliance.icon === 'lamp';
 
               return (
-                <button
+                <div
                   key={s.uid}
-                  type="button"
                   style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-                  className={`outlet-station ${isCeiling ? 'outlet-station--ceiling' : ''} ${
-                    s.on ? 'is-on' : 'is-off'
-                  } ${active ? 'is-active' : ''} ${isTop ? 'is-top' : ''} ${
-                    isNear ? 'is-near-terra' : ''
-                  } ${
-                    tutorialRunning && stage === 'pick-appliance' && !isDone ? 'is-guide-pulse' : ''
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePickAppliance(s.uid, true);
-                  }}
-                  aria-pressed={active}
-                  aria-label={`${s.appliance.name} di ${pos.zone}, ${
-                    s.on ? `${s.hours} jam/hari` : 'mati'
-                  }`}
+                  className={`outlet-station-wrap ${
+                    isCeiling ? 'outlet-station-wrap--ceiling' : ''
+                  } ${active ? 'is-active' : ''} ${isNear ? 'is-near-terra' : ''}`}
                 >
-                  {isDone && (
-                    <span className="unit__done-badge" title="Sudah diatur jam pakainya">
-                      <Icon name="check" size={11} />
+                  {/* Tombol Power Cepat ON/OFF Langsung di Atas Alat */}
+                  <button
+                    type="button"
+                    className={`outlet-station__pwr ${s.on ? 'is-on' : 'is-off'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (s.appliance.critical) {
+                        showTerraBubble(
+                          `🔒 ${s.appliance.name} adalah alat wajib usaha yang harus tetap menyala!`,
+                          3200,
+                        );
+                        return;
+                      }
+                      onChange(toggleSlot(state, s.uid));
+                      showTerraBubble(
+                        `${s.appliance.name} ${!s.on ? 'dinyalakan ⚡' : 'dimatikan 💤'}!`,
+                        2800,
+                      );
+                    }}
+                    title={
+                      s.appliance.critical
+                        ? `${s.appliance.name} wajib menyala`
+                        : s.on
+                          ? `Matikan ${s.appliance.name}`
+                          : `Nyalakan ${s.appliance.name}`
+                    }
+                    aria-label={s.on ? `Matikan ${s.appliance.name}` : `Nyalakan ${s.appliance.name}`}
+                  >
+                    {s.appliance.critical ? 'WAJIB' : s.on ? 'ON' : 'OFF'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`outlet-station ${isCeiling ? 'outlet-station--ceiling' : ''} ${
+                      s.on ? 'is-on' : 'is-off'
+                    } ${active ? 'is-active' : ''} ${isTop ? 'is-top' : ''} ${
+                      isNear ? 'is-near-terra' : ''
+                    } ${
+                      tutorialRunning && stage === 'pick-appliance' && !isDone ? 'is-guide-pulse' : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePickAppliance(s.uid, true);
+                    }}
+                    aria-pressed={active}
+                    aria-label={`${s.appliance.name} di ${pos.zone}, ${
+                      s.on ? `${s.hours} jam/hari` : 'mati'
+                    }`}
+                  >
+                    {isDone && (
+                      <span className="unit__done-badge" title="Sudah diatur jam pakainya">
+                        <Icon name="check" size={11} />
+                      </span>
+                    )}
+
+                    {/* Efek Partikel Hidup Saat Alat Menyala */}
+                    {s.on && (
+                      <span className="outlet-station__fx" aria-hidden="true">
+                        {s.appliance.category === 'heater'
+                          ? '♨️'
+                          : s.appliance.category === 'cooling'
+                            ? '❄️'
+                            : s.appliance.icon === 'washer'
+                              ? '🫧'
+                              : s.appliance.icon === 'pump'
+                                ? '💧'
+                                : '⚡'}
+                      </span>
+                    )}
+
+                    <span className="outlet-station__art">
+                      <ApplianceArt icon={s.appliance.icon} on={s.on} />
                     </span>
-                  )}
-                  {s.on && r && <span className="unit__tag">{formatRp(r.rp_hour)}/jam</span>}
-                  <span className="outlet-station__art">
-                    <ApplianceArt icon={s.appliance.icon} on={s.on} />
-                  </span>
-                  <span className="outlet-station__name">{s.appliance.name}</span>
-                  <span className="outlet-station__zone">{pos.zone}</span>
-                </button>
+
+                    {/* Alas Dudukan 3D Isometrik di Lantai */}
+                    {!isCeiling && <span className="outlet-station__pad" aria-hidden="true" />}
+
+                    <span className="outlet-station__hud">
+                      <span className="outlet-station__name">{s.appliance.name}</span>
+                      <span className="outlet-station__meta">
+                        {s.on && r ? `${formatRp(r.rp_hour)}/j · ${s.hours}j` : 'Mati'}
+                      </span>
+                    </span>
+                  </button>
+                </div>
               );
             })}
 
-            {/* Karakter Terra yang Bisa Digerakkan di Dalam Outlet */}
+            {/* Karakter Terra yang Bisa Digerakkan di Dalam Dunia Kios */}
             <div
-              className={`outlet-terra ${terraWalking ? 'is-walking' : ''} ${
+              className={`outlet-terra ${terraWalking ? 'is-walking' : 'is-idle'} ${
                 terraFacing === 'left' ? 'is-left' : 'is-right'
               }`}
               style={{ left: `${terraPos.x}%`, top: `${terraPos.y}%` }}
             >
+              {/* Gelembung Dialog Interaktif di Atas Kepala Terra */}
+              {terraSpeech && (
+                <div className="outlet-terra__speech" role="status">
+                  <span>{terraSpeech}</span>
+                </div>
+              )}
+
               <span className="outlet-terra__badge">
                 {nearestSlot ? `🔍 ${nearestSlot.appliance.name}` : 'Terra'}
               </span>
@@ -816,12 +1102,13 @@ function KiosPlay({
                   if (nearestSlot) {
                     handlePickAppliance(nearestSlot.uid, true);
                   } else {
-                    setTutorialRunning(true);
-                    setPopupOpen(true);
-                    setStage('pick-appliance');
+                    showTerraBubble(
+                      '👋 Halo! Ketuk lantai, alat listrik, atau aksesoris toko untuk berkeliling bersama Terra!',
+                      4200,
+                    );
                   }
                 }}
-                title="Karakter Terra — Gerakkan ke alat untuk memeriksa listriknya"
+                title="Karakter Terra — Ketuk alat atau aksesoris untuk berkeliling memeriksa kios"
               >
                 <span className="outlet-terra__flip">
                   <TerraAvatar mood={roomTerraMood} size={58} />
@@ -831,7 +1118,7 @@ function KiosPlay({
             </div>
           </div>
 
-          {/* Kontrol Gerak Karakter Terra (D-Pad + Tombol Interaksi Alat) */}
+          {/* Kontrol Gamepad / D-Pad + Tombol Interaksi Cepat */}
           <div className="outlet-controls">
             <div className="outlet-dpad" role="group" aria-label="Kendali gerak karakter Terra">
               <button
@@ -882,7 +1169,7 @@ function KiosPlay({
                 >
                   <Icon name="pencil" size={14} />
                   <span>
-                    Atur {selected.appliance.name} ({selected.on ? `${selected.hours}j` : 'Mati'})
+                    Atur Jam {selected.appliance.name} ({selected.on ? `${selected.hours}j` : 'Mati'})
                   </span>
                 </button>
               )}
