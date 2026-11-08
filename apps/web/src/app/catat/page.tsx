@@ -1,22 +1,28 @@
+'use client';
+
 import { Eyebrow, Reveal } from '@/components/ui/primitives';
+import { useVoltraApp } from '@/context/app-context';
+import { getDictionary } from '@/lib/i18n';
 import { CaptureFlow } from './capture-flow';
 
-export const metadata = { title: 'Catat data · Voltra' };
-
 export default function CatatPage() {
+  const { settings } = useVoltraApp();
+  const t = getDictionary(settings.language || 'id');
+
   return (
     <main className="page">
       <section className="page-head">
         <Reveal>
-          <Eyebrow>Kurang dari 2 menit</Eyebrow>
+          <Eyebrow>{t.capture.eyebrow}</Eyebrow>
         </Reveal>
         <Reveal delay={80}>
           <h1 className="display">
-            Catat hari ini, <em>tanpa ribet</em>
+            {t.capture.titlePre}
+            <em>{t.capture.titleHighlight}</em>
           </h1>
         </Reveal>
         <Reveal delay={160}>
-          <p className="lede">Foto meter, foto label alat, atau cukup bicara. Selalu bisa dikoreksi sebelum disimpan.</p>
+          <p className="lede">{t.capture.lede}</p>
         </Reveal>
       </section>
       <CaptureFlow />

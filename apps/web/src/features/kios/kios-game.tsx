@@ -8,6 +8,7 @@ import { Icon } from '@/components/ui/icon';
 import { TerraAvatar, TerraGameTutorial, type TerraMood } from '@/components/ui/terra-mascot';
 import { useVoltraApp } from '@/context/app-context';
 import { formatKwh, formatRp } from '@/lib/format';
+import { getDictionary } from '@/lib/i18n';
 import { ApplianceArt } from './appliance-art';
 import {
   TEMPLATE_PROPS,
@@ -394,6 +395,8 @@ function KiosPlay({
   onChange: (s: KiosState, rebase?: boolean) => void;
   onSwitchTemplate: () => void;
 }) {
+  const { settings } = useVoltraApp();
+  const t = getDictionary(settings.language || 'id');
   const template = getTemplate(state.templateId);
   const result = useMemo(() => compute(state, tariffRate), [state, tariffRate]);
   const stationPositions = useMemo(
@@ -892,7 +895,7 @@ function KiosPlay({
       {/* Toolbar atas (ikut ngeblur saat pop-up tutorial aktif) */}
       <div className={`row-between kios-toolbar ${spotlightActive ? 'tutorial-dim' : ''}`}>
         <div className="row-gap">
-          <span className="chip chip--mock">Simulasi 2D</span>
+          <span className="chip chip--mock">{t.kiosk.sim2d}</span>
           <span className="chip">{template.display_name}</span>
           <span className="chip">{tariffName}</span>
         </div>
@@ -910,10 +913,14 @@ function KiosPlay({
             }}
           >
             <TerraAvatar mood={roomTerraMood} size={20} />
-            <span>Tutorial Terra ({configuredUids.length}/{state.slots.length} Alat)</span>
+            <span>
+              {t.kiosk.terraTutorial
+                .replace('{done}', String(configuredUids.length))
+                .replace('{total}', String(state.slots.length))}
+            </span>
           </button>
           <button type="button" className="textlink" onClick={onSwitchTemplate}>
-            Ganti usaha
+            {t.kiosk.switchBusiness}
           </button>
         </div>
       </div>
@@ -955,14 +962,23 @@ function KiosPlay({
           <div className="outlet-top-banner">
             <div className="outlet-top-banner__info">
               <div className="outlet-top-banner__badges">
-                <strong className="wati__name">Dunia Kios · {template.display_name}</strong>
+                <strong className="wati__name">
+                  {t.kiosk.worldKiosk.replace('{template}', template.display_name)}
+                </strong>
                 <span className="outlet-watt-pill">
-                  ⚡ {totalActiveWatts.toLocaleString('id-ID')} W Aktif
+                  {t.kiosk.wattActive.replace('{watts}', totalActiveWatts.toLocaleString('id-ID'))}
                 </span>
               </div>
               <p>
                 {nearestSlot
-                  ? `Terra memeriksa ${nearestSlot.appliance.name} (${nearestSlot.on ? `${nearestSlot.hours} jam/hari` : 'Mati'}).`
+                  ? t.kiosk.terraExamining
+                      .replace('{appliance}', nearestSlot.appliance.name)
+                      .replace(
+                        '{status}',
+                        nearestSlot.on
+                          ? t.kiosk.terraHours.replace('{hours}', String(nearestSlot.hours))
+                          : t.kiosk.terraOff,
+                      )
                   : MOOD_COPY[mood].line(top?.appliance.name)}
               </p>
             </div>
@@ -971,9 +987,13 @@ function KiosPlay({
                 type="button"
                 className="outlet-time-btn"
                 onClick={handleCycleTimeOfDay}
-                title="Ganti suasana waktu kios (Siang / Sore / Malam)"
+                title={t.kiosk.timeCycleTooltip}
               >
-                {timeOfDay === 'siang' ? '☀️ Siang' : timeOfDay === 'sore' ? '🌅 Sore' : '🌙 Malam'}
+                {timeOfDay === 'siang'
+                  ? t.kiosk.timeDay
+                  : timeOfDay === 'sore'
+                    ? t.kiosk.timeEve
+                    : t.kiosk.timeNight}
               </button>
             </div>
           </div>
@@ -1318,11 +1338,18 @@ function KiosPlay({
                   onClick={() => {
                     handlePickAppliance(selected.uid, true);
                   }}
-                  title={`Buka pop-up atur jam pakai ${selected.appliance.name}`}
+                  title={t.kiosk.modalTitle}
                 >
                   <Icon name="pencil" size={14} />
                   <span>
-                    Cek Jam {selected.appliance.name} ({selected.on ? `${selected.hours}j` : 'Mati'})
+                    {t.kiosk.checkHours
+                      .replace('{appliance}', selected.appliance.name)
+                      .replace(
+                        '{hours}',
+                        selected.on
+                          ? `${selected.hours}${settings.language === 'en' ? 'h' : 'j'}`
+                          : t.kiosk.terraOff,
+                      )}
                   </span>
                 </button>
               )}
@@ -1332,7 +1359,7 @@ function KiosPlay({
                   className="outlet-add-btn"
                   onClick={() => setShowCatalog((v) => !v)}
                 >
-                  <span>+ Tambah Alat</span>
+                  <span>{t.kiosk.addAppliance}</span>
                 </button>
               )}
             </div>
@@ -1352,10 +1379,10 @@ function KiosPlay({
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
-                aria-label={`Pengaturan Jam Pakai ${selected.appliance.name}`}
+                aria-label={t.kiosk.modalTitle}
               >
                 <div className="outlet-modal-header">
-                  <span className="outlet-modal-title">Cek Jam & Pemakaian Alat</span>
+                  <span className="outlet-modal-title">{t.kiosk.modalTitle}</span>
                   <button
                     type="button"
                     className="outlet-modal-close"
@@ -1456,57 +1483,64 @@ function KiosPlay({
       >
         <Bezel tone="ink" coreClassName="bill">
           <div className="row-between">
-            <Eyebrow tone="light">Tagihan simulasi / hari</Eyebrow>
+            <Eyebrow tone="light">{t.kiosk.billTitle}</Eyebrow>
             <span className={`mood mood--${mood}`}>{MOOD_COPY[mood].label}</span>
           </div>
           <p className="bill__rp">{formatRp(result.rp_day)}</p>
           <p className="bill__meta">
-            {formatKwh(result.kwh_day)} · awal {formatRp(baseline)} ·{' '}
+            {formatKwh(result.kwh_day)} · {t.kiosk.billMetaStart.replace('{baseline}', formatRp(baseline))} ·{' '}
             <strong className={changePct > 0 ? 'is-down' : changePct < 0 ? 'is-up' : ''}>
-              {changePct > 0 ? `turun ${changePct}%` : changePct < 0 ? `naik ${Math.abs(changePct)}%` : 'belum berubah'}
+              {changePct > 0
+                ? t.kiosk.billDown.replace('{pct}', String(changePct))
+                : changePct < 0
+                  ? t.kiosk.billUp.replace('{pct}', String(Math.abs(changePct)))
+                  : t.kiosk.billSame}
             </strong>
           </p>
 
           <div className="challenge">
             <div className="row-between">
               <span className="challenge__title">
-                <Icon name="leaf" size={16} /> Tantangan: turunkan {Math.round(CHALLENGE_TARGET * 100)}%
+                <Icon name="leaf" size={16} />{' '}
+                {t.kiosk.challengeTitle.replace('{pct}', String(Math.round(CHALLENGE_TARGET * 100)))}
               </span>
               <span className="challenge__pct">{Math.round(progress * 100)}%</span>
             </div>
             <div className="meter-line" aria-hidden="true">
               <span style={{ transform: `scaleX(${progress})` }} />
             </div>
-            <p className="hint">Jam buka tetap {OPEN_HOURS} jam. Alat wajib tidak bisa dimatikan.</p>
+            <p className="hint">
+              {t.kiosk.challengeHint.replace('{hours}', String(OPEN_HOURS))}
+            </p>
           </div>
         </Bezel>
 
         <Bezel tone="moss" coreClassName="twin">
-          <Eyebrow>Tersinkron Otomatis</Eyebrow>
-          <p className="twin__title">Lanjutkan ke Aplikasi Utama ({template.display_name})</p>
-          <p className="hint">
-            Semua alat di outlet ini sudah terhubung ke halaman Keuangan/Biaya, Beranda, dan Catat Data.
+          <Eyebrow>{t.kiosk.syncTitle}</Eyebrow>
+          <p className="twin__title">
+            {t.kiosk.syncHeader.replace('{template}', template.display_name)}
           </p>
+          <p className="hint">{t.kiosk.syncHint}</p>
           <div className="capture__actions">
             <IslandLink href="/biaya" icon="chart" onClick={handleCompleteTutorial}>
-              Lihat Rincian Biaya
+              {t.kiosk.viewCost}
             </IslandLink>
             <IslandLink href="/catat" variant="ghost" icon="capture" onClick={handleCompleteTutorial}>
-              Catat Data Asli
+              {t.kiosk.recordReal}
             </IslandLink>
             <IslandLink href="/" variant="ghost" icon="home" onClick={handleCompleteTutorial}>
-              Ke Beranda
+              {t.kiosk.toHome}
             </IslandLink>
           </div>
         </Bezel>
       </div>
 
       <p className={`footnote ${spotlightActive ? 'tutorial-dim' : ''}`}>
-        Simulasi memakai tarif {tariffName} dan mesin <code>energy-calc</code>. Bukan tagihan asli —{' '}
+        {t.kiosk.footnotePre.replace('{tariff}', tariffName)}
         <Link href="/catat" className="textlink">
-          catat data nyata
+          {t.kiosk.footnoteLink}
         </Link>
-        .
+        {t.kiosk.footnotePost}
       </p>
     </div>
   </div>
@@ -1620,6 +1654,8 @@ function ApplianceControl({
   onToggle: () => void;
   onRemove: () => void;
 }) {
+  const { settings } = useVoltraApp();
+  const t = getDictionary(settings.language || 'id');
   const a = slot.appliance;
   const bounds = hourBounds(a);
   const alwaysOn = a.usage_pattern.always_on;
@@ -1654,7 +1690,7 @@ function ApplianceControl({
             {zoneName && <span className="chip chip--mock">{zoneName}</span>}
             <span className="chip">{CATEGORY_LABEL[a.category]}</span>
             <span className="chip">{a.power_w.typical} W</span>
-            {a.critical && <span className="chip chip--high">Wajib</span>}
+            {a.critical && <span className="chip chip--high">{settings.language === 'en' ? 'Required' : 'Wajib'}</span>}
           </div>
         </div>
         {!a.critical && (
@@ -1677,28 +1713,32 @@ function ApplianceControl({
 
       <div className="control__stats">
         <div>
-          <span>Per hari</span>
+          <span>{t.kiosk.perDay}</span>
           <strong>{formatRp(rpDay)}</strong>
         </div>
         <div>
-          <span>Per jam</span>
+          <span>{t.kiosk.perHour}</span>
           <strong>{formatRp(rpHour)}</strong>
         </div>
         <div>
-          <span>Energi</span>
+          <span>{t.kiosk.energy}</span>
           <strong>{formatKwh(kwh)}</strong>
         </div>
       </div>
 
       {alwaysOn ? (
         <p className="hint">
-          <Icon name="info" size={14} /> Menyala 24 jam. Hemat dengan merawat seal pintu dan mengurangi buka-tutup.
+          <Icon name="info" size={14} /> {t.kiosk.alwaysOnHint}
         </p>
       ) : (
         <label className="slider">
           <span className="row-between">
-            <span>Jam pakai per hari</span>
-            <strong>{slot.on ? `${slot.hours} jam` : 'Mati'}</strong>
+            <span>{t.kiosk.hoursPerDay}</span>
+            <strong>
+              {slot.on
+                ? `${slot.hours} ${settings.language === 'en' ? 'hrs' : 'jam'}`
+                : t.kiosk.terraOff}
+            </strong>
           </span>
           <input
             type="range"
@@ -1721,8 +1761,8 @@ function ApplianceControl({
             style={{ ['--pct' as string]: `${pct}%` }}
           />
           <span className="row-between slider__scale">
-            <span>{bounds.min} jam</span>
-            <span>{bounds.max} jam</span>
+            <span>{bounds.min} {settings.language === 'en' ? 'hrs' : 'jam'}</span>
+            <span>{bounds.max} {settings.language === 'en' ? 'hrs' : 'jam'}</span>
           </span>
         </label>
       )}
@@ -1737,14 +1777,14 @@ function ApplianceControl({
               onNextAppliance();
             }}
           >
-            Simpan Jam Pakai & Pilih Alat Berikutnya
+            {t.kiosk.saveAndNext}
           </IslandButton>
         </div>
       )}
 
       {removable && !a.critical && (
         <button type="button" className="textlink" onClick={onRemove}>
-          Hapus alat ini dari kios
+          {t.kiosk.removeAppliance}
         </button>
       )}
     </Bezel>

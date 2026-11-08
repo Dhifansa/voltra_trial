@@ -6,6 +6,7 @@ import { Bezel, Eyebrow, IslandButton, IslandLink } from '@/components/ui/primit
 import { Icon } from '@/components/ui/icon';
 import { useVoltraApp } from '@/context/app-context';
 import { getTemplate } from '@/features/kios/templates';
+import { getDictionary } from '@/lib/i18n';
 
 export function SettingsView() {
   const router = useRouter();
@@ -21,6 +22,8 @@ export function SettingsView() {
   } = useVoltraApp();
   const template = getTemplate(profile.templateId);
   const [notice, setNotice] = useState<string | null>(null);
+  const currentLang = settings.language || 'id';
+  const t = getDictionary(currentLang);
 
   function showNotice(msg: string) {
     setNotice(msg);
@@ -36,15 +39,47 @@ export function SettingsView() {
         </div>
       )}
 
-      {/* Pengingat Misi WhatsApp (PRD 2 §7.3) */}
+      {/* Pilihan Bahasa Tampilan (Language Selector) */}
+      <Bezel coreClassName="result">
+        <Eyebrow>{t.settings.languageTitle}</Eyebrow>
+        <p className="hint">{t.settings.languageHint}</p>
+        <div className="pillset" role="radiogroup" aria-label={t.settings.languageTitle}>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={currentLang === 'id'}
+            className={currentLang === 'id' ? 'is-active' : ''}
+            onClick={() => {
+              updateSettings({ language: 'id' });
+              showNotice('Bahasa berhasil diubah ke Bahasa Indonesia.');
+            }}
+          >
+            {t.settings.langId}
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={currentLang === 'en'}
+            className={currentLang === 'en' ? 'is-active' : ''}
+            onClick={() => {
+              updateSettings({ language: 'en' });
+              showNotice('Language successfully changed to English.');
+            }}
+          >
+            {t.settings.langEn}
+          </button>
+        </div>
+      </Bezel>
+
+      {/* Pengingat Misi WhatsApp */}
       <Bezel coreClassName="result">
         <div className="row-between">
-          <Eyebrow>Pengingat Misi Harian (WhatsApp)</Eyebrow>
+          <Eyebrow>{t.settings.waTitle}</Eyebrow>
           <button
             type="button"
             role="switch"
             aria-checked={settings.waReminder}
-            aria-label="Aktifkan pengingat WhatsApp"
+            aria-label={t.settings.waTitle}
             className={`switch ${settings.waReminder ? 'is-on' : ''}`}
             onClick={() => updateSettings({ waReminder: !settings.waReminder })}
           >
@@ -52,12 +87,11 @@ export function SettingsView() {
           </button>
         </div>
         <p className="hint">
-          Maksimal 1 pengingat per hari ke nomor <strong>{user.phone}</strong> untuk foto meter tutup toko. Bisa
-          dimatikan kapan saja.
+          {t.settings.waHint.replace('{phone}', user.phone)}
         </p>
 
         <label className="field">
-          <span>Jam pengingat harian</span>
+          <span>{t.settings.reminderTime}</span>
           <div className="field__control field__control--sm">
             <input
               type="time"
@@ -71,18 +105,18 @@ export function SettingsView() {
 
       {/* Tampilan & Mode AI Gateway */}
       <Bezel coreClassName="result">
-        <Eyebrow>Tampilan & Mode Simulasi</Eyebrow>
+        <Eyebrow>{t.settings.displayTitle}</Eyebrow>
 
         <div className="setting-row">
           <div>
-            <p className="setting-row__title">Kurangi animasi (Hemat baterai / RAM)</p>
-            <p className="hint">Menonaktifkan animasi transisi & partikel pada Kios Virtual 2D (ADR-004).</p>
+            <p className="setting-row__title">{t.settings.reducedMotionTitle}</p>
+            <p className="hint">{t.settings.reducedMotionHint}</p>
           </div>
           <button
             type="button"
             role="switch"
             aria-checked={settings.reducedMotion}
-            aria-label="Kurangi animasi"
+            aria-label={t.settings.reducedMotionTitle}
             className={`switch ${settings.reducedMotion ? 'is-on' : ''}`}
             onClick={() => updateSettings({ reducedMotion: !settings.reducedMotion })}
           >
@@ -91,8 +125,8 @@ export function SettingsView() {
         </div>
 
         <div className="field">
-          <span>Mode AI Gateway</span>
-          <div className="pillset" role="radiogroup" aria-label="Mode AI Gateway">
+          <span>{t.settings.aiMode}</span>
+          <div className="pillset" role="radiogroup" aria-label={t.settings.aiMode}>
             <button
               type="button"
               role="radio"
@@ -100,7 +134,7 @@ export function SettingsView() {
               className={settings.aiMode === 'mock' ? 'is-active' : ''}
               onClick={() => updateSettings({ aiMode: 'mock' })}
             >
-              Mock (Contoh)
+              {t.settings.aiModeMock}
             </button>
             <button
               type="button"
@@ -109,22 +143,23 @@ export function SettingsView() {
               className={settings.aiMode === 'hybrid' ? 'is-active' : ''}
               onClick={() => updateSettings({ aiMode: 'hybrid' })}
             >
-              Hybrid
+              {t.settings.aiModeHybrid}
             </button>
           </div>
         </div>
       </Bezel>
 
-      {/* Privasi & Kendali Data (PRD 1 §2) */}
+      {/* Privasi & Kendali Data */}
       <Bezel coreClassName="result">
         <div className="row-between">
-          <Eyebrow>Privasi & Kendali Data</Eyebrow>
-          <span className="chip">Consent {user.consentVersion}</span>
+          <Eyebrow>{t.settings.privacyTitle}</Eyebrow>
+          <span className="chip">{t.settings.privacyConsent} {user.consentVersion}</span>
         </div>
         <p className="hint">
-          Foto, suara, dan profil usaha (<strong>{profile.businessName}</strong> · {kios.slots.length} alat di{' '}
-          {template.display_name}) adalah milik Anda. Anda dapat mereset simulasi atau menghapus seluruh data kapan
-          saja.
+          {t.settings.privacyHint
+            .replace('{business}', profile.businessName)
+            .replace('{count}', String(kios.slots.length))
+            .replace('{template}', template.display_name)}
         </p>
 
         <div className="capture__actions">
@@ -133,14 +168,14 @@ export function SettingsView() {
             icon="retry"
             onClick={() => {
               selectTemplate(profile.templateId, profile.businessName);
-              showNotice(`Alat di Kios 2D dikembalikan ke bawaan ${template.display_name}.`);
+              showNotice(t.settings.resetNotice.replace('{template}', template.display_name));
             }}
           >
-            Reset Alat Kios ke Awal
+            {t.settings.resetKiosk}
           </IslandButton>
 
           <IslandLink href="/profil" variant="ghost" icon="user">
-            Edit Profil Usaha
+            {t.settings.editProfile}
           </IslandLink>
         </div>
 
@@ -153,7 +188,7 @@ export function SettingsView() {
               router.push('/masuk');
             }}
           >
-            Keluar Akun
+            {t.settings.logout}
           </IslandButton>
           <IslandButton
             variant="ghost"
@@ -163,7 +198,7 @@ export function SettingsView() {
               router.push('/masuk');
             }}
           >
-            Hapus Data & Mulai Ulang
+            {t.settings.deleteData}
           </IslandButton>
         </div>
       </Bezel>

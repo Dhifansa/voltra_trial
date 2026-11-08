@@ -68,6 +68,7 @@ export interface AppSettings {
   reminderTime: string;
   aiMode: 'mock' | 'hybrid';
   reducedMotion: boolean;
+  language: 'id' | 'en';
 }
 
 interface StoredAppState {
@@ -159,6 +160,7 @@ function buildDefaultState(): StoredAppState {
       reminderTime: '20:30',
       aiMode: 'mock',
       reducedMotion: false,
+      language: 'id',
     },
   };
 }

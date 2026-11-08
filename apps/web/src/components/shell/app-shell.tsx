@@ -6,27 +6,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useVoltraApp } from '@/context/app-context';
 import { getTemplate } from '@/features/kios/templates';
+import { getDictionary } from '@/lib/i18n';
 import { Icon, type IconName } from '../ui/icon';
-
-const TABS: Array<{ href: string; label: string; icon: IconName }> = [
-  { href: '/', label: 'Beranda', icon: 'home' },
-  { href: '/kios', label: 'Kios', icon: 'store' },
-  { href: '/catat', label: 'Catat', icon: 'capture' },
-  { href: '/biaya', label: 'Biaya', icon: 'chart' },
-  { href: '/profil', label: 'Profil', icon: 'user' },
-];
-
-const MENU: Array<{ href: string; label: string; note: string; soon?: boolean }> = [
-  { href: '/masuk', label: 'Masuk & Profiling', note: 'Login, pilih usaha, lalu buka Kios 2D' },
-  { href: '/', label: 'Beranda', note: 'Ringkasan listrik hari ini' },
-  { href: '/kios', label: 'Kios Virtual 2D', note: 'Simulasi alat sesuai template usaha' },
-  { href: '/catat', label: 'Catat data', note: 'Foto meter, label alat, suara' },
-  { href: '/biaya', label: 'Keuangan & Biaya', note: 'Ke mana uang listrik pergi' },
-  { href: '/profil', label: 'Profil Usaha', note: 'Kelola akun, tarif PLN, & jenis usaha' },
-  { href: '/pengaturan', label: 'Pengaturan', note: 'Pengingat WA, privasi, & reset data' },
-  { href: '#', label: 'Tanya Wati', note: 'Asisten listrik usaha', soon: true },
-  { href: '/dev', label: 'Uji AI Gateway', note: 'Halaman pengembang' },
-];
 
 function isActive(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -37,6 +18,27 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const { profile, user, settings } = useVoltraApp();
   const template = getTemplate(profile.templateId);
+  const t = getDictionary(settings.language || 'id');
+
+  const tabs: Array<{ href: string; label: string; icon: IconName }> = [
+    { href: '/', label: t.nav.home, icon: 'home' },
+    { href: '/kios', label: t.nav.kiosk, icon: 'store' },
+    { href: '/catat', label: t.nav.record, icon: 'capture' },
+    { href: '/biaya', label: t.nav.cost, icon: 'chart' },
+    { href: '/profil', label: t.nav.profile, icon: 'user' },
+  ];
+
+  const menuItems: Array<{ href: string; label: string; note: string; soon?: boolean }> = [
+    { href: '/masuk', label: t.menu.login, note: t.menu.loginNote },
+    { href: '/', label: t.menu.home, note: t.menu.homeNote },
+    { href: '/kios', label: t.menu.kiosk, note: t.menu.kioskNote },
+    { href: '/catat', label: t.menu.record, note: t.menu.recordNote },
+    { href: '/biaya', label: t.menu.cost, note: t.menu.costNote },
+    { href: '/profil', label: t.menu.profile, note: t.menu.profileNote },
+    { href: '/pengaturan', label: t.menu.settings, note: t.menu.settingsNote },
+    { href: '#', label: t.menu.wati, note: t.menu.watiNote, soon: true },
+    { href: '/dev', label: t.menu.dev, note: t.menu.devNote },
+  ];
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -51,7 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className={`shell ${settings.reducedMotion ? 'is-reduced-motion' : ''}`}>
       <header className="topbar">
         <div className="topbar__island">
-          <Link href="/" className="brand" aria-label="Beranda">
+          <Link href="/" className="brand" aria-label={t.nav.home}>
             <Image
               src="/Logo.png"
               alt=""
@@ -69,13 +71,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               priority
             />
           </Link>
-          <Link href="/profil" className="topbar__trial" title="Status akun & usaha">
-            {user.role === 'user' ? 'Akun Aktif' : 'Tamu'} · {template.display_name.split(' ')[0]}
+          <Link href="/profil" className="topbar__trial" title={t.common.status}>
+            {user.role === 'user' ? t.common.activeAccount : t.common.guest} · {template.display_name.split(' ')[0]}
           </Link>
           <button
             type="button"
             className={`burger ${open ? 'is-open' : ''}`}
-            aria-label={open ? 'Tutup menu' : 'Buka menu'}
+            aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
             aria-expanded={open ? 'true' : 'false'}
             aria-controls="menu-overlay"
             onClick={() => setOpen((v) => !v)}
@@ -91,17 +93,17 @@ export function AppShell({ children }: { children: ReactNode }) {
         className={`overlay ${open ? 'is-open' : ''}`}
         onClick={(e) => e.target === e.currentTarget && setOpen(false)}
       >
-        <nav className="overlay__nav" aria-label="Menu utama">
+        <nav className="overlay__nav" aria-label={t.nav.mainMenuAria}>
           <p className="overlay__biz">
             {profile.businessName} <span>· {template.display_name} ({profile.tariffName})</span>
           </p>
           <ul>
-            {MENU.map((item) => (
+            {menuItems.map((item) => (
               <li key={item.label}>
                 {item.soon ? (
                   <span className="overlay__link is-soon">
                     <span className="overlay__label">{item.label}</span>
-                    <span className="overlay__note">{item.note} · segera</span>
+                    <span className="overlay__note">{item.note} · {t.menu.soon}</span>
                   </span>
                 ) : (
                   <Link href={item.href} className="overlay__link" tabIndex={open ? 0 : -1}>
@@ -117,9 +119,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="shell__content">{children}</div>
 
-      <nav className="dock" aria-label="Navigasi bawah">
+      <nav className="dock" aria-label={t.nav.bottomNavAria}>
         <div className="dock__island">
-          {TABS.map((tab) => {
+          {tabs.map((tab) => {
             const active = isActive(pathname, tab.href);
             return (
               <Link

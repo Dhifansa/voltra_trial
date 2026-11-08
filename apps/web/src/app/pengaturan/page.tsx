@@ -1,24 +1,28 @@
+'use client';
+
 import { Eyebrow, Reveal } from '@/components/ui/primitives';
+import { useVoltraApp } from '@/context/app-context';
+import { getDictionary } from '@/lib/i18n';
 import { SettingsView } from './settings-view';
 
-export const metadata = { title: 'Pengaturan · Voltra' };
-
 export default function PengaturanPage() {
+  const { settings } = useVoltraApp();
+  const t = getDictionary(settings.language || 'id');
+
   return (
     <main className="page">
       <section className="page-head">
         <Reveal>
-          <Eyebrow>Preferensi & Privasi</Eyebrow>
+          <Eyebrow>{t.settings.eyebrow}</Eyebrow>
         </Reveal>
         <Reveal delay={60}>
           <h1 className="display">
-            Pengaturan <em>aplikasi</em>
+            {t.settings.titlePre}
+            <em>{t.settings.titleHighlight}</em>
           </h1>
         </Reveal>
         <Reveal delay={120}>
-          <p className="lede">
-            Atur pengingat Misi Meter via WhatsApp, mode tampilan, dan kendali penuh atas data usaha Anda.
-          </p>
+          <p className="lede">{t.settings.lede}</p>
         </Reveal>
       </section>
       <SettingsView />

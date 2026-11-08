@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/icon';
 import { useVoltraApp } from '@/context/app-context';
 import { getTemplate } from '@/features/kios/templates';
 import { formatKwh, formatRp } from '@/lib/format';
+import { getDictionary } from '@/lib/i18n';
 import type { CostScenario, ScenarioId } from '@/lib/mock-data';
 
 const SCENARIO_ORDER: ScenarioId[] = ['appliance', 'category', 'insufficient'];
@@ -13,8 +14,9 @@ const SEGMENT_TONES = ['seg-1', 'seg-2', 'seg-3', 'seg-4', 'seg-5'];
 const EFFORT_LABEL = { low: 'Mudah', medium: 'Sedang', high: 'Butuh usaha' } as const;
 
 export function CostBreakdown() {
-  const { profile, analytics } = useVoltraApp();
+  const { profile, analytics, settings } = useVoltraApp();
   const template = getTemplate(profile.templateId);
+  const t = getDictionary(settings.language || 'id');
   const [id, setId] = useState<ScenarioId>('appliance');
   const s = analytics.scenarios[id];
 
@@ -27,23 +29,31 @@ export function CostBreakdown() {
           <span className="chip">{profile.tariffName}</span>
         </div>
         <IslandLink href="/kios" variant="ghost" icon="store">
-          Atur Kios 2D
+          {t.cost.manageKiosk}
         </IslandLink>
       </div>
 
-      <div className="segmented" role="tablist" aria-label="Pratinjau keadaan data (contoh)">
-        {SCENARIO_ORDER.map((key) => (
-          <button
-            key={key}
-            type="button"
-            role="tab"
-            aria-selected={id === key}
-            className={`segmented__item ${id === key ? 'is-active' : ''}`}
-            onClick={() => setId(key)}
-          >
-            {analytics.scenarios[key].label}
-          </button>
-        ))}
+      <div className="segmented" role="tablist" aria-label="Pratinjau keadaan data">
+        {SCENARIO_ORDER.map((key) => {
+          const scenarioLabel =
+            key === 'appliance'
+              ? t.cost.tabAppliance
+              : key === 'category'
+                ? t.cost.tabCategory
+                : t.cost.tabInitial;
+          return (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={id === key}
+              className={`segmented__item ${id === key ? 'is-active' : ''}`}
+              onClick={() => setId(key)}
+            >
+              {scenarioLabel}
+            </button>
+          );
+        })}
       </div>
       <p className="segmented__hint">
         <Icon name="info" size={14} /> Pratinjau keadaan UI: {s.hint}
@@ -66,13 +76,15 @@ export function CostBreakdown() {
 }
 
 function Summary({ s, unitLabel }: { s: CostScenario; unitLabel: string }) {
+  const { settings } = useVoltraApp();
+  const t = getDictionary(settings.language || 'id');
   const meter = s.result.meter_delta_kwh ?? 0;
   const unexplainedShare = meter > 0 && s.result.unexplained_kwh ? s.result.unexplained_kwh / meter : 0;
 
   return (
     <Bezel tone="ink" coreClassName="summary">
       <div className="row-between">
-        <Eyebrow tone="light">Total kemarin</Eyebrow>
+        <Eyebrow tone="light">{t.cost.totalYesterday}</Eyebrow>
         <div className="row-gap">
           <MockBadge />
         </div>
@@ -82,7 +94,7 @@ function Summary({ s, unitLabel }: { s: CostScenario; unitLabel: string }) {
         {formatKwh(meter)} · {s.per_unit_rp !== null ? formatRp(s.per_unit_rp) : '—'}/{unitLabel.split(' ')[0]}
       </p>
 
-      <div className="stack" role="img" aria-label="Komposisi biaya">
+      <div className="stack" role="img" aria-label={t.cost.composition}>
         {s.rows.map((r, i) => (
           <span
             key={r.id}
@@ -92,7 +104,7 @@ function Summary({ s, unitLabel }: { s: CostScenario; unitLabel: string }) {
           />
         ))}
         {unexplainedShare > 0 && (
-          <span className="stack__seg stack__seg--gap" style={{ flexGrow: unexplainedShare }} title="Belum terjelaskan" />
+          <span className="stack__seg stack__seg--gap" style={{ flexGrow: unexplainedShare }} title={t.cost.unexplained} />
         )}
       </div>
 

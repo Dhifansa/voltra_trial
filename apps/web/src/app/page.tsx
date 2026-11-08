@@ -6,21 +6,25 @@ import { TerraAvatar } from '@/components/ui/terra-mascot';
 import { useVoltraApp } from '@/context/app-context';
 import { getTemplate } from '@/features/kios/templates';
 import { formatKwh, formatRp } from '@/lib/format';
-
-const MISSION_STEPS = [
-  { label: 'Foto meter pagi', done: true },
-  { label: 'Catatan suara jam pakai', done: true },
-  { label: 'Foto meter malam', done: false },
-];
+import { getDictionary } from '@/lib/i18n';
 
 export default function HomePage() {
-  const { user, profile, analytics } = useVoltraApp();
+  const { user, profile, analytics, settings } = useVoltraApp();
   const template = getTemplate(profile.templateId);
+  const t = getDictionary(settings.language || 'id');
+  const isEn = settings.language === 'en';
+
+  const missionSteps = [
+    { label: isEn ? 'Morning meter photo' : 'Foto meter pagi', done: true },
+    { label: isEn ? 'Usage hours voice log' : 'Catatan suara jam pakai', done: true },
+    { label: isEn ? 'Night meter photo' : 'Foto meter malam', done: false },
+  ];
+
   const today = analytics.scenarios.appliance;
   const top = today.rows[0];
   const rec = analytics.recommendations[0];
   const maxWeek = Math.max(1, ...analytics.week.map((d) => d.kwh));
-  const doneCount = MISSION_STEPS.filter((s) => s.done).length;
+  const doneCount = missionSteps.filter((s) => s.done).length;
 
   // Fallback nominal jika scenario 'insufficient_data' (misal data hari < 3)
   const displayTotalRp =
@@ -43,14 +47,13 @@ export default function HomePage() {
         </Reveal>
         <Reveal delay={80}>
           <h1 className="display">
-            Kemarin listrik kios Anda <em>{displayTotalRp}</em>
+            {t.home.titlePre}<em>{displayTotalRp}</em>
           </h1>
         </Reveal>
         <Reveal delay={160}>
           <p className="lede">
-            Sekitar <strong>{displayPerUnitRp}</strong> per{' '}
-            {profile.unitLabel} ({profile.dailyVolume} {profile.unitLabel}/hari). Estimasi dari foto meter dan catatan
-            suara — bukan pemantauan real-time.
+            {t.home.ledePre}<strong>{displayPerUnitRp}</strong>{t.home.ledeMid}
+            {profile.unitLabel} ({profile.dailyVolume} {profile.unitLabel}/{isEn ? 'day' : 'hari'}){t.home.ledePost}
           </p>
         </Reveal>
       </section>
@@ -63,20 +66,21 @@ export default function HomePage() {
                 <TerraAvatar mood="hallo" size={72} />
               </div>
               <div className="onboard-banner__text">
-                <Eyebrow>Alur Pengenalan bersama Terra</Eyebrow>
-                <p className="twin__title">Belum mengatur profil usaha Anda?</p>
+                <Eyebrow>{isEn ? 'Onboarding with Terra' : 'Alur Pengenalan bersama Terra'}</Eyebrow>
+                <p className="twin__title">{isEn ? 'Not set up your business profile yet?' : 'Belum mengatur profil usaha Anda?'}</p>
                 <p className="hint">
-                  Mulai dari Login → Profiling Jenis Usaha → Simulasi Kios 2D bersama maskot Terra agar semua alat di
-                  aplikasi menyesuaikan usaha Anda.
+                  {isEn
+                    ? 'Start from Login → Business Profiling → 2D Kiosk Simulation with Terra to customize all appliances.'
+                    : 'Mulai dari Login → Profiling Jenis Usaha → Simulasi Kios 2D bersama maskot Terra agar semua alat di aplikasi menyesuaikan usaha Anda.'}
                 </p>
               </div>
             </div>
             <div className="capture__actions onboard-banner__actions">
               <IslandLink href="/masuk" icon="store">
-                Mulai Login & Profiling
+                {isEn ? 'Start Login & Profiling' : 'Mulai Login & Profiling'}
               </IslandLink>
               <IslandLink href="/kios" variant="ghost" icon="arrow">
-                Buka Kios 2D
+                {isEn ? 'Open 2D Kiosk' : 'Buka Kios 2D'}
               </IslandLink>
             </div>
           </Bezel>
@@ -87,7 +91,7 @@ export default function HomePage() {
         <Reveal className="bento__hero">
           <Bezel tone="ink" coreClassName="hero-card">
             <div className="row-between">
-              <Eyebrow tone="light">24 jam terakhir · {template.display_name}</Eyebrow>
+              <Eyebrow tone="light">{isEn ? 'Last 24 hours' : '24 jam terakhir'} · {template.display_name}</Eyebrow>
               <div className="row-gap">
                 <MockBadge />
               </div>
@@ -96,11 +100,11 @@ export default function HomePage() {
             <div className="hero-card__figure">
               <span className="hero-card__rp">{displayTotalRp}</span>
               <span className="hero-card__kwh">
-                {formatKwh(today.result.meter_delta_kwh ?? analytics.kiosResult.kwh_day)} · tarif {profile.tariffName}
+                {formatKwh(today.result.meter_delta_kwh ?? analytics.kiosResult.kwh_day)} · {isEn ? 'tariff' : 'tarif'} {profile.tariffName}
               </span>
             </div>
 
-            <div className="week" role="img" aria-label="Pemakaian 7 hari terakhir">
+            <div className="week" role="img" aria-label={isEn ? 'Past 7 days usage' : 'Pemakaian 7 hari terakhir'}>
               {analytics.week.map((d, i) => (
                 <div key={d.day} className={`week__col ${i === analytics.week.length - 1 ? 'is-today' : ''}`}>
                   <div className="week__track">
@@ -116,31 +120,31 @@ export default function HomePage() {
 
             <div className="row-between hero-card__foot">
               <ConfidenceBadge level={today.confidence} />
-              <span className="muted-light">{profile.dataDays} hari data</span>
+              <span className="muted-light">{profile.dataDays} {isEn ? 'days data' : 'hari data'}</span>
             </div>
           </Bezel>
         </Reveal>
 
         <Reveal className="bento__a" delay={80}>
           <Bezel coreClassName="stat-card">
-            <Eyebrow>Paling boros di {template.display_name}</Eyebrow>
-            <p className="stat-card__name">{top?.label ?? 'Belum ada alat'}</p>
+            <Eyebrow>{isEn ? 'Highest in' : 'Paling boros di'} {template.display_name}</Eyebrow>
+            <p className="stat-card__name">{top?.label ?? (isEn ? 'No appliances yet' : 'Belum ada alat')}</p>
             <p className="stat-card__value">
               {top ? formatRp(top.rp) : '—'}
-              <span>/hari</span>
+              <span>/{isEn ? 'day' : 'hari'}</span>
             </p>
             <div className="meter-line" aria-hidden="true">
               <span style={{ transform: `scaleX(${top?.share ?? 0})` }} />
             </div>
             <p className="stat-card__note">
-              {top ? Math.round(top.share * 100) : 0}% dari pemakaian kemarin
+              {top ? Math.round(top.share * 100) : 0}% {isEn ? 'of yesterday usage' : 'dari pemakaian kemarin'}
             </p>
             <div className="row-gap">
               <IslandLink href="/biaya" variant="ghost">
-                Lihat rincian
+                {isEn ? 'View details' : 'Lihat rincian'}
               </IslandLink>
               <IslandLink href="/kios" variant="ghost" icon="store">
-                Atur di Kios 2D
+                {isEn ? 'Adjust in 2D Kiosk' : 'Atur di Kios 2D'}
               </IslandLink>
             </div>
           </Bezel>
@@ -149,13 +153,13 @@ export default function HomePage() {
         <Reveal className="bento__b" delay={140}>
           <Bezel tone="moss" coreClassName="mission-card">
             <div className="row-between">
-              <Eyebrow>Misi Meter · hari {profile.dataDays}/7</Eyebrow>
+              <Eyebrow>{isEn ? 'Meter Mission' : 'Misi Meter'} · {isEn ? 'day' : 'hari'} {profile.dataDays}/7</Eyebrow>
               <span className="mission-card__count">
-                {doneCount}/{MISSION_STEPS.length}
+                {doneCount}/{missionSteps.length}
               </span>
             </div>
             <ul className="steps">
-              {MISSION_STEPS.map((s) => (
+              {missionSteps.map((s) => (
                 <li key={s.label} className={s.done ? 'is-done' : ''}>
                   <span className="steps__dot">{s.done && <Icon name="check" size={12} />}</span>
                   {s.label}
@@ -163,7 +167,7 @@ export default function HomePage() {
               ))}
             </ul>
             <IslandLink href="/catat" icon="capture">
-              Foto meter malam
+              {isEn ? 'Night meter photo' : 'Foto meter malam'}
             </IslandLink>
           </Bezel>
         </Reveal>
