@@ -448,7 +448,7 @@ em {
 }
 
 .page--wide {
-  max-width: 36rem;
+  max-width: 100%;
 }
 
 .page-head {
@@ -2309,20 +2309,9 @@ em {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
-}
 
-@media (min-width: 960px) {
   .page--wide {
-    max-width: 64rem;
-  }
-
-  .page--wide .page-head {
-    padding: 1.5rem 0.25rem 2rem;
-  }
-
-  .page--wide .display {
-    max-width: 22ch;
-    font-size: 2.75rem;
+    max-width: 48rem;
   }
 
   .bento {
@@ -2357,6 +2346,27 @@ em {
 
   .week__track {
     height: 8.5rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .page--wide {
+    max-width: 64rem;
+  }
+
+  .page--wide .page-head {
+    padding: 1.5rem 0.25rem 2rem;
+  }
+
+  .page--wide .display {
+    max-width: 22ch;
+    font-size: 2.75rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page--wide {
+    max-width: 68rem;
   }
 }
 
@@ -5476,6 +5486,13 @@ body.is-game-tutorial .topbar,
    ========================================================================== */
 
 /* 1. Preview State Selector (Testing / Demo Mode) */
+.sub-container {
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
 .sub-preview-selector {
   display: flex;
   align-items: center;
@@ -5488,6 +5505,35 @@ body.is-game-tutorial .topbar,
   font-size: 0.75rem;
 }
 
+@media (max-width: 640px) {
+  .sub-preview-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .sub-preview-selector__list {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  .sub-preview-selector__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sub-preview-selector__chip {
+    flex-shrink: 0;
+  }
+}
+
 .sub-preview-selector__head {
   display: inline-flex;
   align-items: center;
@@ -5497,6 +5543,7 @@ body.is-game-tutorial .topbar,
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 0.68rem;
+  flex-shrink: 0;
 }
 
 .sub-preview-selector__list {
@@ -5507,7 +5554,7 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-preview-selector__chip {
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
   background: #ffffff;
   color: var(--ink-soft);
@@ -5531,9 +5578,11 @@ body.is-game-tutorial .topbar,
 
 /* 2. Header & Current Plan Badge */
 .sub-header__top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: center;
 }
 
 .sub-header__badge-wrap {
@@ -5665,6 +5714,25 @@ body.is-game-tutorial .topbar,
   gap: 0.5rem;
 }
 
+@media (max-width: 640px) {
+  .sub-state-banner {
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .sub-state-banner__actions {
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  .sub-state-banner__btn,
+  .sub-state-banner__actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .sub-state-banner__btn {
   display: inline-flex;
   align-items: center;
@@ -5684,58 +5752,7 @@ body.is-game-tutorial .topbar,
   transform: translateY(-1px);
 }
 
-/* 4. Billing Cycle Toggle */
-.sub-billing-toggle-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 0.25rem 0 0.5rem;
-}
-
-.sub-billing-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem;
-  border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 0 0 1px var(--hair-strong), 0 4px 14px -4px rgba(15, 23, 42, 0.08);
-}
-
-.sub-billing-toggle__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.45rem 1.15rem;
-  border-radius: 999px;
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 220ms var(--ease);
-}
-
-.sub-billing-toggle__btn.is-active {
-  background: #1a2945;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(26, 41, 69, 0.25);
-}
-
-.sub-billing-toggle__badge {
-  padding: 0.12rem 0.45rem;
-  border-radius: 999px;
-  background: #2dd4bf;
-  color: #0f172a;
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.sub-billing-toggle__btn.is-active .sub-billing-toggle__badge {
-  background: #2dd4bf;
-  color: #0f172a;
-}
-
-/* 5. Pricing Cards Grid */
+/* 4. Pricing Cards Grid */
 .sub-pricing-section {
   width: 100%;
 }
@@ -5743,14 +5760,20 @@ body.is-game-tutorial .topbar,
 .sub-pricing-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1.15rem;
   align-items: stretch;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 680px) {
   .sub-pricing-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.35rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sub-pricing-grid {
+    gap: 1.75rem;
   }
 }
 
@@ -5762,12 +5785,12 @@ body.is-game-tutorial .topbar,
 }
 
 .sub-pricing-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
 .sub-pricing-card--plus {
   position: relative;
-  box-shadow: 0 0 0 1.5px rgba(45, 212, 191, 0.35), 0 16px 36px -12px rgba(26, 41, 69, 0.45);
+  box-shadow: 0 0 0 1.5px rgba(45, 212, 191, 0.4), 0 16px 36px -12px rgba(26, 41, 69, 0.45);
 }
 
 .sub-pricing-card__core {
@@ -5775,7 +5798,21 @@ body.is-game-tutorial .topbar,
   flex-direction: column;
   height: 100%;
   padding: 1.5rem;
-  gap: 1.25rem;
+  gap: 1.15rem;
+}
+
+@media (max-width: 679px) {
+  .sub-pricing-card__core {
+    padding: 1.15rem 1rem;
+    gap: 0.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sub-pricing-card__core {
+    padding: 2rem 1.85rem;
+    gap: 1.35rem;
+  }
 }
 
 .sub-pricing-card__head {
@@ -6003,17 +6040,24 @@ body.is-game-tutorial .topbar,
   }
 }
 
-/* 6. Feature Comparison Table */
+/* 5. Feature Comparison Table & Mobile Responsive Views */
 .sub-comparison-bezel {
   margin-top: 0.5rem;
+  width: 100%;
 }
 
 .sub-comparison-core {
   padding: 1.5rem;
 }
 
+@media (max-width: 768px) {
+  .sub-comparison-core {
+    padding: 1.15rem 0.75rem;
+  }
+}
+
 .sub-comparison-head {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.15rem;
 }
 
 .sub-comparison-title {
@@ -6023,10 +6067,80 @@ body.is-game-tutorial .topbar,
   letter-spacing: -0.02em;
 }
 
+/* Mobile Tabs Switcher (Side-by-Side vs Free vs Plus) */
+.sub-comp-mobile-tabs {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sub-comp-mobile-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.85rem;
+    background: var(--paper-2);
+    padding: 0.25rem;
+    border-radius: 999px;
+    width: 100%;
+    max-width: 24rem;
+  }
+
+  .sub-comp-mobile-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.38rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: all 180ms var(--ease);
+    white-space: nowrap;
+  }
+
+  .sub-comp-mobile-tab.is-active {
+    background: #ffffff;
+    color: var(--ink);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .sub-comp-mobile-tab--plus.is-active {
+    background: #1a2945;
+    color: #2dd4bf;
+  }
+}
+
+.sub-table-scroll-hint {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sub-table-scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 0.2rem 0.1rem 0.5rem;
+  }
+}
+
 .sub-comparison-table-wrap {
   width: 100%;
   overflow-x: auto;
   scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .sub-comparison-table-wrap.is-mobile-hidden {
+    display: none;
+  }
 }
 
 .sub-comparison-table {
@@ -6151,12 +6265,137 @@ body.is-game-tutorial .topbar,
   font-weight: 750;
 }
 
-/* 7. Bottom CTA */
+/* Sticky First Column on Mobile for Matrix Table */
+@media (max-width: 768px) {
+  .sub-comparison-table thead th.sub-col-feature,
+  .sub-comparison-table tbody td.sub-cell-feature {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: #ffffff;
+    box-shadow: 2px 0 6px -1px rgba(15, 23, 42, 0.06);
+  }
+
+  .sub-col-feature {
+    width: 48%;
+    min-width: 10rem;
+    padding: 0.65rem 0.5rem;
+  }
+
+  .sub-col-free {
+    width: 26%;
+    min-width: 5.5rem;
+    padding: 0.65rem 0.4rem;
+  }
+
+  .sub-col-plus {
+    width: 26%;
+    min-width: 6rem;
+    padding: 0.65rem 0.4rem;
+  }
+
+  .sub-cell-feature {
+    padding: 0.65rem 0.5rem;
+  }
+
+  .sub-feature-name {
+    font-size: 0.78rem;
+  }
+
+  .sub-feature-desc {
+    font-size: 0.7rem;
+  }
+
+  .sub-cell-val {
+    padding: 0.65rem 0.4rem;
+  }
+}
+
+/* Mobile List Card View (saat tab Free atau Plus dipilih di HP) */
+.sub-comp-mobile-list {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sub-comp-mobile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    margin-top: 0.85rem;
+  }
+
+  .sub-comp-mobile-list-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .sub-comp-mobile-cat-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .sub-comp-mobile-cat-title {
+    margin: 0;
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--blue);
+  }
+
+  .sub-comp-mobile-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .sub-comp-mobile-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0.85rem;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px var(--hair), var(--shadow-ambient);
+  }
+
+  .sub-comp-mobile-item__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sub-comp-mobile-item__name {
+    font-size: 0.82rem;
+    font-weight: 650;
+    color: var(--ink);
+  }
+
+  .sub-comp-mobile-item__desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .sub-comp-mobile-item__val {
+    flex-shrink: 0;
+  }
+}
+
+/* 6. Bottom CTA */
 .sub-bottom-cta {
   padding: 1.5rem;
 }
 
 .sub-bottom-cta__inner {
+  display: flex;
   flex-wrap: wrap;
   gap: 1.25rem;
   align-items: center;
@@ -6179,9 +6418,50 @@ body.is-game-tutorial .topbar,
   flex-shrink: 0;
 }
 
-/* 8. FAQ Section */
+@media (max-width: 680px) {
+  .sub-bottom-cta {
+    padding: 1.25rem 1rem;
+  }
+
+  .sub-bottom-cta__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .sub-bottom-cta__text {
+    min-width: 0;
+  }
+
+  .sub-bottom-cta__title {
+    font-size: 1.15rem;
+  }
+
+  .sub-bottom-cta__btn-wrap,
+  .sub-bottom-cta__btn-wrap button,
+  .sub-bottom-cta__btn-wrap a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* 7. FAQ Section */
 .sub-faq-core {
   padding: 1.5rem;
+}
+
+@media (max-width: 680px) {
+  .sub-faq-core {
+    padding: 1.25rem 1rem;
+  }
+
+  .sub-faq-question {
+    font-size: 0.9rem;
+  }
+
+  .sub-faq-item .hint {
+    font-size: 0.8rem;
+  }
 }
 
 .sub-faq-list {
@@ -6207,9 +6487,10 @@ body.is-game-tutorial .topbar,
   color: var(--ink);
 }
 
-/* 9. Checkout Modal Placeholder */
+/* 8. Checkout Modal Placeholder */
 .sub-checkout-dialog {
-  max-width: 27rem;
+  max-width: min(28rem, calc(100vw - 1.5rem));
+  width: 100%;
 }
 
 .sub-checkout-body {
@@ -6583,6 +6864,31 @@ body.is-game-tutorial .topbar,
   background: var(--accent, #2DD4BF);
   box-shadow: 0 0 15px rgba(45, 212, 191, 0.45);
   font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .onboarding-plan-card {
+    padding: 1rem;
+    gap: 0.85rem;
+  }
+  .onboarding-plan-card__amount {
+    font-size: 1.45rem;
+  }
+  .onboarding-plan-card__name {
+    font-size: 1.05rem;
+  }
+  .onboarding-plan-card__desc {
+    font-size: 0.78rem;
+    margin-bottom: 0.65rem;
+  }
+  .onboarding-plan-card__pricing {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.65rem;
+  }
+  .onboarding-plan-card__btn {
+    min-height: 2.6rem;
+    font-size: 0.8rem;
+  }
 }
 
 .is-reduced-motion *,

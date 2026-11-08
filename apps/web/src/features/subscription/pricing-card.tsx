@@ -42,7 +42,7 @@ export function PricingCard({
     >
       {/* Top Header: Badge Rekomendasi (khusus Plus) */}
       <div className="sub-pricing-card__head">
-        <div className="row-between">
+        <div className="row-between card-head-wrap">
           <div className="sub-pricing-card__title-row">
             {isPlus && <Icon name="crown" size={20} className="sub-pricing-card__crown-icon" />}
             <span className="sub-pricing-card__name">{plan.name}</span>
