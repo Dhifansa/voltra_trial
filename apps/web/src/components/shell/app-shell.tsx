@@ -16,7 +16,7 @@ function isActive(pathname: string, href: string) {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { profile, user, settings } = useVoltraApp();
+  const { profile, settings } = useVoltraApp();
   const template = getTemplate(profile.templateId);
   const t = getDictionary(settings.language || 'id');
 
@@ -73,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
           </Link>
           <Link href="/profil" className="topbar__trial" title={t.common.status}>
-            {user.role === 'user' ? t.common.activeAccount : t.common.guest} · {template.display_name.split(' ')[0]}
+            {profile.subscriptionPlan === 'plus' ? '⚡ Plus' : `Trial ${profile.trialDaysLeft}h`} · {template.display_name.split(' ')[0]}
           </Link>
           <button
             type="button"

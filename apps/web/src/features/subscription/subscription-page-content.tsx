@@ -18,12 +18,14 @@ import { StatePreviewSelector } from './state-preview-selector';
 import { SubscriptionStatusBadge } from './subscription-status-badge';
 
 export function SubscriptionPageContent() {
-  const { settings, profile } = useVoltraApp();
+  const { settings, profile, updateProfile } = useVoltraApp();
   const lang = settings.language || 'id';
   const isEn = lang === 'en';
   const t = getDictionary(lang);
 
-  const [status, setStatus] = useState<SubscriptionStateStatus>('free');
+  const [status, setStatus] = useState<SubscriptionStateStatus>(
+    profile.subscriptionPlan === 'plus' ? 'plus' : 'free',
+  );
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
@@ -32,6 +34,25 @@ export function SubscriptionPageContent() {
   function triggerNotice(msg: string) {
     setNotice(msg);
     setTimeout(() => setNotice(null), 3800);
+  }
+
+  function handleStatusChange(nextStatus: SubscriptionStateStatus) {
+    setStatus(nextStatus);
+    if (nextStatus === 'plus') {
+      updateProfile({
+        subscriptionPlan: 'plus',
+        subscriptionStatus: 'active',
+        trialDaysLeft: 365,
+      });
+    } else if (nextStatus === 'free') {
+      updateProfile({
+        subscriptionPlan: 'free',
+        subscriptionStatus: 'trial',
+        trialDaysLeft: 30,
+      });
+    } else if (nextStatus === 'pending' || nextStatus === 'expired') {
+      updateProfile({ subscriptionStatus: nextStatus });
+    }
   }
 
   function handleUpgradeClick() {
@@ -46,7 +67,7 @@ export function SubscriptionPageContent() {
   function handleConfirmPaymentSimulation() {
     setShowCheckoutModal(false);
     // Simulasi transisi ke status Pending pembayaran
-    setStatus('pending');
+    handleStatusChange('pending');
     triggerNotice(
       isEn
         ? 'Payment initiated! Verifying checkout with billing gateway...'
@@ -71,7 +92,7 @@ export function SubscriptionPageContent() {
       )}
 
       {/* State Preview Switcher (Khusus testing & demo 6 subscription states) */}
-      <StatePreviewSelector current={status} onChange={setStatus} lang={lang} />
+      <StatePreviewSelector current={status} onChange={handleStatusChange} lang={lang} />
 
       {/* HEADER SECTION */}
       <section className="page-head sub-header">
@@ -114,7 +135,7 @@ export function SubscriptionPageContent() {
                   type="button"
                   className="sub-state-banner__btn"
                   onClick={() => {
-                    setStatus('plus');
+                    handleStatusChange('plus');
                     triggerNotice(
                       isEn
                         ? 'Payment verified! Your account is now upgraded to Plus.'

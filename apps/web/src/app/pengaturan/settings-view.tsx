@@ -75,16 +75,30 @@ export function SettingsView() {
       <Bezel coreClassName="result">
         <div className="row-between">
           <Eyebrow>{t.menu.subscription}</Eyebrow>
-          <span className="chip chip--high">Free Tier</span>
+          <span className={`chip ${profile.subscriptionPlan === 'plus' ? 'chip--high' : 'chip--mock'}`}>
+            {profile.subscriptionPlan === 'plus'
+              ? 'Plus Plan (Aktif)'
+              : `Free Trial (${profile.trialDaysLeft} hari)`}
+          </span>
         </div>
         <p className="hint">
-          {currentLang === 'id'
-            ? 'Akun Anda saat ini aktif pada paket Free. Tingkatkan ke Voltra Plus untuk analitik mendalam, ekspor PDF/Excel tak terbatas, dan asisten AI tanpa batas kuota.'
-            : 'Your account is currently on the Free plan. Upgrade to Voltra Plus for comprehensive analytics, unlimited report exports, and unlimited AI access.'}
+          {profile.subscriptionPlan === 'plus'
+            ? currentLang === 'id'
+              ? 'Akun Anda aktif pada paket Voltra Plus dengan akses penuh tak terbatas ke seluruh fitur AI Gateway, OCR meteran, asisten suara, dan ekspor akuntansi.'
+              : 'Your account is active on Voltra Plus with full unlimited access to all AI Gateway features, meter OCR, voice assistant, and report exports.'
+            : currentLang === 'id'
+              ? 'Akun Anda saat ini aktif pada paket Free (Trial 30 Hari). Tingkatkan ke Voltra Plus untuk analitik mendalam, ekspor PDF/Excel tak terbatas, dan asisten AI tanpa batas kuota.'
+              : 'Your account is currently on the Free plan (30-day trial). Upgrade to Voltra Plus for comprehensive analytics, unlimited report exports, and unlimited AI access.'}
         </p>
         <div className="capture__actions">
           <IslandLink href="/langganan" variant="solid" icon="crown">
-            {currentLang === 'id' ? 'Lihat Pilihan Paket' : 'View Subscription Plans'}
+            {profile.subscriptionPlan === 'plus'
+              ? currentLang === 'id'
+                ? 'Kelola Paket Langganan'
+                : 'Manage Subscription'
+              : currentLang === 'id'
+                ? 'Lihat Pilihan Paket'
+                : 'View Subscription Plans'}
           </IslandLink>
         </div>
       </Bezel>

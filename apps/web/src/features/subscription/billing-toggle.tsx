@@ -44,3 +44,4 @@ export function BillingToggle({ cycle, onChange, lang = 'id' }: BillingTogglePro
     </div>
   );
 }
+

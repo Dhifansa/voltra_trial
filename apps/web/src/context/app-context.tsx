@@ -61,6 +61,8 @@ export interface BusinessProfileState {
   address: string;
   dataDays: number;
   trialDaysLeft: number;
+  subscriptionPlan: 'free' | 'plus';
+  subscriptionStatus: 'trial' | 'active' | 'pending' | 'expired';
 }
 
 export interface AppSettings {
@@ -104,6 +106,7 @@ interface VoltraAppContextValue extends StoredAppState {
     billingType: 'prepaid' | 'postpaid';
     dailyVolume: number;
     address?: string;
+    subscriptionPlan?: 'free' | 'plus';
   }) => void;
   updateProfile: (patch: Partial<BusinessProfileState>) => void;
   selectTemplate: (templateId: string, customShopName?: string) => void;
@@ -151,7 +154,9 @@ function buildDefaultState(): StoredAppState {
       dailyVolume: tpl.unit.default_daily,
       address: 'Sekaran, Gunungpati, Semarang',
       dataDays: 5,
-      trialDaysLeft: 23,
+      trialDaysLeft: 30,
+      subscriptionPlan: 'free',
+      subscriptionStatus: 'trial',
     },
     kios,
     kiosBaselineRp,
@@ -431,7 +436,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(raw) as Partial<StoredAppState>;
         setState((prev) => ({
           user: { ...prev.user, ...parsed.user },
-          profile: { ...prev.profile, ...parsed.profile },
+          profile: {
+            ...prev.profile,
+            ...parsed.profile,
+            subscriptionPlan: parsed.profile?.subscriptionPlan || prev.profile.subscriptionPlan || 'free',
+            subscriptionStatus:
+              parsed.profile?.subscriptionStatus ||
+              (parsed.profile?.subscriptionPlan === 'plus' ? 'active' : 'trial'),
+            trialDaysLeft: parsed.profile?.trialDaysLeft ?? 30,
+          },
           kios: parsed.kios ?? prev.kios,
           kiosBaselineRp: parsed.kiosBaselineRp ?? prev.kiosBaselineRp,
           settings: { ...prev.settings, ...parsed.settings },
@@ -574,12 +587,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     billingType: 'prepaid' | 'postpaid';
     dailyVolume: number;
     address?: string;
+    subscriptionPlan?: 'free' | 'plus';
   }) {
     const tpl = getTemplate(input.templateId);
     const tariff = getTariff(input.tariffId);
     const shopName = input.businessName.trim() || `${tpl.display_name} ${state.user.ownerName}`;
     const newKios = createState(tpl, shopName);
     const baseline = compute(newKios, tariff.rate).rp_day;
+    const plan = input.subscriptionPlan || 'free';
+    const isPlus = plan === 'plus';
 
     setState((prev) => ({
       ...prev,
@@ -600,6 +616,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         unitLabel: tpl.unit.label,
         dailyVolume: Math.max(1, input.dailyVolume || tpl.unit.default_daily),
         address: input.address !== undefined ? input.address : prev.profile.address,
+        subscriptionPlan: plan,
+        subscriptionStatus: isPlus ? 'active' : 'trial',
+        trialDaysLeft: isPlus ? 365 : 30,
       },
       kios: newKios,
       kiosBaselineRp: baseline,

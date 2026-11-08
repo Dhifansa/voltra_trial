@@ -111,7 +111,9 @@ export function ProfileView() {
           </div>
           <div>
             <span>Paket Akun</span>
-            <strong>Free Plan</strong>
+            <strong style={{ color: profile.subscriptionPlan === 'plus' ? '#2DD4BF' : 'inherit' }}>
+              {profile.subscriptionPlan === 'plus' ? '⚡ Plus (Akses Penuh)' : `Free (Trial ${profile.trialDaysLeft} Hari)`}
+            </strong>
           </div>
         </div>
 
@@ -121,7 +123,7 @@ export function ProfileView() {
           </span>
           <div className="capture__actions">
             <IslandLink href="/langganan" variant="solid" icon="crown">
-              Upgrade Plus
+              {profile.subscriptionPlan === 'plus' ? 'Kelola Paket' : 'Upgrade Plus'}
             </IslandLink>
             <IslandLink href="/masuk" variant="ghost" icon="phone">
               {user.role === 'user' ? 'Ganti Akun' : 'Masuk / Daftar Akun'}
@@ -233,7 +235,9 @@ export function ProfileView() {
                   <small>Akses fitur analitik & kuota AI</small>
                 </span>
                 <span className="entries__val">
-                  <span className="chip chip--high">Free Plan</span>
+                  <span className={`chip ${profile.subscriptionPlan === 'plus' ? 'chip--high' : 'chip--mock'}`}>
+                    {profile.subscriptionPlan === 'plus' ? 'Voltra Plus (Aktif)' : `Free Trial (${profile.trialDaysLeft} Hari)`}
+                  </span>
                   {' · '}
                   <IslandLink href="/langganan" variant="ghost" icon="crown">
                     Kelola Paket

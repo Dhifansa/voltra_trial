@@ -238,3 +238,4 @@ export const INITIAL_SUBSCRIPTION_STATE: UserSubscriptionMock = {
   billingCycle: 'monthly',
   expiresAt: undefined,
 };
+

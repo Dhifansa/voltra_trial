@@ -60,7 +60,8 @@ export function OnboardingFlow() {
   const [step, setStep] = useState<Step>('login');
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [showGooglePicker, setShowGooglePicker] = useState(false);
-  const [profileTask, setProfileTask] = useState<1 | 2>(1);
+  const [profileTask, setProfileTask] = useState<1 | 2 | 3>(1);
+  const [selectedPlan, setSelectedPlan] = useState<'free' | 'plus'>('free');
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -154,7 +155,8 @@ export function OnboardingFlow() {
     advanceToProfiling(ownerName);
   }
 
-  function handleFinishProfiling() {
+  function handleFinishProfiling(planToSave?: 'free' | 'plus') {
+    const finalPlan = planToSave || selectedPlan;
     saveProfiling({
       businessName:
         businessName.trim() || `${selectedTemplate.display_name} ${ownerName.trim() || 'Kita'}`,
@@ -163,12 +165,19 @@ export function OnboardingFlow() {
       billingType,
       dailyVolume: Number(dailyVolume) || selectedTemplate.unit.default_daily,
       address: address.trim(),
+      subscriptionPlan: finalPlan,
     });
     router.push('/kios');
   }
 
   const activeStepNum =
-    step === 'login' || step === 'otp' ? 1 : profileTask === 1 ? 2 : 3;
+    step === 'login' || step === 'otp'
+      ? 1
+      : profileTask === 1
+        ? 2
+        : profileTask === 2
+          ? 3
+          : 4;
 
   return (
     <div className="stack-gap onboarding-shell">
@@ -180,7 +189,7 @@ export function OnboardingFlow() {
           onClick={() => setStep('login')}
         >
           <span className="stepper__num">1</span>
-          <span className="stepper__label">Masuk / Daftar</span>
+          <span className="stepper__label">Masuk</span>
         </button>
         <span className="stepper__line" />
         <button
@@ -194,19 +203,33 @@ export function OnboardingFlow() {
           }}
         >
           <span className="stepper__num">2</span>
-          <span className="stepper__label">Jenis Usaha</span>
+          <span className="stepper__label">Pilih Kios</span>
         </button>
         <span className="stepper__line" />
         <button
           type="button"
-          className={`stepper__item ${activeStepNum === 3 ? 'is-active' : ''}`}
+          className={`stepper__item ${
+            activeStepNum === 3 ? 'is-active' : activeStepNum > 3 ? 'is-done' : ''
+          }`}
           onClick={() => {
             setStep('profiling');
             setProfileTask(2);
           }}
         >
           <span className="stepper__num">3</span>
-          <span className="stepper__label">Tarif & Kios</span>
+          <span className="stepper__label">Tarif PLN</span>
+        </button>
+        <span className="stepper__line" />
+        <button
+          type="button"
+          className={`stepper__item ${activeStepNum === 4 ? 'is-active' : ''}`}
+          onClick={() => {
+            setStep('profiling');
+            setProfileTask(3);
+          }}
+        >
+          <span className="stepper__num">4</span>
+          <span className="stepper__label">Pilih Paket</span>
         </button>
       </div>
 
@@ -668,8 +691,14 @@ export function OnboardingFlow() {
             </div>
 
             <div className="capture__actions">
-              <IslandButton icon="store" onClick={handleFinishProfiling}>
-                Simpan & Buka Kios 2D
+              <IslandButton
+                icon="arrow"
+                onClick={() => {
+                  setProfileTask(3);
+                  scrollCardIntoView();
+                }}
+              >
+                Lanjut ke Pilihan Paket ({selectedTemplate.display_name})
               </IslandButton>
               <IslandButton
                 variant="ghost"
@@ -680,6 +709,192 @@ export function OnboardingFlow() {
                 }}
               >
                 Ganti Jenis Usaha
+              </IslandButton>
+            </div>
+          </Bezel>
+        </div>
+      )}
+
+      {/* LANGKAH 4: PILIH PAKET LANGGANAN (FREE TRIAL 30 HARI VS PLUS AKSES SEMUA FITUR) */}
+      {step === 'profiling' && profileTask === 3 && (
+        <div ref={cardRef}>
+          <Bezel coreClassName="result">
+            <div className="row-between card-head-wrap">
+              <Eyebrow>Langkah 4 · Pilih Paket Langganan</Eyebrow>
+              <button
+                type="button"
+                className="selected-tpl-pill"
+                onClick={() => {
+                  setProfileTask(2);
+                  scrollCardIntoView();
+                }}
+              >
+                <span>{selectedTemplate.display_name}</span>
+                <em>Ubah Tarif/Kios</em>
+              </button>
+            </div>
+
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: '0.6rem', marginBottom: '0.2rem', letterSpacing: '-0.01em' }}>
+              Pilih Paket untuk {businessName || selectedTemplate.display_name}
+            </h3>
+            <p className="hint">
+              Pilih <strong>Free (Trial 30 Hari)</strong> untuk mencoba fitur dasar simulasi, atau aktifkan <strong>Voltra Plus</strong> agar langsung bisa mengakses seluruh fitur canggih tanpa batas.
+            </p>
+
+            <div className="onboarding-plans-grid" role="radiogroup" aria-label="Pilih paket langganan">
+              {/* OPSI 1: FREE (TRIAL 30 HARI) */}
+              <div
+                role="radio"
+                tabIndex={0}
+                aria-checked={selectedPlan === 'free'}
+                className={`onboarding-plan-card onboarding-plan-card--free ${selectedPlan === 'free' ? 'is-selected' : ''}`}
+                onClick={() => setSelectedPlan('free')}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedPlan('free')}
+              >
+                <div>
+                  <div className="onboarding-plan-card__badge-row">
+                    <span className="onboarding-plan-card__name">Free Plan</span>
+                    <span className="onboarding-plan-card__badge onboarding-plan-card__badge--free">Trial 30 Hari</span>
+                  </div>
+                  <p className="onboarding-plan-card__desc">
+                    Uji coba gratis seluruh fitur simulasi dan kalkulasi energi dasar selama 30 hari ke depan tanpa biaya.
+                  </p>
+                  <div className="onboarding-plan-card__pricing">
+                    <span className="onboarding-plan-card__amount">Rp 0</span>
+                    <span className="onboarding-plan-card__period">/ 30 hari pertama</span>
+                  </div>
+                  <ul className="onboarding-plan-card__features" aria-label="Fitur Free Trial">
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
+                      <span><strong>Trial 30 Hari</strong> akses penuh uji coba</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
+                      <span>Simulasi Kios Virtual 2D interaktif</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
+                      <span>Kalkulasi biaya energi listrik per alat</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
+                      <span>Catat meteran mandiri harian</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
+                      <span>3 rekomendasi efisiensi daya dasar</span>
+                    </li>
+                  </ul>
+                </div>
+                <button
+                  type="button"
+                  className={`onboarding-plan-card__btn onboarding-plan-card__btn--free ${selectedPlan === 'free' ? 'is-active' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPlan('free');
+                  }}
+                >
+                  {selectedPlan === 'free' ? '✓ Paket Terpilih (Trial 30 Hari)' : 'Pilih Free (Trial 30 Hari)'}
+                </button>
+              </div>
+
+              {/* OPSI 2: VOLTRA PLUS (LANGSUNG AKSES SEMUA FITUR) */}
+              <div
+                role="radio"
+                tabIndex={0}
+                aria-checked={selectedPlan === 'plus'}
+                className={`onboarding-plan-card onboarding-plan-card--plus ${selectedPlan === 'plus' ? 'is-selected' : ''}`}
+                onClick={() => setSelectedPlan('plus')}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedPlan('plus')}
+              >
+                <div>
+                  <div className="onboarding-plan-card__badge-row">
+                    <div className="onboarding-plan-card__title-row">
+                      <Icon name="crown" size={18} className="onboarding-plan-card__crown" />
+                      <span className="onboarding-plan-card__name">Voltra Plus</span>
+                    </div>
+                    <span className="onboarding-plan-card__badge onboarding-plan-card__badge--plus">Rekomendasi · Akses Penuh</span>
+                  </div>
+                  <p className="onboarding-plan-card__desc">
+                    Langsung buka semua fitur canggih tanpa batasan kuota untuk efisiensi bisnis maksimal.
+                  </p>
+                  <div className="onboarding-plan-card__pricing">
+                    <span className="onboarding-plan-card__amount" style={{ color: '#2DD4BF' }}>Rp 49.000</span>
+                    <span className="onboarding-plan-card__period">/ bulan</span>
+                  </div>
+                  <ul className="onboarding-plan-card__features" aria-label="Fitur Voltra Plus">
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check is-plus"><Icon name="bolt" size={12} /></span>
+                      <span style={{ color: '#2DD4BF', fontWeight: 700 }}>⚡ Langsung Akses Semua Fitur</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
+                      <span>Tanpa batas durasi trial (Full Access)</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
+                      <span>AI OCR Foto Meteran Listrik otomatis</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
+                      <span>AI Voice Input & Asisten Terra AI tanpa kuota</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
+                      <span>Ekspor laporan PDF & Excel akuntansi lengkap</span>
+                    </li>
+                    <li className="onboarding-plan-card__feature-item">
+                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
+                      <span>Pengingat WhatsApp harian otomatis terjadwal</span>
+                    </li>
+                  </ul>
+                </div>
+                <button
+                  type="button"
+                  className={`onboarding-plan-card__btn onboarding-plan-card__btn--plus ${selectedPlan === 'plus' ? 'is-active' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPlan('plus');
+                  }}
+                >
+                  {selectedPlan === 'plus' ? '✓ Paket Terpilih (Akses Semua Fitur)' : 'Pilih Plus (Akses Semua Fitur)'}
+                </button>
+              </div>
+            </div>
+
+            {/* Notice ringkasan paket terpilih */}
+            {selectedPlan === 'free' ? (
+              <div className="notice" role="status">
+                <Icon name="info" size={18} />
+                <div>
+                  <strong>Free (Trial 30 Hari) Aktif:</strong> Anda mendapatkan akses uji coba 30 hari gratis untuk simulasi Kios 2D dan perhitungan energi dasar. Tanpa kartu kredit.
+                </div>
+              </div>
+            ) : (
+              <div className="notice" role="status" style={{ background: 'rgba(45, 212, 191, 0.1)', borderColor: 'rgba(45, 212, 191, 0.3)' }}>
+                <Icon name="crown" size={18} style={{ color: '#2DD4BF' }} />
+                <div>
+                  <strong>Voltra Plus Aktif:</strong> Anda langsung membuka seluruh fitur premium tanpa batas: AI OCR, suara Wati, analitik multi-skenario, dan ekspor laporan.
+                </div>
+              </div>
+            )}
+
+            <div className="capture__actions" style={{ marginTop: '1.25rem' }}>
+              <IslandButton
+                icon="store"
+                onClick={() => handleFinishProfiling(selectedPlan)}
+              >
+                Mulai Buka Kios 2D ({selectedPlan === 'plus' ? 'Paket Plus · Akses Penuh' : 'Free · Trial 30 Hari'})
+              </IslandButton>
+              <IslandButton
+                variant="ghost"
+                icon="retry"
+                onClick={() => {
+                  setProfileTask(2);
+                  scrollCardIntoView();
+                }}
+              >
+                Kembali ke Tarif PLN
               </IslandButton>
             </div>
           </Bezel>
