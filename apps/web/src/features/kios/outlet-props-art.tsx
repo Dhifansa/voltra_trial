@@ -35,7 +35,7 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
       name: 'Meja Makan Pelanggan',
       zone: 'Area Pelanggan',
       x: 38,
-      y: 67,
+      y: 72,
       badge: '🍜 Meja #1',
       tip: 'Nyalakan Kipas Angin saat ada pelanggan di meja makan, dan matikan saat jam sepi sore hari.',
     },
