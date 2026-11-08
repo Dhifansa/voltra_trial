@@ -71,6 +71,24 @@ export function SettingsView() {
         </div>
       </Bezel>
 
+      {/* Paket Langganan & Membership */}
+      <Bezel coreClassName="result">
+        <div className="row-between">
+          <Eyebrow>{t.menu.subscription}</Eyebrow>
+          <span className="chip chip--high">Free Tier</span>
+        </div>
+        <p className="hint">
+          {currentLang === 'id'
+            ? 'Akun Anda saat ini aktif pada paket Free. Tingkatkan ke Voltra Plus untuk analitik mendalam, ekspor PDF/Excel tak terbatas, dan asisten AI tanpa batas kuota.'
+            : 'Your account is currently on the Free plan. Upgrade to Voltra Plus for comprehensive analytics, unlimited report exports, and unlimited AI access.'}
+        </p>
+        <div className="capture__actions">
+          <IslandLink href="/langganan" variant="solid" icon="crown">
+            {currentLang === 'id' ? 'Lihat Pilihan Paket' : 'View Subscription Plans'}
+          </IslandLink>
+        </div>
+      </Bezel>
+
       {/* Pengingat Misi WhatsApp */}
       <Bezel coreClassName="result">
         <div className="row-between">

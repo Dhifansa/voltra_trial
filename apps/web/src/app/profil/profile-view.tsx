@@ -110,8 +110,8 @@ export function ProfileView() {
             <strong>{kios.slots.length} alat</strong>
           </div>
           <div>
-            <span>Masa Trial</span>
-            <strong>{profile.trialDaysLeft} hari</strong>
+            <span>Paket Akun</span>
+            <strong>Free Plan</strong>
           </div>
         </div>
 
@@ -120,6 +120,9 @@ export function ProfileView() {
             Simulasi kios: <strong>{formatRp(analytics.kiosResult.rp_day)}/hari</strong> ({formatKwh(analytics.kiosResult.kwh_day)})
           </span>
           <div className="capture__actions">
+            <IslandLink href="/langganan" variant="solid" icon="crown">
+              Upgrade Plus
+            </IslandLink>
             <IslandLink href="/masuk" variant="ghost" icon="phone">
               {user.role === 'user' ? 'Ganti Akun' : 'Masuk / Daftar Akun'}
             </IslandLink>
@@ -223,6 +226,19 @@ export function ProfileView() {
                   <small>Lokasi operasional kios</small>
                 </span>
                 <span className="entries__val">{profile.address || 'Belum diisi'}</span>
+              </li>
+              <li>
+                <span className="entries__name">
+                  Status Paket Langganan
+                  <small>Akses fitur analitik & kuota AI</small>
+                </span>
+                <span className="entries__val">
+                  <span className="chip chip--high">Free Plan</span>
+                  {' · '}
+                  <IslandLink href="/langganan" variant="ghost" icon="crown">
+                    Kelola Paket
+                  </IslandLink>
+                </span>
               </li>
             </ul>
 

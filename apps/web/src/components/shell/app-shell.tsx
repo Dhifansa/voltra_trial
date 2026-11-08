@@ -35,6 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     { href: '/catat', label: t.menu.record, note: t.menu.recordNote },
     { href: '/biaya', label: t.menu.cost, note: t.menu.costNote },
     { href: '/profil', label: t.menu.profile, note: t.menu.profileNote },
+    { href: '/langganan', label: t.menu.subscription, note: t.menu.subscriptionNote },
     { href: '/pengaturan', label: t.menu.settings, note: t.menu.settingsNote },
     { href: '#', label: t.menu.wati, note: t.menu.watiNote, soon: true },
     { href: '/dev', label: t.menu.dev, note: t.menu.devNote },
