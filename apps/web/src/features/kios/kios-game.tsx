@@ -403,6 +403,7 @@ function KiosPlay({
 
   const [selectedUid, setSelectedUid] = useState<string | null>(state.slots[0]?.uid ?? null);
   const [showCatalog, setShowCatalog] = useState(false);
+  const [showHourModal, setShowHourModal] = useState(false);
 
   // Posisi karakter Terra di dalam ruangan outlet (persentase x, y)
   const [terraPos, setTerraPos] = useState<{ x: number; y: number }>({ x: 52, y: 66 });
@@ -569,12 +570,12 @@ function KiosPlay({
       }
       setSelectedUid(uid);
 
-      if (tutorialRunning && openControlStage) {
-        setStage('set-hours');
-        setPopupOpen(true);
-        setTimeout(() => {
-          controlRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 260);
+      if (openControlStage) {
+        setShowHourModal(true);
+        if (tutorialRunning) {
+          setStage('set-hours');
+          setPopupOpen(true);
+        }
       }
     },
     [stationPositions, state.slots, triggerWalkAnimation, showTerraBubble, tutorialRunning, stage, selectedUid],
@@ -845,6 +846,7 @@ function KiosPlay({
       ? Array.from(new Set([...configuredUids, selectedUid]))
       : configuredUids;
     setConfiguredUids(nextConfigured);
+    setShowHourModal(false);
 
     const remaining = state.slots.filter((s) => !nextConfigured.includes(s.uid));
     if (remaining.length > 0) {
@@ -866,6 +868,7 @@ function KiosPlay({
     if (selectedUid && !configuredUids.includes(selectedUid)) {
       setConfiguredUids((prev) => [...prev, selectedUid]);
     }
+    setShowHourModal(false);
     setStage('summary');
     setPopupOpen(true);
     setTimeout(() => {
@@ -1163,7 +1166,7 @@ function KiosPlay({
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handlePickAppliance(s.uid, true);
+                      handlePickAppliance(s.uid, false);
                     }}
                     aria-pressed={active}
                     aria-label={`${s.appliance.name} di ${pos.zone}, ${
@@ -1327,12 +1330,12 @@ function KiosPlay({
                   className="outlet-inspect-btn"
                   onClick={() => {
                     handlePickAppliance(selected.uid, true);
-                    controlRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }}
+                  title={`Buka pop-up atur jam pakai ${selected.appliance.name}`}
                 >
                   <Icon name="pencil" size={14} />
                   <span>
-                    Atur Jam {selected.appliance.name} ({selected.on ? `${selected.hours}j` : 'Mati'})
+                    Cek Jam {selected.appliance.name} ({selected.on ? `${selected.hours}j` : 'Mati'})
                   </span>
                 </button>
               )}
@@ -1395,46 +1398,61 @@ function KiosPlay({
       )}
 
       {/* ==================================================================== */}
-      {/* BAGIAN SCREEN 2: Penggunaan Jam Pakai Per Hari (ApplianceControl)    */}
-      {/* Pop-out tajam saat `stage === 'set-hours'`, ngeblur saat tahap lain   */}
+      {/* POP-UP MODAL: Pengaturan Jam Pakai Per Hari (Cek Jam Alat)           */}
       {/* ==================================================================== */}
-      {selected && (
+      {selected && showHourModal && (
         <div
           ref={controlRef}
-          className={
-            spotlightActive
-              ? stage === 'set-hours'
-                ? 'tutorial-pop'
-                : 'tutorial-dim'
-              : ''
-          }
+          className={`outlet-modal-backdrop ${spotlightActive ? 'tutorial-pop' : ''}`}
+          onClick={() => setShowHourModal(false)}
         >
-          <ApplianceControl
-            key={selected.uid}
-            slot={selected}
-            zoneName={stationPositions[selected.uid]?.zone}
-            rpDay={result.per_slot[selected.uid]?.rp_day ?? 0}
-            rpHour={result.per_slot[selected.uid]?.rp_hour ?? 0}
-            kwh={result.per_slot[selected.uid]?.kwh ?? 0}
-            removable={isKustom || state.slots.length > 1}
-            showTutorialNext={tutorialRunning && stage === 'set-hours'}
-            onNextAppliance={handleFinishCurrentApplianceHours}
-            onInteractionCommit={
-              tutorialRunning && stage === 'set-hours'
-                ? handleFinishCurrentApplianceHours
-                : undefined
-            }
-            onHours={(h) => onChange(setHours(state, selected.uid, h))}
-            onToggle={() => onChange(toggleSlot(state, selected.uid))}
-            onRemove={() => {
-              onChange(removeSlot(state, selected.uid), true);
-              setSelectedUid(null);
-              if (tutorialRunning) {
-                setStage('pick-appliance');
-                setPopupOpen(true);
+          <div
+            className="outlet-modal-dialog"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Pengaturan Jam Pakai ${selected.appliance.name}`}
+          >
+            <div className="outlet-modal-header">
+              <span className="outlet-modal-title">Cek Jam & Pemakaian Alat</span>
+              <button
+                type="button"
+                className="outlet-modal-close"
+                onClick={() => setShowHourModal(false)}
+                aria-label="Tutup pop up"
+              >
+                ✕
+              </button>
+            </div>
+
+            <ApplianceControl
+              key={selected.uid}
+              slot={selected}
+              zoneName={stationPositions[selected.uid]?.zone}
+              rpDay={result.per_slot[selected.uid]?.rp_day ?? 0}
+              rpHour={result.per_slot[selected.uid]?.rp_hour ?? 0}
+              kwh={result.per_slot[selected.uid]?.kwh ?? 0}
+              removable={isKustom || state.slots.length > 1}
+              showTutorialNext={tutorialRunning && stage === 'set-hours'}
+              onNextAppliance={handleFinishCurrentApplianceHours}
+              onInteractionCommit={
+                tutorialRunning && stage === 'set-hours'
+                  ? handleFinishCurrentApplianceHours
+                  : undefined
               }
-            }}
-          />
+              onHours={(h) => onChange(setHours(state, selected.uid, h))}
+              onToggle={() => onChange(toggleSlot(state, selected.uid))}
+              onRemove={() => {
+                onChange(removeSlot(state, selected.uid), true);
+                setSelectedUid(null);
+                setShowHourModal(false);
+                if (tutorialRunning) {
+                  setStage('pick-appliance');
+                  setPopupOpen(true);
+                }
+              }}
+            />
+          </div>
         </div>
       )}
 
