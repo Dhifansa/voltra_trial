@@ -4840,24 +4840,28 @@ body.is-game-tutorial .topbar,
   padding: 0;
   border-radius: 999px;
   background: transparent;
+  border: none;
   filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.24));
+  cursor: pointer;
 }
 
-.outlet-terra__flip {
-  display: inline-flex;
-  transition: transform 200ms var(--ease);
+.outlet-terra__sprite {
+  display: block;
+  width: 4.15rem;
+  height: 4.15rem;
+  object-fit: contain;
+  image-rendering: auto;
+  user-select: none;
+  pointer-events: none;
+  transition: transform 120ms var(--ease);
 }
 
-.outlet-terra.is-left .outlet-terra__flip {
-  transform: scaleX(-1);
-}
-
-.outlet-terra.is-idle .outlet-terra__btn {
+.outlet-terra.is-idle .outlet-terra__sprite {
   animation: terra-breathe 1800ms var(--ease) infinite alternate;
 }
 
-.outlet-terra.is-walking .outlet-terra__btn {
-  animation: terra-step 210ms var(--ease) infinite alternate;
+.outlet-terra.is-walking .outlet-terra__sprite {
+  transform: translateY(-2px);
 }
 
 @keyframes terra-breathe {
@@ -4866,15 +4870,6 @@ body.is-game-tutorial .topbar,
   }
   to {
     transform: translateY(-3px);
-  }
-}
-
-@keyframes terra-step {
-  from {
-    transform: translateY(0) rotate(-4deg);
-  }
-  to {
-    transform: translateY(-6px) rotate(4deg);
   }
 }
 
@@ -5240,6 +5235,11 @@ body.is-game-tutorial .topbar,
 
   .outlet-station__meta {
     font-size: 0.48rem;
+  }
+
+  .outlet-terra__sprite {
+    width: 3.45rem;
+    height: 3.45rem;
   }
 
   .outlet-terra .terra-avatar {

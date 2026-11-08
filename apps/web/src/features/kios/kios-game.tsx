@@ -68,6 +68,29 @@ interface StationCoord {
   zone: string;
 }
 
+type TerraDirection = 'down' | 'up' | 'left' | 'right';
+type TerraWalkStep = 'left' | 'right';
+
+const TERRA_SPRITES = {
+  idle: '/Terra_diam-removebg-preview.png',
+  down: {
+    left: '/terra_kebawah_langkah_kiri-removebg-preview.png',
+    right: '/Terra_kebawah_langkah_kanan-removebg-preview.png',
+  },
+  up: {
+    left: '/Terra_atas_langkah_kiri-removebg-preview.png',
+    right: '/Terra_atas_Langkah_Kanan-removebg-preview.png',
+  },
+  left: {
+    left: '/terra_ke_kiri_langkah_kiri-removebg-preview.png',
+    right: '/terra_kekiri_langkah_kanan-removebg-preview.png',
+  },
+  right: {
+    left: '/Terra_kekanan_langkah_kiri-removebg-preview.png',
+    right: '/Terra_ke_kanan_langkah_kanan-removebg-preview.png',
+  },
+} as const;
+
 const TEMPLATE_STATION_MAP: Record<string, Record<string, StationCoord>> = {
   laundry: {
     lamp: { x: 50, y: 19, zone: 'Plafon Kios' },
@@ -383,9 +406,11 @@ function KiosPlay({
 
   // Posisi karakter Terra di dalam ruangan outlet (persentase x, y)
   const [terraPos, setTerraPos] = useState<{ x: number; y: number }>({ x: 52, y: 66 });
-  const [terraFacing, setTerraFacing] = useState<'left' | 'right'>('right');
+  const [terraDir, setTerraDir] = useState<TerraDirection>('down');
+  const [terraStep, setTerraStep] = useState<TerraWalkStep>('left');
   const [terraWalking, setTerraWalking] = useState(false);
   const walkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const floorArenaRef = useRef<HTMLDivElement>(null);
 
   // Elemen interaktif dunia game: Waktu (Siang/Sore/Malam), Aksesoris Aktif, Kucing Kios, Efek Klik Lantai, & Balon Dialog Terra
@@ -448,6 +473,7 @@ function KiosPlay({
   useEffect(() => {
     return () => {
       if (walkTimerRef.current) clearTimeout(walkTimerRef.current);
+      if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
       if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
     };
   }, []);
@@ -486,13 +512,31 @@ function KiosPlay({
   const nextUnconfiguredSlot =
     state.slots.find((s) => !configuredUids.includes(s.uid)) ?? top ?? state.slots[0];
 
-  const triggerWalkAnimation = useCallback((durationMs = 360) => {
+  const triggerWalkAnimation = useCallback((durationMs = 380) => {
     setTerraWalking(true);
+    setTerraStep((prev) => (prev === 'left' ? 'right' : 'left'));
+
+    if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
+    stepIntervalRef.current = setInterval(() => {
+      setTerraStep((prev) => (prev === 'left' ? 'right' : 'left'));
+    }, 170);
+
     if (walkTimerRef.current) clearTimeout(walkTimerRef.current);
     walkTimerRef.current = setTimeout(() => {
       setTerraWalking(false);
+      if (stepIntervalRef.current) {
+        clearInterval(stepIntervalRef.current);
+        stepIntervalRef.current = null;
+      }
     }, durationMs);
   }, []);
+
+  // Gambar sprite Terra saat ini (diam vs langkah kaki kiri/kanan sesuai arah)
+  const currentTerraSrc = useMemo(() => {
+    if (!terraWalking) return TERRA_SPRITES.idle;
+    const dirSprites = TERRA_SPRITES[terraDir];
+    return dirSprites[terraStep] || TERRA_SPRITES.idle;
+  }, [terraWalking, terraDir, terraStep]);
 
   // Fungsi memilih alat & menggerakkan Terra ke dekat alat tersebut
   const handlePickAppliance = useCallback(
@@ -505,8 +549,13 @@ function KiosPlay({
         setTerraPos((prev) => {
           const nextX = clampCoord(targetPos.x + (targetPos.x > 50 ? -6 : 6), 14, 86);
           const nextY = clampCoord(targetPos.y + (targetPos.y < 30 ? 15 : 9), 28, 84);
-          if (nextX < prev.x - 1) setTerraFacing('left');
-          else if (nextX > prev.x + 1) setTerraFacing('right');
+          const dx = nextX - prev.x;
+          const dy = nextY - prev.y;
+          if (Math.abs(dx) >= Math.abs(dy)) {
+            setTerraDir(dx < 0 ? 'left' : 'right');
+          } else {
+            setTerraDir(dy < 0 ? 'up' : 'down');
+          }
           return { x: nextX, y: nextY };
         });
         triggerWalkAnimation(420);
@@ -544,8 +593,13 @@ function KiosPlay({
       setTerraPos((prev) => {
         const nextX = clampCoord(prop.x + (prop.x > 50 ? -5 : 5), 14, 86);
         const nextY = clampCoord(prop.y + (prop.y < 30 ? 15 : 7), 28, 84);
-        if (nextX < prev.x - 1) setTerraFacing('left');
-        else if (nextX > prev.x + 1) setTerraFacing('right');
+        const dx = nextX - prev.x;
+        const dy = nextY - prev.y;
+        if (Math.abs(dx) >= Math.abs(dy)) {
+          setTerraDir(dx < 0 ? 'left' : 'right');
+        } else {
+          setTerraDir(dy < 0 ? 'up' : 'down');
+        }
         return { x: nextX, y: nextY };
       });
       triggerWalkAnimation(400);
@@ -557,10 +611,8 @@ function KiosPlay({
   // Interaksi dengan Meteran PLN di dinding
   const handleInteractMeter = useCallback(() => {
     setActivePropId('pln-meter');
-    setTerraPos((prev) => {
-      if (18 < prev.x) setTerraFacing('left');
-      return { x: 18, y: 34 };
-    });
+    setTerraDir('up');
+    setTerraPos({ x: 18, y: 34 });
     triggerWalkAnimation(380);
     showTerraBubble(
       `⚡ Meteran PLN: Beban aktif ${totalActiveWatts.toLocaleString('id-ID')} Watt (${formatKwh(result.kwh_day)}/hari).`,
@@ -572,12 +624,8 @@ function KiosPlay({
   const handleInteractCat = useCallback(() => {
     setCatAwake((v) => !v);
     setActivePropId('doorcat');
-    setTerraPos((prev) => {
-      const nextX = 46;
-      if (nextX < prev.x) setTerraFacing('left');
-      else setTerraFacing('right');
-      return { x: nextX, y: 80 };
-    });
+    setTerraDir('down');
+    setTerraPos({ x: 46, y: 80 });
     triggerWalkAnimation(360);
     showTerraBubble(
       '🐱 Meow! Kucing penjaga kios senang kalau suhu ruangan sejuk & tagihan listrik tetap hemat!',
@@ -603,8 +651,11 @@ function KiosPlay({
   // Gerakkan Terra dengan langkah D-Pad atau Keyboard (WASD / Arrow)
   const moveTerraByDelta = useCallback(
     (dx: number, dy: number) => {
-      if (dx < 0) setTerraFacing('left');
-      if (dx > 0) setTerraFacing('right');
+      if (dx < 0) setTerraDir('left');
+      else if (dx > 0) setTerraDir('right');
+      else if (dy < 0) setTerraDir('up');
+      else if (dy > 0) setTerraDir('down');
+
       triggerWalkAnimation(260);
 
       setTerraPos((prev) => {
@@ -682,12 +733,17 @@ function KiosPlay({
     const clickX = clampCoord(((e.clientX - rect.left) / rect.width) * 100, 12, 88);
     const clickY = clampCoord(((e.clientY - rect.top) / rect.height) * 100, 26, 84);
 
-    if (clickX < terraPos.x - 1) setTerraFacing('left');
-    else if (clickX > terraPos.x + 1) setTerraFacing('right');
+    const dx = clickX - terraPos.x;
+    const dy = clickY - terraPos.y;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      setTerraDir(dx < 0 ? 'left' : 'right');
+    } else {
+      setTerraDir(dy < 0 ? 'up' : 'down');
+    }
 
     setClickMarker({ x: clickX, y: clickY, id: Date.now() });
     setTerraPos({ x: clickX, y: clickY });
-    triggerWalkAnimation(400);
+    triggerWalkAnimation(440);
 
     // Jika titik klik dekat dengan salah satu alat, pilih alat tersebut
     let closestUid: string | null = null;
@@ -1079,9 +1135,7 @@ function KiosPlay({
 
             {/* Karakter Terra yang Bisa Digerakkan di Dalam Dunia Kios */}
             <div
-              className={`outlet-terra ${terraWalking ? 'is-walking' : 'is-idle'} ${
-                terraFacing === 'left' ? 'is-left' : 'is-right'
-              }`}
+              className={`outlet-terra ${terraWalking ? 'is-walking' : 'is-idle'} outlet-terra--dir-${terraDir}`}
               style={{ left: `${terraPos.x}%`, top: `${terraPos.y}%` }}
             >
               {/* Gelembung Dialog Interaktif di Atas Kepala Terra */}
@@ -1110,9 +1164,14 @@ function KiosPlay({
                 }}
                 title="Karakter Terra — Ketuk alat atau aksesoris untuk berkeliling memeriksa kios"
               >
-                <span className="outlet-terra__flip">
-                  <TerraAvatar mood={roomTerraMood} size={58} />
-                </span>
+                <img
+                  src={currentTerraSrc}
+                  alt={`Terra ${terraWalking ? `berjalan ke ${terraDir}` : 'diam'}`}
+                  className="outlet-terra__sprite"
+                  width={68}
+                  height={68}
+                  draggable={false}
+                />
               </button>
               <span className="outlet-terra__shadow" aria-hidden="true" />
             </div>
