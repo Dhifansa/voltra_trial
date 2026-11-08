@@ -4112,17 +4112,17 @@ body.is-game-tutorial .topbar,
 }
 
 .unit.is-guide-pulse,
-.outlet-station.is-guide-pulse {
+.outlet-station.is-guide-pulse .outlet-station__art {
   animation: guide-pulse 1500ms var(--ease) infinite;
 }
 
 @keyframes guide-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 2px var(--blue), 0 0 0 0 rgba(26, 41, 69, 0.45);
+    filter: drop-shadow(0 0 0 rgba(26, 41, 69, 0.45));
   }
   50% {
-    box-shadow: 0 0 0 2px var(--blue), 0 0 0 8px rgba(26, 41, 69, 0);
+    filter: drop-shadow(0 0 10px rgba(45, 212, 191, 0.85));
   }
 }
 
@@ -4686,29 +4686,27 @@ body.is-game-tutorial .topbar,
   opacity: 0.52;
 }
 
-/* Alas Karpet / Pedestal Isometrik di Bawah Alat */
+/* Alas Bayangan Halus di Bawah Alat (Tanpa Bingkai/Border Tebal) */
 .outlet-station__pad {
-  width: 4.1rem;
-  height: 1.15rem;
-  margin-top: -0.65rem;
+  width: 3.6rem;
+  height: 0.85rem;
+  margin-top: -0.45rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid rgba(26, 41, 69, 0.28);
-  box-shadow: 0 5px 10px -3px rgba(26, 41, 69, 0.28);
+  background: rgba(26, 41, 69, 0.16);
+  border: none;
+  box-shadow: none;
   z-index: 1;
-  transition: border-color 240ms var(--ease), background-color 240ms var(--ease), box-shadow 240ms var(--ease);
+  transition: transform 240ms var(--ease), background-color 240ms var(--ease);
 }
 
 .outlet-station.is-active .outlet-station__pad {
-  background: #ffffff;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(26, 41, 69, 0.22), 0 6px 12px rgba(26, 41, 69, 0.35);
+  background: rgba(26, 41, 69, 0.35);
+  transform: scale(1.12);
 }
 
 .outlet-station.is-near-terra .outlet-station__pad {
-  background: #f0fdfa;
-  border-color: #0f766e;
-  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.38);
+  background: rgba(15, 118, 110, 0.35);
+  transform: scale(1.1);
 }
 
 /* Partikel Efek Alat Menyala (Uap / Busa / Dingin) */
@@ -4731,23 +4729,24 @@ body.is-game-tutorial .topbar,
   }
 }
 
-/* Papan Nama HUD Alat di Bawah Pedestal */
+/* Papan Nama HUD Alat di Bawah Alat (Gaya Game Minimalis Tanpa Kotak Tebal) */
 .outlet-station__hud {
-  margin-top: 0.12rem;
+  margin-top: 0.18rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.14rem 0.45rem;
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow:
-    0 0 0 1px rgba(26, 41, 69, 0.18),
-    0 4px 10px -4px rgba(15, 23, 42, 0.24);
+  padding: 0.12rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.18);
+  border: none;
 }
 
 .outlet-station.is-active .outlet-station__hud {
   background: #1a2945;
+  box-shadow: 0 4px 10px -2px rgba(26, 41, 69, 0.35);
 }
 
 .outlet-station__name {
@@ -5231,8 +5230,8 @@ body.is-game-tutorial .topbar,
   }
 
   .outlet-station__pad {
-    width: 3.35rem;
-    height: 0.95rem;
+    width: 2.9rem;
+    height: 0.7rem;
   }
 
   .outlet-station__name {
