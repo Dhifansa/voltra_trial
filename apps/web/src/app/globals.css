@@ -4815,14 +4815,14 @@ body.is-game-tutorial .topbar,
 
 /* Papan Nama HUD Alat di Bawah Alat (Gaya Game Minimalis Tanpa Kotak Tebal) */
 .outlet-station__hud {
-  margin-top: 0.18rem;
+  margin-top: 0.12rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.12rem 0.42rem;
+  padding: 0.08rem 0.38rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(2px);
   box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.18);
   border: none;
@@ -4834,7 +4834,7 @@ body.is-game-tutorial .topbar,
 }
 
 .outlet-station__name {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.15;
@@ -4846,7 +4846,7 @@ body.is-game-tutorial .topbar,
 }
 
 .outlet-station__meta {
-  font-size: 0.52rem;
+  font-size: 0.5rem;
   font-weight: 700;
   color: var(--blue);
   line-height: 1.15;

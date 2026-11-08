@@ -94,11 +94,11 @@ const TERRA_SPRITES = {
 
 const TEMPLATE_STATION_MAP: Record<string, Record<string, StationCoord>> = {
   laundry: {
-    lamp: { x: 50, y: 19, zone: 'Plafon Kios' },
-    pump: { x: 17, y: 44, zone: 'Pipa & Tandon Air' },
-    washer: { x: 47, y: 44, zone: 'Area Cuci Basah' },
-    dryer: { x: 78, y: 44, zone: 'Area Pengering' },
-    iron: { x: 24, y: 74, zone: 'Meja Setrika Uap' },
+    lamp: { x: 50, y: 15, zone: 'Plafon Kios' },
+    pump: { x: 14, y: 36, zone: 'Pipa & Tandon Air' },
+    washer: { x: 42, y: 36, zone: 'Area Cuci Basah' },
+    dryer: { x: 76, y: 36, zone: 'Area Pengering' },
+    iron: { x: 20, y: 76, zone: 'Meja Setrika Uap' },
   },
   warung: {
     lamp: { x: 50, y: 19, zone: 'Plafon Warung' },
