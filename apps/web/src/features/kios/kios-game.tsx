@@ -1350,6 +1350,65 @@ function KiosPlay({
               )}
             </div>
           </div>
+
+          {/* ==================================================================== */}
+          {/* POP-UP MODAL: Pengaturan Jam Pakai Pas di Atas Game (Tanpa Scroll)   */}
+          {/* ==================================================================== */}
+          {selected && showHourModal && (
+            <div
+              ref={controlRef}
+              className={`outlet-modal-backdrop ${spotlightActive ? 'tutorial-pop' : ''}`}
+              onClick={() => setShowHourModal(false)}
+            >
+              <div
+                className="outlet-modal-dialog"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-label={`Pengaturan Jam Pakai ${selected.appliance.name}`}
+              >
+                <div className="outlet-modal-header">
+                  <span className="outlet-modal-title">Cek Jam & Pemakaian Alat</span>
+                  <button
+                    type="button"
+                    className="outlet-modal-close"
+                    onClick={() => setShowHourModal(false)}
+                    aria-label="Tutup pop up"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <ApplianceControl
+                  key={selected.uid}
+                  slot={selected}
+                  zoneName={stationPositions[selected.uid]?.zone}
+                  rpDay={result.per_slot[selected.uid]?.rp_day ?? 0}
+                  rpHour={result.per_slot[selected.uid]?.rp_hour ?? 0}
+                  kwh={result.per_slot[selected.uid]?.kwh ?? 0}
+                  removable={isKustom || state.slots.length > 1}
+                  showTutorialNext={tutorialRunning && stage === 'set-hours'}
+                  onNextAppliance={handleFinishCurrentApplianceHours}
+                  onInteractionCommit={
+                    tutorialRunning && stage === 'set-hours'
+                      ? handleFinishCurrentApplianceHours
+                      : undefined
+                  }
+                  onHours={(h) => onChange(setHours(state, selected.uid, h))}
+                  onToggle={() => onChange(toggleSlot(state, selected.uid))}
+                  onRemove={() => {
+                    onChange(removeSlot(state, selected.uid), true);
+                    setSelectedUid(null);
+                    setShowHourModal(false);
+                    if (tutorialRunning) {
+                      setStage('pick-appliance');
+                      setPopupOpen(true);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </Bezel>
       </div>
 
@@ -1380,9 +1439,6 @@ function KiosPlay({
                     if (tutorialRunning) {
                       setStage('set-hours');
                       setPopupOpen(true);
-                      setTimeout(() => {
-                        controlRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      }, 80);
                     }
                   }}
                 >
@@ -1394,65 +1450,6 @@ function KiosPlay({
               ))}
             </div>
           </Bezel>
-        </div>
-      )}
-
-      {/* ==================================================================== */}
-      {/* POP-UP MODAL: Pengaturan Jam Pakai Per Hari (Cek Jam Alat)           */}
-      {/* ==================================================================== */}
-      {selected && showHourModal && (
-        <div
-          ref={controlRef}
-          className={`outlet-modal-backdrop ${spotlightActive ? 'tutorial-pop' : ''}`}
-          onClick={() => setShowHourModal(false)}
-        >
-          <div
-            className="outlet-modal-dialog"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Pengaturan Jam Pakai ${selected.appliance.name}`}
-          >
-            <div className="outlet-modal-header">
-              <span className="outlet-modal-title">Cek Jam & Pemakaian Alat</span>
-              <button
-                type="button"
-                className="outlet-modal-close"
-                onClick={() => setShowHourModal(false)}
-                aria-label="Tutup pop up"
-              >
-                ✕
-              </button>
-            </div>
-
-            <ApplianceControl
-              key={selected.uid}
-              slot={selected}
-              zoneName={stationPositions[selected.uid]?.zone}
-              rpDay={result.per_slot[selected.uid]?.rp_day ?? 0}
-              rpHour={result.per_slot[selected.uid]?.rp_hour ?? 0}
-              kwh={result.per_slot[selected.uid]?.kwh ?? 0}
-              removable={isKustom || state.slots.length > 1}
-              showTutorialNext={tutorialRunning && stage === 'set-hours'}
-              onNextAppliance={handleFinishCurrentApplianceHours}
-              onInteractionCommit={
-                tutorialRunning && stage === 'set-hours'
-                  ? handleFinishCurrentApplianceHours
-                  : undefined
-              }
-              onHours={(h) => onChange(setHours(state, selected.uid, h))}
-              onToggle={() => onChange(toggleSlot(state, selected.uid))}
-              onRemove={() => {
-                onChange(removeSlot(state, selected.uid), true);
-                setSelectedUid(null);
-                setShowHourModal(false);
-                if (tutorialRunning) {
-                  setStage('pick-appliance');
-                  setPopupOpen(true);
-                }
-              }}
-            />
-          </div>
         </div>
       )}
 
