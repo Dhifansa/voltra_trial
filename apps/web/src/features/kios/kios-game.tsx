@@ -919,20 +919,23 @@ function KiosPlay({
       </div>
 
       {/* ==================================================================== */}
-      {/* BAGIAN SCREEN 1: Dunia Game Kios 2D Interaktif Sesuai Jenis Usaha    */}
-      {/* - Dunia & Aksesoris mengikuti jenis kios (Laundry/Warung/Roti/Kustom)*/}
-      {/* - Karakter Terra bebas berjalan, menyentuh alat & aksesoris          */}
+      {/* LAYOUT GRID: Responsif di Mobile (1 Kolom) & Desktop/Tablet (Side-by-side) */}
       {/* ==================================================================== */}
-      <div
-        ref={sceneRef}
-        className={
-          spotlightActive
-            ? stage === 'pick-appliance'
-              ? 'tutorial-pop'
-              : 'tutorial-dim'
-            : ''
-        }
-      >
+      <div className="kios-stage-grid">
+        <div className="kios-stage-grid__scene">
+          {/* BAGIAN SCREEN 1: Dunia Game Kios 2D Interaktif Sesuai Jenis Usaha    */}
+          {/* - Dunia & Aksesoris mengikuti jenis kios (Laundry/Warung/Roti/Kustom)*/}
+          {/* - Karakter Terra bebas berjalan, menyentuh alat & aksesoris          */}
+          <div
+            ref={sceneRef}
+            className={
+              spotlightActive
+                ? stage === 'pick-appliance'
+                  ? 'tutorial-pop'
+                  : 'tutorial-dim'
+                : ''
+            }
+          >
         <Bezel
           coreClassName={`scene scene--${mood} scene--time-${timeOfDay} ${
             roomLit ? 'is-lit' : 'is-dimmed'
@@ -1251,6 +1254,7 @@ function KiosPlay({
                   handleDpadStart(-1, 0);
                 }}
                 onTouchEnd={handleDpadEnd}
+                onTouchCancel={handleDpadEnd}
               >
                 ◀
               </button>
@@ -1267,6 +1271,7 @@ function KiosPlay({
                     handleDpadStart(0, -1);
                   }}
                   onTouchEnd={handleDpadEnd}
+                  onTouchCancel={handleDpadEnd}
                 >
                   ▲
                 </button>
@@ -1282,6 +1287,7 @@ function KiosPlay({
                     handleDpadStart(0, 1);
                   }}
                   onTouchEnd={handleDpadEnd}
+                  onTouchCancel={handleDpadEnd}
                 >
                   ▼
                 </button>
@@ -1298,6 +1304,7 @@ function KiosPlay({
                   handleDpadStart(1, 0);
                 }}
                 onTouchEnd={handleDpadEnd}
+                onTouchCancel={handleDpadEnd}
               >
                 ▶
               </button>
@@ -1432,11 +1439,11 @@ function KiosPlay({
           </Bezel>
         </div>
       )}
+    </div>
 
-      {/* ==================================================================== */}
-      {/* BAGIAN SCREEN 3: Tagihan Simulasi & Lanjutkan ke Aplikasi Utama      */}
-      {/* Pop-out tajam saat `stage === 'summary'`, ngeblur saat tahap 1 & 2    */}
-      {/* ==================================================================== */}
+    {/* BAGIAN SCREEN 3: Tagihan Simulasi & Lanjutkan ke Aplikasi Utama      */}
+    {/* Pop-out tajam saat `stage === 'summary'`, ngeblur saat tahap 1 & 2    */}
+    <div className="kios-stage-grid__summary">
       <div
         ref={summaryRef}
         className={`stack-gap ${
@@ -1501,6 +1508,8 @@ function KiosPlay({
         </Link>
         .
       </p>
+    </div>
+  </div>
 
       {/* ==================================================================== */}
       {/* TUTORIAL GAME TERRA (DIRENDER KE BODY DI ATAS NAVBAR)                */}

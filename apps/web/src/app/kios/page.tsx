@@ -5,7 +5,7 @@ export const metadata = { title: 'Kios Virtual · Voltra' };
 
 export default function KiosPage() {
   return (
-    <main className="page">
+    <main className="page page--wide">
       <section className="page-head">
         <Reveal>
           <Eyebrow>Kios Virtual · gratis</Eyebrow>

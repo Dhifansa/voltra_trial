@@ -5,7 +5,7 @@ export const metadata = { title: 'Biaya listrik · Voltra' };
 
 export default function BiayaPage() {
   return (
-    <main className="page">
+    <main className="page page--wide">
       <section className="page-head">
         <Reveal>
           <Eyebrow>Rincian biaya · 24 jam</Eyebrow>
