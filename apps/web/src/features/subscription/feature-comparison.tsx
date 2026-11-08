@@ -35,7 +35,7 @@ export function FeatureComparison({ lang = 'id' }: FeatureComparisonProps) {
       if (val) {
         return (
           <span className={`sub-comp-icon sub-comp-icon--check ${isPlus ? 'is-plus' : ''}`}>
-            <Icon name="check" size={16} />
+            <Icon name="check" size={14} />
           </span>
         );
       }

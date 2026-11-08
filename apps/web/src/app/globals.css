@@ -76,6 +76,12 @@
 html,
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -91,9 +97,18 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 button {
@@ -5491,6 +5506,29 @@ body.is-game-tutorial .topbar,
   max-width: 64rem;
   margin: 0 auto;
   box-sizing: border-box;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .page-head.sub-header {
+    padding: 0.25rem 0.1rem 0.85rem;
+  }
+
+  .sub-header .display {
+    font-size: 1.35rem;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+  }
+
+  .sub-header .lede {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    margin-top: 0.35rem;
+  }
+
+  .sub-header__top-row {
+    margin-bottom: 0.2rem;
+  }
 }
 
 .sub-preview-selector {
@@ -5509,20 +5547,29 @@ body.is-game-tutorial .topbar,
   .sub-preview-selector {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.4rem;
-    padding: 0.5rem 0.65rem;
+    gap: 0.35rem;
+    padding: 0.4rem 0.55rem;
+  }
+
+  .sub-preview-selector__head {
+    font-size: 0.62rem;
   }
 
   .sub-preview-selector__list {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     overflow-x: auto;
-    padding-bottom: 0.25rem;
+    padding-bottom: 0.2rem;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     flex-wrap: nowrap;
+  }
+
+  .sub-preview-selector__chip {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.68rem;
   }
 
   .sub-preview-selector__list::-webkit-scrollbar {
@@ -5596,6 +5643,12 @@ body.is-game-tutorial .topbar,
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .sub-header__status-label {
+    font-size: 0.68rem;
+  }
 }
 
 .sub-status-badge {
@@ -5782,6 +5835,8 @@ body.is-game-tutorial .topbar,
   display: flex;
   flex-direction: column;
   transition: transform 260ms var(--ease), box-shadow 260ms var(--ease);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sub-pricing-card:hover {
@@ -5803,8 +5858,8 @@ body.is-game-tutorial .topbar,
 
 @media (max-width: 679px) {
   .sub-pricing-card__core {
-    padding: 1.15rem 1rem;
-    gap: 0.85rem;
+    padding: 1rem 0.85rem;
+    gap: 0.75rem;
   }
 }
 
@@ -5835,6 +5890,12 @@ body.is-game-tutorial .topbar,
   font-size: 1.45rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+@media (max-width: 679px) {
+  .sub-pricing-card__name {
+    font-size: 1.15rem;
+  }
 }
 
 .sub-pricing-card__recommended-pill {
@@ -5872,6 +5933,13 @@ body.is-game-tutorial .topbar,
   color: #cbd5e1;
 }
 
+@media (max-width: 679px) {
+  .sub-pricing-card__desc {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+}
+
 .sub-pricing-card__pricing {
   padding: 0.9rem 0;
   border-top: 1px solid var(--hair);
@@ -5883,10 +5951,17 @@ body.is-game-tutorial .topbar,
   border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
+@media (max-width: 679px) {
+  .sub-pricing-card__pricing {
+    padding: 0.65rem 0;
+  }
+}
+
 .sub-pricing-card__amount-row {
   display: flex;
   align-items: baseline;
   gap: 0.2rem;
+  flex-wrap: wrap;
 }
 
 .sub-pricing-card__currency {
@@ -5903,6 +5978,16 @@ body.is-game-tutorial .topbar,
   font-variant-numeric: tabular-nums;
 }
 
+@media (max-width: 679px) {
+  .sub-pricing-card__currency {
+    font-size: 0.95rem;
+  }
+
+  .sub-pricing-card__amount {
+    font-size: 1.7rem;
+  }
+}
+
 .sub-pricing-card__period {
   font-size: 0.88rem;
   font-weight: 600;
@@ -5914,11 +5999,24 @@ body.is-game-tutorial .topbar,
   color: #94a3b8;
 }
 
+@media (max-width: 679px) {
+  .sub-pricing-card__period {
+    font-size: 0.76rem;
+  }
+}
+
 .sub-pricing-card__billing-note {
   margin: 0.35rem 0 0;
   font-size: 0.76rem;
   color: #2dd4bf;
   font-weight: 600;
+}
+
+@media (max-width: 679px) {
+  .sub-pricing-card__billing-note {
+    font-size: 0.7rem;
+    margin-top: 0.25rem;
+  }
 }
 
 .sub-pricing-card__features {
@@ -5937,12 +6035,29 @@ body.is-game-tutorial .topbar,
   gap: 0.55rem;
 }
 
+@media (max-width: 679px) {
+  .sub-pricing-card__features {
+    gap: 0.45rem;
+  }
+
+  .sub-pricing-card__list {
+    gap: 0.45rem;
+  }
+}
+
 .sub-pricing-card__item {
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
   font-size: 0.835rem;
   line-height: 1.4;
+}
+
+@media (max-width: 679px) {
+  .sub-pricing-card__item {
+    font-size: 0.75rem;
+    gap: 0.45rem;
+  }
 }
 
 .sub-pricing-card__check {
@@ -5955,6 +6070,14 @@ body.is-game-tutorial .topbar,
   border-radius: 999px;
   background: var(--paper-2);
   color: #10b981;
+}
+
+@media (max-width: 679px) {
+  .sub-pricing-card__check {
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.08rem;
+  }
 }
 
 .sub-pricing-card__check.is-plus {
@@ -6044,15 +6167,19 @@ body.is-game-tutorial .topbar,
 .sub-comparison-bezel {
   margin-top: 0.5rem;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .sub-comparison-core {
   padding: 1.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .sub-comparison-core {
-    padding: 1.15rem 0.75rem;
+    padding: 0.95rem 0.65rem;
   }
 }
 
@@ -6067,6 +6194,21 @@ body.is-game-tutorial .topbar,
   letter-spacing: -0.02em;
 }
 
+@media (max-width: 640px) {
+  .sub-comparison-head {
+    margin-bottom: 0.75rem;
+  }
+
+  .sub-comparison-title {
+    font-size: 1.05rem;
+  }
+
+  .sub-comparison-head .hint {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+}
+
 /* Mobile Tabs Switcher (Side-by-Side vs Free vs Plus) */
 .sub-comp-mobile-tabs {
   display: none;
@@ -6076,13 +6218,13 @@ body.is-game-tutorial .topbar,
   .sub-comp-mobile-tabs {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    margin-top: 0.85rem;
+    gap: 0.25rem;
+    margin-top: 0.75rem;
     background: var(--paper-2);
-    padding: 0.25rem;
+    padding: 0.2rem;
     border-radius: 999px;
     width: 100%;
-    max-width: 24rem;
+    max-width: 22rem;
   }
 
   .sub-comp-mobile-tab {
@@ -6090,10 +6232,10 @@ body.is-game-tutorial .topbar,
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.3rem;
-    padding: 0.38rem 0.6rem;
+    gap: 0.25rem;
+    padding: 0.32rem 0.45rem;
     border-radius: 999px;
-    font-size: 0.74rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: var(--muted);
     background: transparent;
@@ -6122,16 +6264,17 @@ body.is-game-tutorial .topbar,
   .sub-table-scroll-hint {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.72rem;
+    gap: 0.3rem;
+    font-size: 0.68rem;
     font-weight: 600;
     color: var(--muted);
-    padding: 0.2rem 0.1rem 0.5rem;
+    padding: 0.15rem 0.1rem 0.4rem;
   }
 }
 
 .sub-comparison-table-wrap {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
@@ -6278,36 +6421,48 @@ body.is-game-tutorial .topbar,
 
   .sub-col-feature {
     width: 48%;
-    min-width: 10rem;
-    padding: 0.65rem 0.5rem;
+    min-width: 7.25rem;
+    max-width: 8.5rem;
+    padding: 0.45rem 0.35rem;
   }
 
   .sub-col-free {
     width: 26%;
-    min-width: 5.5rem;
-    padding: 0.65rem 0.4rem;
+    min-width: 3.5rem;
+    padding: 0.45rem 0.25rem;
   }
 
   .sub-col-plus {
     width: 26%;
-    min-width: 6rem;
-    padding: 0.65rem 0.4rem;
+    min-width: 4rem;
+    padding: 0.45rem 0.25rem;
   }
 
   .sub-cell-feature {
-    padding: 0.65rem 0.5rem;
+    padding: 0.45rem 0.35rem;
   }
 
   .sub-feature-name {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
+    line-height: 1.25;
   }
 
   .sub-feature-desc {
-    font-size: 0.7rem;
+    font-size: 0.64rem;
+    line-height: 1.2;
   }
 
   .sub-cell-val {
-    padding: 0.65rem 0.4rem;
+    padding: 0.45rem 0.25rem;
+  }
+
+  .sub-comp-icon--check {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .sub-comp-text {
+    font-size: 0.7rem;
   }
 }
 
@@ -6320,8 +6475,8 @@ body.is-game-tutorial .topbar,
   .sub-comp-mobile-list {
     display: flex;
     flex-direction: column;
-    gap: 1.15rem;
-    margin-top: 0.85rem;
+    gap: 0.85rem;
+    margin-top: 0.75rem;
   }
 
   .sub-comp-mobile-list-header {
@@ -6332,12 +6487,12 @@ body.is-game-tutorial .topbar,
   .sub-comp-mobile-cat-group {
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
 
   .sub-comp-mobile-cat-title {
     margin: 0;
-    font-size: 0.74rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -6350,16 +6505,16 @@ body.is-game-tutorial .topbar,
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
 
   .sub-comp-mobile-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.65rem 0.85rem;
-    border-radius: 0.85rem;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.75rem;
     background: #ffffff;
     box-shadow: 0 0 0 1px var(--hair), var(--shadow-ambient);
   }
@@ -6367,21 +6522,21 @@ body.is-game-tutorial .topbar,
   .sub-comp-mobile-item__main {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.1rem;
     flex: 1;
     min-width: 0;
   }
 
   .sub-comp-mobile-item__name {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 650;
     color: var(--ink);
   }
 
   .sub-comp-mobile-item__desc {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     color: var(--muted);
-    line-height: 1.35;
+    line-height: 1.3;
   }
 
   .sub-comp-mobile-item__val {
@@ -6420,13 +6575,13 @@ body.is-game-tutorial .topbar,
 
 @media (max-width: 680px) {
   .sub-bottom-cta {
-    padding: 1.25rem 1rem;
+    padding: 0.95rem 0.85rem;
   }
 
   .sub-bottom-cta__inner {
     flex-direction: column;
     text-align: center;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .sub-bottom-cta__text {
@@ -6434,7 +6589,13 @@ body.is-game-tutorial .topbar,
   }
 
   .sub-bottom-cta__title {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+
+  .sub-bottom-cta__text .hint {
+    font-size: 0.76rem;
+    line-height: 1.35;
   }
 
   .sub-bottom-cta__btn-wrap,
@@ -6442,6 +6603,8 @@ body.is-game-tutorial .topbar,
   .sub-bottom-cta__btn-wrap a {
     width: 100%;
     justify-content: center;
+    min-height: 2.45rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -6452,15 +6615,16 @@ body.is-game-tutorial .topbar,
 
 @media (max-width: 680px) {
   .sub-faq-core {
-    padding: 1.25rem 1rem;
+    padding: 0.95rem 0.85rem;
   }
 
   .sub-faq-question {
-    font-size: 0.9rem;
+    font-size: 0.84rem;
   }
 
   .sub-faq-item .hint {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
+    line-height: 1.35;
   }
 }
 
@@ -6868,26 +7032,40 @@ body.is-game-tutorial .topbar,
 
 @media (max-width: 640px) {
   .onboarding-plan-card {
-    padding: 1rem;
-    gap: 0.85rem;
-  }
-  .onboarding-plan-card__amount {
-    font-size: 1.45rem;
+    padding: 0.85rem;
+    gap: 0.65rem;
   }
   .onboarding-plan-card__name {
-    font-size: 1.05rem;
+    font-size: 1rem;
+  }
+  .onboarding-plan-card__badge {
+    font-size: 0.65rem;
+    padding: 0.18rem 0.5rem;
   }
   .onboarding-plan-card__desc {
-    font-size: 0.78rem;
-    margin-bottom: 0.65rem;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
   }
   .onboarding-plan-card__pricing {
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.65rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+  }
+  .onboarding-plan-card__amount {
+    font-size: 1.35rem;
+  }
+  .onboarding-plan-card__features {
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+  .onboarding-plan-card__feature-item {
+    font-size: 0.74rem;
+    gap: 0.35rem;
   }
   .onboarding-plan-card__btn {
-    min-height: 2.6rem;
-    font-size: 0.8rem;
+    min-height: 2.35rem;
+    font-size: 0.78rem;
+    padding: 0.45rem 0.65rem;
   }
 }
 
