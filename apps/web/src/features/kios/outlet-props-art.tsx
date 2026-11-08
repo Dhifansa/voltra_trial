@@ -11,24 +11,6 @@ export interface InteractivePropDef {
 export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
   laundry: [
     {
-      id: 'detergent',
-      name: 'Rak Deterjen & Pewangi',
-      zone: 'Dinding Kiri',
-      x: 31,
-      y: 22,
-      badge: '🫧 Sabun Takar',
-      tip: 'Takaran deterjen yang pas bikin bilasan cepat selesai—Pompa Air & Mesin Cuci tidak kerja dua kali!',
-    },
-    {
-      id: 'rack',
-      name: 'Jemuran Baju Gantung',
-      zone: 'Gantungan Atas',
-      x: 68,
-      y: 23,
-      badge: '👕 Jemur Angin',
-      tip: 'Tiriskan & angin-anginkan cucian sebentar sebelum masuk Pengering, bisa hemat waktu pengeringan 30%!',
-    },
-    {
       id: 'basket',
       name: 'Keranjang Cucian',
       zone: 'Area Sortir',
@@ -49,15 +31,6 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
   ],
   warung: [
     {
-      id: 'menuboard',
-      name: 'Papan Menu Harian',
-      zone: 'Dinding Warung',
-      x: 32,
-      y: 21,
-      badge: '📋 Menu Spesial',
-      tip: 'Siapkan bahan masakan sekaligus sebelum jam makan siang agar pintu Kulkas tidak dibuka-tutup terus!',
-    },
-    {
       id: 'diningtable',
       name: 'Meja Makan Pelanggan',
       zone: 'Area Pelanggan',
@@ -65,15 +38,6 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
       y: 62,
       badge: '🍜 Meja #1',
       tip: 'Nyalakan Kipas Angin saat ada pelanggan di meja makan, dan matikan saat jam sepi sore hari.',
-    },
-    {
-      id: 'wartegcase',
-      name: 'Etalase Kaca Lauk',
-      zone: 'Meja Saji Depan',
-      x: 45,
-      y: 76,
-      badge: '🍛 12 Lauk Siap',
-      tip: 'Jangan masukkan kuah atau lauk yang masih panas mengepul langsung ke dalam Kulkas/Freezer ya!',
     },
     {
       id: 'warung-counter',
@@ -96,24 +60,6 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
       tip: 'Panggang beberapa loyang berurutan saat Oven sudah panas—pemanasan awal Oven memakan listrik terbesar!',
     },
     {
-      id: 'pastrytable',
-      name: 'Meja Ulen & Loyang',
-      zone: 'Area Adonan',
-      x: 15,
-      y: 60,
-      badge: '🥖 Meja Adonan',
-      tip: 'Siapkan semua loyang adonan terlebih dahulu sebelum menyalakan pemanas Oven Listrik!',
-    },
-    {
-      id: 'floursack',
-      name: 'Karung Tepung & Mentega',
-      zone: 'Stok Bahan',
-      x: 58,
-      y: 61,
-      badge: '🌾 Terigu 25 Kg',
-      tip: 'Keluarkan mentega dari Chiller 15 menit sebelum diaduk agar putaran Mixer lebih ringan dan cepat selesai.',
-    },
-    {
       id: 'bakery-counter',
       name: 'Kasir & Kotak Kue',
       zone: 'Kasir Bakery',
@@ -125,15 +71,6 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
   ],
   kustom: [
     {
-      id: 'targetboard',
-      name: 'Papan Target Hemat',
-      zone: 'Dinding Kios',
-      x: 32,
-      y: 21,
-      badge: '🎯 Target -10%',
-      tip: 'Fokus kurangi 1–2 jam pemakaian pada alat pemanas atau pendingin terbesar untuk memangkas tagihan cepat!',
-    },
-    {
       id: 'plant',
       name: 'Tanaman Hias Kios',
       zone: 'Sudut Segar',
@@ -141,15 +78,6 @@ export const TEMPLATE_PROPS: Record<string, InteractivePropDef[]> = {
       y: 59,
       badge: '🌿 Udara Sejuk',
       tip: 'Sirkulasi udara dan ventilasi alami yang baik membuat ruangan sejuk tanpa harus menyalakan pendingin terus.',
-    },
-    {
-      id: 'stockrack',
-      name: 'Rak Stok Barang',
-      zone: 'Area Gudang',
-      x: 56,
-      y: 61,
-      badge: '📦 Stok Rapi',
-      tip: 'Beri jarak minimal 10 cm di belakang alat pendingin agar pembuangan panas kompresor tidak terhalang kardus.',
     },
     {
       id: 'kustom-counter',

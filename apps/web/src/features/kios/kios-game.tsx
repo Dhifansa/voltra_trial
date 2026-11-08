@@ -409,9 +409,14 @@ function KiosPlay({
   const [terraDir, setTerraDir] = useState<TerraDirection>('down');
   const [terraStep, setTerraStep] = useState<TerraWalkStep>('left');
   const [terraWalking, setTerraWalking] = useState(false);
-  const walkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const stepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const floorArenaRef = useRef<HTMLDivElement>(null);
+
+  // Controller engine: Loop gerak halus tanpa blink saat tombol ditekan tahan
+  const keysDownRef = useRef<Set<string>>(new Set());
+  const moveAnimFrameRef = useRef<number | null>(null);
+  const lastStepToggleTimeRef = useRef<number>(0);
+  const stopTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dpadHoldingRef = useRef<{ dx: number; dy: number } | null>(null);
 
   // Elemen interaktif dunia game: Waktu (Siang/Sore/Malam), Aksesoris Aktif, Kucing Kios, Efek Klik Lantai, & Balon Dialog Terra
   const [timeOfDay, setTimeOfDay] = useState<'siang' | 'sore' | 'malam'>('siang');
@@ -472,8 +477,8 @@ function KiosPlay({
 
   useEffect(() => {
     return () => {
-      if (walkTimerRef.current) clearTimeout(walkTimerRef.current);
-      if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
+      if (moveAnimFrameRef.current) cancelAnimationFrame(moveAnimFrameRef.current);
+      if (stopTimeoutRef.current) clearTimeout(stopTimeoutRef.current);
       if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
     };
   }, []);
@@ -512,22 +517,11 @@ function KiosPlay({
   const nextUnconfiguredSlot =
     state.slots.find((s) => !configuredUids.includes(s.uid)) ?? top ?? state.slots[0];
 
-  const triggerWalkAnimation = useCallback((durationMs = 380) => {
+  const triggerWalkAnimation = useCallback((durationMs = 400) => {
     setTerraWalking(true);
-    setTerraStep((prev) => (prev === 'left' ? 'right' : 'left'));
-
-    if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
-    stepIntervalRef.current = setInterval(() => {
-      setTerraStep((prev) => (prev === 'left' ? 'right' : 'left'));
-    }, 170);
-
-    if (walkTimerRef.current) clearTimeout(walkTimerRef.current);
-    walkTimerRef.current = setTimeout(() => {
+    if (stopTimeoutRef.current) clearTimeout(stopTimeoutRef.current);
+    stopTimeoutRef.current = setTimeout(() => {
       setTerraWalking(false);
-      if (stepIntervalRef.current) {
-        clearInterval(stepIntervalRef.current);
-        stepIntervalRef.current = null;
-      }
     }, durationMs);
   }, []);
 
@@ -648,15 +642,31 @@ function KiosPlay({
     });
   }, [showTerraBubble]);
 
-  // Gerakkan Terra dengan langkah D-Pad atau Keyboard (WASD / Arrow)
-  const moveTerraByDelta = useCallback(
-    (dx: number, dy: number) => {
-      if (dx < 0) setTerraDir('left');
-      else if (dx > 0) setTerraDir('right');
-      else if (dy < 0) setTerraDir('up');
-      else if (dy > 0) setTerraDir('down');
+  // Gerakkan Terra dengan langkah halus tanpa blink (dipanggil tiap frame / event)
+  const applyMovement = useCallback(
+    (dx: number, dy: number, isContinuous = false) => {
+      if (dx === 0 && dy === 0) return;
 
-      triggerWalkAnimation(260);
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        setTerraDir(dx < 0 ? 'left' : 'right');
+      } else {
+        setTerraDir(dy < 0 ? 'up' : 'down');
+      }
+
+      setTerraWalking(true);
+
+      const now = performance.now();
+      if (now - lastStepToggleTimeRef.current > 160) {
+        lastStepToggleTimeRef.current = now;
+        setTerraStep((prev) => (prev === 'left' ? 'right' : 'left'));
+      }
+
+      if (stopTimeoutRef.current) clearTimeout(stopTimeoutRef.current);
+      if (!isContinuous) {
+        stopTimeoutRef.current = setTimeout(() => {
+          setTerraWalking(false);
+        }, 220);
+      }
 
       setTerraPos((prev) => {
         const next = {
@@ -693,36 +703,102 @@ function KiosPlay({
         return next;
       });
     },
-    [state.slots, stationPositions, worldProps, triggerWalkAnimation, showTerraBubble],
+    [state.slots, stationPositions, worldProps, showTerraBubble],
   );
 
-  // Keyboard listener (Arrow keys / WASD) untuk menggerakkan Terra
+  // Loop update continuous saat tombol panah / WASD / D-pad ditahan (60 FPS smooth)
+  const updateContinuousMovement = useCallback(() => {
+    let vx = 0;
+    let vy = 0;
+    const speed = 0.58; // persentase per frame 60fps
+
+    const keys = keysDownRef.current;
+    if (keys.has('arrowleft') || keys.has('a')) vx -= speed;
+    if (keys.has('arrowright') || keys.has('d')) vx += speed;
+    if (keys.has('arrowup') || keys.has('w')) vy -= speed;
+    if (keys.has('arrowdown') || keys.has('s')) vy += speed;
+
+    if (dpadHoldingRef.current) {
+      vx += dpadHoldingRef.current.dx * speed;
+      vy += dpadHoldingRef.current.dy * speed;
+    }
+
+    if (vx !== 0 || vy !== 0) {
+      applyMovement(vx, vy, true);
+      moveAnimFrameRef.current = requestAnimationFrame(updateContinuousMovement);
+    } else {
+      if (stopTimeoutRef.current) clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = setTimeout(() => {
+        setTerraWalking(false);
+      }, 80);
+      moveAnimFrameRef.current = null;
+    }
+  }, [applyMovement]);
+
+  const ensureContinuousLoop = useCallback(() => {
+    if (moveAnimFrameRef.current === null) {
+      moveAnimFrameRef.current = requestAnimationFrame(updateContinuousMovement);
+    }
+  }, [updateContinuousMovement]);
+
+  // Handler D-Pad sentuh / tahan di layar HP & desktop
+  const handleDpadStart = useCallback(
+    (dx: number, dy: number) => {
+      dpadHoldingRef.current = { dx, dy };
+      applyMovement(dx * 2.5, dy * 2.5, true);
+      ensureContinuousLoop();
+    },
+    [applyMovement, ensureContinuousLoop],
+  );
+
+  const handleDpadEnd = useCallback(() => {
+    dpadHoldingRef.current = null;
+    if (keysDownRef.current.size === 0) {
+      if (stopTimeoutRef.current) clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = setTimeout(() => {
+        setTerraWalking(false);
+      }, 90);
+    }
+  }, []);
+
+  // Keyboard listener (Arrow keys / WASD) dengan tracking KeyDown & KeyUp tanpa putus-putus
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
-      const step = 7;
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+      const k = e.key.toLowerCase();
+      if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', 'w', 'a', 's', 'd'].includes(k)) {
         e.preventDefault();
-        moveTerraByDelta(-step, 0);
-      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        e.preventDefault();
-        moveTerraByDelta(step, 0);
-      } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        e.preventDefault();
-        moveTerraByDelta(0, -step);
-      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        e.preventDefault();
-        moveTerraByDelta(0, step);
+        keysDownRef.current.add(k);
+        ensureContinuousLoop();
       } else if (e.key === 'Enter' && nearestSlot) {
         e.preventDefault();
         handlePickAppliance(nearestSlot.uid, true);
       }
     };
+
+    const onKeyUp = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase();
+      keysDownRef.current.delete(k);
+    };
+
+    const onBlur = () => {
+      keysDownRef.current.clear();
+      dpadHoldingRef.current = null;
+      setTerraWalking(false);
+    };
+
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [moveTerraByDelta, nearestSlot, handlePickAppliance]);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
+    };
+  }, [ensureContinuousLoop, nearestSlot, handlePickAppliance]);
 
   // Klik di lantai outlet -> Terra berjalan ke titik tersebut + efek ripple langkah
   function handleArenaClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -1184,7 +1260,14 @@ function KiosPlay({
                 type="button"
                 className="outlet-dpad__btn"
                 aria-label="Gerakkan Terra ke kiri"
-                onClick={() => moveTerraByDelta(-9, 0)}
+                onMouseDown={() => handleDpadStart(-1, 0)}
+                onMouseUp={handleDpadEnd}
+                onMouseLeave={handleDpadEnd}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  handleDpadStart(-1, 0);
+                }}
+                onTouchEnd={handleDpadEnd}
               >
                 ◀
               </button>
@@ -1193,7 +1276,14 @@ function KiosPlay({
                   type="button"
                   className="outlet-dpad__btn"
                   aria-label="Gerakkan Terra ke atas"
-                  onClick={() => moveTerraByDelta(0, -9)}
+                  onMouseDown={() => handleDpadStart(0, -1)}
+                  onMouseUp={handleDpadEnd}
+                  onMouseLeave={handleDpadEnd}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    handleDpadStart(0, -1);
+                  }}
+                  onTouchEnd={handleDpadEnd}
                 >
                   ▲
                 </button>
@@ -1201,7 +1291,14 @@ function KiosPlay({
                   type="button"
                   className="outlet-dpad__btn"
                   aria-label="Gerakkan Terra ke bawah"
-                  onClick={() => moveTerraByDelta(0, 9)}
+                  onMouseDown={() => handleDpadStart(0, 1)}
+                  onMouseUp={handleDpadEnd}
+                  onMouseLeave={handleDpadEnd}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    handleDpadStart(0, 1);
+                  }}
+                  onTouchEnd={handleDpadEnd}
                 >
                   ▼
                 </button>
@@ -1210,7 +1307,14 @@ function KiosPlay({
                 type="button"
                 className="outlet-dpad__btn"
                 aria-label="Gerakkan Terra ke kanan"
-                onClick={() => moveTerraByDelta(9, 0)}
+                onMouseDown={() => handleDpadStart(1, 0)}
+                onMouseUp={handleDpadEnd}
+                onMouseLeave={handleDpadEnd}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  handleDpadStart(1, 0);
+                }}
+                onTouchEnd={handleDpadEnd}
               >
                 ▶
               </button>
