@@ -8,10 +8,8 @@ import { formatRp } from '@/lib/format';
 import { getDictionary } from '@/lib/i18n';
 import {
   SUBSCRIPTION_PLANS,
-  type BillingCycle,
   type SubscriptionStateStatus,
 } from '@/lib/subscription-config';
-import { BillingToggle } from './billing-toggle';
 import { FeatureComparison } from './feature-comparison';
 import { PricingCard } from './pricing-card';
 import { StatePreviewSelector } from './state-preview-selector';
@@ -26,7 +24,6 @@ export function SubscriptionPageContent() {
   const [status, setStatus] = useState<SubscriptionStateStatus>(
     profile.subscriptionPlan === 'plus' ? 'plus' : 'free',
   );
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -76,10 +73,7 @@ export function SubscriptionPageContent() {
   }
 
   const plusPlan = SUBSCRIPTION_PLANS.plus;
-  const plusPrice =
-    billingCycle === 'yearly'
-      ? plusPlan.pricing.priceYearly
-      : plusPlan.pricing.priceMonthly;
+  const plusPrice = plusPlan.pricing.priceMonthly;
 
   return (
     <div className="sub-container stack-gap">
@@ -201,7 +195,6 @@ export function SubscriptionPageContent() {
       {/* SKELETON LOADING STATE */}
       {status === 'loading' ? (
         <div className="sub-loading-wrap" aria-busy="true" aria-label="Loading plans">
-          <div className="sub-skeleton sub-skeleton--toggle" />
           <div className="sub-pricing-grid">
             <div className="sub-skeleton sub-skeleton--card" />
             <div className="sub-skeleton sub-skeleton--card is-tall" />
@@ -209,18 +202,12 @@ export function SubscriptionPageContent() {
         </div>
       ) : (
         <>
-          {/* BILLING TOGGLE (Monthly vs Yearly 20% OFF) */}
-          <Reveal delay={160}>
-            <BillingToggle cycle={billingCycle} onChange={setBillingCycle} lang={lang} />
-          </Reveal>
-
           {/* PRICING CARDS (Side-by-side) */}
           <section className="sub-pricing-section" aria-label="Subscription Plans">
             <div className="sub-pricing-grid">
               <PricingCard
                 plan={SUBSCRIPTION_PLANS.free}
                 currentStatus={status}
-                billingCycle={billingCycle}
                 onUpgrade={handleUpgradeClick}
                 lang={lang}
               />
@@ -228,7 +215,6 @@ export function SubscriptionPageContent() {
               <PricingCard
                 plan={SUBSCRIPTION_PLANS.plus}
                 currentStatus={status}
-                billingCycle={billingCycle}
                 onUpgrade={handleUpgradeClick}
                 isUpgrading={isUpgrading}
                 lang={lang}
@@ -342,7 +328,7 @@ export function SubscriptionPageContent() {
               <div className="sub-checkout-plan-summary">
                 <div className="row-between">
                   <div>
-                    <h4 className="sub-checkout-plan-name">Voltra Plus ({billingCycle === 'yearly' ? (isEn ? 'Yearly' : 'Tahunan') : (isEn ? 'Monthly' : 'Bulanan')})</h4>
+                    <h4 className="sub-checkout-plan-name">Voltra Plus ({isEn ? 'Monthly' : 'Bulanan'})</h4>
                     <p className="hint">
                       {isEn ? 'Access to all business templates & unlimited AI Gateway' : 'Akses semua template usaha & AI Gateway unlimited'}
                     </p>
@@ -352,12 +338,6 @@ export function SubscriptionPageContent() {
                     <span>/{isEn ? 'mo' : 'bln'}</span>
                   </div>
                 </div>
-
-                {billingCycle === 'yearly' && (
-                  <div className="sub-checkout-billed-badge">
-                    <span>{isEn ? `Billed ${formatRp(plusPlan.pricing.yearlyBilledTotal)}/year (Saved 20%)` : `Ditagih ${formatRp(plusPlan.pricing.yearlyBilledTotal)}/tahun (Hemat 20%)`}</span>
-                  </div>
-                )}
               </div>
 
               <div className="sub-checkout-meta">

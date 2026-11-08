@@ -12,8 +12,6 @@ export type BillingCycle = 'monthly' | 'yearly';
 
 export interface PlanPricing {
   priceMonthly: number;
-  priceYearly: number; // Harga per bulan jika bayar tahunan
-  yearlyBilledTotal: number;
   currency: string;
 }
 
@@ -58,8 +56,6 @@ export const SUBSCRIPTION_PLANS: Record<PlanTier, PlanConfig> = {
     descriptionEn: 'Basic free plan to explore 2D Virtual Kiosk simulation and daily electricity tracking.',
     pricing: {
       priceMonthly: 0,
-      priceYearly: 0,
-      yearlyBilledTotal: 0,
       currency: 'Rp',
     },
     keyHighlightsId: [
@@ -85,9 +81,7 @@ export const SUBSCRIPTION_PLANS: Record<PlanTier, PlanConfig> = {
     descriptionId: 'Solusi lengkap untuk UMKM aktif: AI Gateway tanpa batas, multi-outlet, & rekomendasi hemat presisi.',
     descriptionEn: 'Complete solution for active businesses: unlimited AI Gateway, multi-outlet & precise saving insights.',
     pricing: {
-      priceMonthly: 49000,
-      priceYearly: 39000,
-      yearlyBilledTotal: 468000, // 39.000 x 12
+      priceMonthly: 19000,
       currency: 'Rp',
     },
     keyHighlightsId: [

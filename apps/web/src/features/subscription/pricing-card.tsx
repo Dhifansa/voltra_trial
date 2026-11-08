@@ -3,12 +3,11 @@
 import { Bezel, Eyebrow, IslandButton } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/icon';
 import { formatRp } from '@/lib/format';
-import type { BillingCycle, PlanConfig, SubscriptionStateStatus } from '@/lib/subscription-config';
+import type { PlanConfig, SubscriptionStateStatus } from '@/lib/subscription-config';
 
 interface PricingCardProps {
   plan: PlanConfig;
   currentStatus: SubscriptionStateStatus;
-  billingCycle: BillingCycle;
   onUpgrade: () => void;
   isUpgrading?: boolean;
   lang?: 'id' | 'en';
@@ -17,7 +16,6 @@ interface PricingCardProps {
 export function PricingCard({
   plan,
   currentStatus,
-  billingCycle,
   onUpgrade,
   isUpgrading = false,
   lang = 'id',
@@ -28,8 +26,7 @@ export function PricingCard({
     (plan.id === 'free' && currentStatus === 'free') ||
     (plan.id === 'plus' && currentStatus === 'plus');
 
-  const price =
-    billingCycle === 'yearly' ? plan.pricing.priceYearly : plan.pricing.priceMonthly;
+  const price = plan.pricing.priceMonthly;
 
   const highlights = isEn ? plan.keyHighlightsEn : plan.keyHighlightsId;
   const description = isEn ? plan.descriptionEn : plan.descriptionId;
@@ -84,13 +81,9 @@ export function PricingCard({
 
         {isPlus && price > 0 && (
           <p className="sub-pricing-card__billing-note">
-            {billingCycle === 'yearly'
-              ? isEn
-                ? `Billed annually (${formatRp(plan.pricing.yearlyBilledTotal)}/yr)`
-                : `Ditagih tahunan (${formatRp(plan.pricing.yearlyBilledTotal)}/tahun)`
-              : isEn
-                ? 'Billed monthly, cancel anytime'
-                : 'Ditagih per bulan, bisa dibatalkan kapan saja'}
+            {isEn
+              ? 'Billed monthly, cancel anytime'
+              : 'Ditagih per bulan, bisa dibatalkan kapan saja'}
           </p>
         )}
       </div>

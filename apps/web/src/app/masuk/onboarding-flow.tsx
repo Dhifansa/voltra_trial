@@ -819,7 +819,7 @@ export function OnboardingFlow() {
                     Langsung buka semua fitur canggih tanpa batasan kuota untuk efisiensi bisnis maksimal.
                   </p>
                   <div className="onboarding-plan-card__pricing">
-                    <span className="onboarding-plan-card__amount" style={{ color: '#2DD4BF' }}>Rp 49.000</span>
+                    <span className="onboarding-plan-card__amount" style={{ color: '#2DD4BF' }}>Rp 19.000</span>
                     <span className="onboarding-plan-card__period">/ bulan</span>
                   </div>
                   <ul className="onboarding-plan-card__features" aria-label="Fitur Voltra Plus">
