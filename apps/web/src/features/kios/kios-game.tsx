@@ -112,7 +112,7 @@ const TEMPLATE_STATION_MAP: Record<string, Record<string, StationCoord>> = {
     oven: { x: 18, y: 44, zone: 'Dapur Panggang' },
     mixer: { x: 48, y: 44, zone: 'Meja Adonan' },
     chiller: { x: 78, y: 44, zone: 'Pendingin Bahan' },
-    display: { x: 35, y: 74, zone: 'Etalase Depan' },
+    display: { x: 25, y: 74, zone: 'Etalase Depan' },
   },
   kustom: {
     lamp: { x: 50, y: 19, zone: 'Plafon Utama' },
