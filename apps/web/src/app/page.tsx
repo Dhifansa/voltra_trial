@@ -143,9 +143,6 @@ export default function HomePage() {
               <IslandLink href="/biaya" variant="ghost">
                 {isEn ? 'View details' : 'Lihat rincian'}
               </IslandLink>
-              <IslandLink href="/kios" variant="ghost" icon="store">
-                {isEn ? 'Adjust in 2D Kiosk' : 'Atur di Kios 2D'}
-              </IslandLink>
             </div>
           </Bezel>
         </Reveal>

@@ -28,9 +28,6 @@ export function CostBreakdown() {
           <span className="chip chip--high">{template.display_name}</span>
           <span className="chip">{profile.tariffName}</span>
         </div>
-        <IslandLink href="/kios" variant="ghost" icon="store">
-          {t.cost.manageKiosk}
-        </IslandLink>
       </div>
 
       <div className="segmented" role="tablist" aria-label="Tampilan rincian biaya">
@@ -216,14 +213,11 @@ function Breakdown({
                   <span className="cost-row__rp">{s.unexplained_rp !== null ? formatRp(s.unexplained_rp) : '—'}</span>
                 </div>
                 <p className="gap-row__note">
-                  Tidak kami bagi paksa ke alat lain. Tambahkan alat yang belum tercatat agar angka ini mengecil.
+                  Tambahkan alat yang belum tercatat agar angka selisih ini mengecil.
                 </p>
                 <div className="row-gap">
                   <IslandLink href="/catat" variant="ghost" icon="tag">
                     Foto label alat
-                  </IslandLink>
-                  <IslandLink href="/kios" variant="ghost" icon="store">
-                    Atur alat di Kios
                   </IslandLink>
                 </div>
               </div>
