@@ -117,7 +117,7 @@ function PhotoCapture({
   scenario: CaptureScenario;
   onManual: (prefill?: string) => void;
 }) {
-  const { analytics, addCustomAppliance } = useVoltraApp();
+  const { analytics, addCustomAppliance, recordDataUpdate } = useVoltraApp();
   const [phase, setPhase] = useState<PhotoPhase>({ kind: 'pick' });
   const [preview, setPreview] = useState<string | null>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -225,7 +225,10 @@ function PhotoCapture({
         <MeterResult
           data={phase.data}
           onRetake={reset}
-          onSave={(v) => setPhase({ kind: 'saved', summary: `Meter ${v} kWh tersimpan` })}
+          onSave={(v) => {
+            recordDataUpdate('meter', v);
+            setPhase({ kind: 'saved', summary: `Meter ${v} kWh tersimpan` });
+          }}
         />
       )}
       {phase.kind === 'label' && (
@@ -234,6 +237,7 @@ function PhotoCapture({
           onRetake={reset}
           onSave={(name, w) => {
             addCustomAppliance(name, Number(w));
+            recordDataUpdate('label', `${name} ${w}W`);
             setPhase({
               kind: 'saved',
               summary: `${name} (${w} W) telah ditambahkan ke Kios 2D & Rincian Biaya`,
@@ -416,7 +420,7 @@ type VoicePhase = 'idle' | 'recording' | 'processing' | 'result' | 'error' | 'sa
 const MAX_SECONDS = 60;
 
 function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onManual: () => void }) {
-  const { kios, analytics, applyVoiceHours } = useVoltraApp();
+  const { kios, analytics, applyVoiceHours, recordDataUpdate } = useVoltraApp();
   const sttData = analytics.sttExample;
   const [phase, setPhase] = useState<VoicePhase>('idle');
   const [seconds, setSeconds] = useState(0);
@@ -525,6 +529,7 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
                 Object.entries(hours).map(([k, v]) => [k, Number(v.replace(',', '.'))]),
               );
               applyVoiceHours(numericMap, sttData.work_volume?.value);
+              recordDataUpdate('voice');
               setPhase('saved');
             }}
           >
@@ -606,7 +611,7 @@ function VoiceCapture({ scenario, onManual }: { scenario: CaptureScenario; onMan
 /* ====================================================================== */
 
 function ManualForm({ prefill }: { prefill: string }) {
-  const { profile } = useVoltraApp();
+  const { profile, recordDataUpdate } = useVoltraApp();
   const [kind, setKind] = useState<'meter' | 'token'>(
     profile.billingType === 'prepaid' ? 'token' : 'meter',
   );
@@ -692,7 +697,14 @@ function ManualForm({ prefill }: { prefill: string }) {
       </label>
 
       <div className="capture__actions">
-        <IslandButton icon="check" disabled={!valid} onClick={() => setSaved(true)}>
+        <IslandButton
+          icon="check"
+          disabled={!valid}
+          onClick={() => {
+            recordDataUpdate('manual', value);
+            setSaved(true);
+          }}
+        >
           Simpan
         </IslandButton>
       </div>

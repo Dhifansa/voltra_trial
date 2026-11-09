@@ -58,7 +58,7 @@ export function CostBreakdown() {
           ? 'Rincian pemakaian listrik presisi dihitung per masing-masing alat.'
           : id === 'category'
             ? 'Pengelompokan pemakaian listrik berdasarkan kategori fungsi peralatan.'
-            : 'Simulasi tampilan data awal sebelum syarat histori 3 hari foto meter terpenuhi.'}
+            : 'Simulasi tampilan data awal sebelum syarat 2 kali pembaruan data terpenuhi.'}
       </p>
 
       <div key={`${profile.templateId}-${id}`} className="swap">
@@ -67,6 +67,7 @@ export function CostBreakdown() {
             s={s}
             kiosEstimateRp={analytics.kiosResult.rp_day}
             unitLabel={profile.unitLabel}
+            recordCount={profile.recordCount ?? 1}
           />
         ) : (
           <Breakdown
@@ -257,17 +258,19 @@ function Breakdown({
 }
 
 function Insufficient({
-  s,
+  s: _s,
   kiosEstimateRp,
   unitLabel,
+  recordCount = 1,
 }: {
   s: CostScenario;
   kiosEstimateRp: number;
   unitLabel: string;
+  recordCount?: number;
 }) {
-  const days = 1;
-  const need = 3;
-  const remainingDays = need - days;
+  const count = Math.min(2, Math.max(1, recordCount));
+  const need = 2;
+  const remaining = Math.max(0, need - count);
   const estimateTotal = kiosEstimateRp > 0 ? kiosEstimateRp : 38500;
   const perUnit = Math.round(estimateTotal / Math.max(1, 30));
 
@@ -278,7 +281,7 @@ function Insufficient({
         <Bezel tone="ink" coreClassName="summary">
           <div className="row-between">
             <Eyebrow tone="light">Total Kemarin (Estimasi Sementara)</Eyebrow>
-            <span className="chip chip--mock">Data Awal ({days}/{need} Hari)</span>
+            <span className="chip chip--mock">Data Awal ({count}/{need} Catatan)</span>
           </div>
           <p className="summary__rp">{formatRp(estimateTotal)}</p>
           <p className="summary__meta">
@@ -286,34 +289,42 @@ function Insufficient({
           </p>
 
           <div className="meter-line" aria-hidden="true" style={{ margin: '0.85rem 0 0.5rem' }}>
-            <span style={{ transform: `scaleX(${days / need})` }} />
+            <span style={{ transform: `scaleX(${count / need})` }} />
           </div>
           <div className="row-between summary__foot">
-            <span className="muted-light">Progres data meter: {days} dari {need} hari tercatat</span>
+            <span className="muted-light">Progres pencatatan: {count} dari {need} kali tercatat</span>
             <ConfidenceBadge level="low" />
           </div>
         </Bezel>
 
-        {/* Kartu Edukasi: Aturan Data Histori Wajib Minimal 3 Hari */}
+        {/* Kartu Edukasi: Aturan Data Histori Minimal 2 Kali Catat */}
         <Bezel coreClassName="empty">
           <span className="empty__icon">
             <Icon name="meter" size={28} />
           </span>
           <Eyebrow>Aturan Data Histori</Eyebrow>
           <h2 className="empty__title">
-            Butuh foto meter <em>{remainingDays} hari</em> lagi
+            {remaining > 0 ? (
+              <>
+                Butuh pembaruan data <em>{remaining} kali</em> lagi
+              </>
+            ) : (
+              <>Syarat 2 kali catatan terpenuhi!</>
+            )}
           </h2>
           <p className="empty__text">
-            Total biaya di atas adalah estimasi awal. Sesuai aturan kalkulasi energi, <strong>rincian Rupiah per masing-masing alat baru dapat dibuka setelah minimal {need} hari data foto meter terkumpul</strong> agar angka tidak menebak dan benar-benar terverifikasi.
+            Total biaya di atas adalah estimasi awal. Sesuai aturan kalkulasi energi, <strong>rincian Rupiah per masing-masing alat akan langsung keluar setelah minimal 2 kali pembaruan data</strong> (foto meter, label alat, atau suara) agar perhitungan akurat dan terverifikasi.
           </p>
-          <div className="dots" aria-label={`${days} dari ${need} hari`}>
+          <div className="dots" aria-label={`${count} dari ${need} kali catatan`}>
             {Array.from({ length: need }, (_, i) => (
-              <span key={i} className={i < days ? 'is-on' : ''} />
+              <span key={i} className={i < count ? 'is-on' : ''} />
             ))}
           </div>
           <div className="capture__actions" style={{ marginTop: '0.65rem' }}>
             <IslandLink href="/catat" icon="capture">
-              Foto Meter Sekarang (Hari ke-{days + 1})
+              {remaining > 0
+                ? `Update Data Sekarang (Catatan ke-${count + 1})`
+                : 'Tambah Catatan Baru'}
             </IslandLink>
           </div>
         </Bezel>

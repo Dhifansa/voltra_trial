@@ -60,6 +60,7 @@ export interface BusinessProfileState {
   dailyVolume: number;
   address: string;
   dataDays: number;
+  recordCount?: number;
   trialDaysLeft: number;
   subscriptionPlan: 'free' | 'plus';
   subscriptionStatus: 'trial' | 'active' | 'pending' | 'expired';
@@ -109,6 +110,7 @@ interface VoltraAppContextValue extends StoredAppState {
     subscriptionPlan?: 'free' | 'plus';
   }) => void;
   updateProfile: (patch: Partial<BusinessProfileState>) => void;
+  recordDataUpdate: (type: 'meter' | 'label' | 'voice' | 'manual', detail?: string) => void;
   selectTemplate: (templateId: string, customShopName?: string) => void;
   updateKios: (next: KiosState, rebase?: boolean) => void;
   addCustomAppliance: (name: string, watt: number) => void;
@@ -153,7 +155,8 @@ function buildDefaultState(): StoredAppState {
       unitLabel: tpl.unit.label,
       dailyVolume: tpl.unit.default_daily,
       address: 'Sekaran, Gunungpati, Semarang',
-      dataDays: 5,
+      dataDays: 1,
+      recordCount: 1,
       trialDaysLeft: 30,
       subscriptionPlan: 'free',
       subscriptionStatus: 'trial',
@@ -276,20 +279,23 @@ function computeAnalytics(state: StoredAppState): DerivedAnalytics {
     };
   }
 
+  const isUnlocked = (profile.recordCount ?? 1) >= 2;
+  const effectiveDays = isUnlocked ? Math.max(3, profile.dataDays || 3) : 1;
+
   const scenarios: Record<ScenarioId, CostScenario> = {
     appliance: buildScenario(
       'appliance',
       'Data cukup',
       `Selisih meter kecil, rincian per alat ${tpl.display_name} tampil`,
       1.09,
-      Math.max(3, profile.dataDays),
+      effectiveDays,
     ),
     category: buildScenario(
       'category',
       'Selisih besar',
       'Turun ke tampilan kelompok alat',
       1.55,
-      Math.max(3, profile.dataDays),
+      effectiveDays,
     ),
     insufficient: buildScenario(
       'insufficient',
@@ -616,6 +622,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         unitLabel: tpl.unit.label,
         dailyVolume: Math.max(1, input.dailyVolume || tpl.unit.default_daily),
         address: input.address !== undefined ? input.address : prev.profile.address,
+        dataDays: 1,
+        recordCount: 1,
         subscriptionPlan: plan,
         subscriptionStatus: isPlus ? 'active' : 'trial',
         trialDaysLeft: isPlus ? 365 : 30,
@@ -651,6 +659,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
         profile: nextProfile,
         kios: nextKios,
         kiosBaselineRp: nextBaseline,
+      };
+    });
+  }
+
+  function recordDataUpdate(_type: 'meter' | 'label' | 'voice' | 'manual', _detail?: string) {
+    setState((prev) => {
+      const currentCount = prev.profile.recordCount ?? 1;
+      const nextCount = currentCount + 1;
+      const nextDataDays = nextCount >= 2 ? Math.max(3, prev.profile.dataDays || 3) : 1;
+      return {
+        ...prev,
+        profile: {
+          ...prev.profile,
+          recordCount: nextCount,
+          dataDays: nextDataDays,
+        },
       };
     });
   }
@@ -780,6 +804,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         logout,
         saveProfiling,
         updateProfile,
+        recordDataUpdate,
         selectTemplate,
         updateKios,
         addCustomAppliance,
