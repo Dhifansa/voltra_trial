@@ -442,9 +442,9 @@ function KiosPlay({
   // tutorialRunning menjaga sesi panduan tetap aktif walau pop-up ditutup sementara (close)
   const [tutorialRunning, setTutorialRunning] = useState<boolean>(initialTutorial);
   const [popupOpen, setPopupOpen] = useState<boolean>(initialTutorial);
-  const spotlightActive = tutorialRunning && popupOpen;
-
   const [stage, setStage] = useState<TutorialStage>('pick-appliance');
+  const spotlightActive = tutorialRunning && popupOpen && stage !== 'set-hours';
+
   const [configuredUids, setConfiguredUids] = useState<string[]>([]);
 
   const prevTemplateRef = useRef(state.templateId);
@@ -577,7 +577,6 @@ function KiosPlay({
         setShowHourModal(true);
         if (tutorialRunning) {
           setStage('set-hours');
-          setPopupOpen(true);
         }
       }
     },
@@ -853,11 +852,17 @@ function KiosPlay({
 
     const remaining = state.slots.filter((s) => !nextConfigured.includes(s.uid));
     if (remaining.length > 0) {
+      const nextSlot = remaining[0];
+      if (nextSlot && stationPositions[nextSlot.uid]) {
+        const targetPos = stationPositions[nextSlot.uid]!;
+        setTerraPos({
+          x: clampCoord(targetPos.x + (targetPos.x > 50 ? -6 : 6), 14, 86),
+          y: clampCoord(targetPos.y + (targetPos.y < 30 ? 15 : 9), 28, 84),
+        });
+        triggerWalkAnimation(400);
+      }
       setStage('pick-appliance');
       setPopupOpen(true);
-      setTimeout(() => {
-        sceneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 80);
     } else {
       setStage('summary');
       setPopupOpen(true);
@@ -904,12 +909,20 @@ function KiosPlay({
             type="button"
             className="terra-pill-trigger"
             onClick={() => {
+              setShowHourModal(false);
               setTutorialRunning(true);
               setPopupOpen(true);
-              setStage('pick-appliance');
-              setTimeout(() => {
-                sceneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }, 60);
+              if (configuredUids.length >= state.slots.length) {
+                setStage('summary');
+                setTimeout(() => {
+                  summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 60);
+              } else {
+                setStage('pick-appliance');
+                setTimeout(() => {
+                  sceneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 60);
+              }
             }}
           >
             <TerraAvatar mood={roomTerraMood} size={20} />
@@ -1371,8 +1384,13 @@ function KiosPlay({
           {selected && showHourModal && (
             <div
               ref={controlRef}
-              className={`outlet-modal-backdrop ${spotlightActive ? 'tutorial-pop' : ''}`}
-              onClick={() => setShowHourModal(false)}
+              className="outlet-modal-backdrop"
+              onClick={() => {
+                setShowHourModal(false);
+                if (tutorialRunning && stage === 'set-hours') {
+                  setStage('pick-appliance');
+                }
+              }}
             >
               <div
                 className="outlet-modal-dialog"
@@ -1386,12 +1404,31 @@ function KiosPlay({
                   <button
                     type="button"
                     className="outlet-modal-close"
-                    onClick={() => setShowHourModal(false)}
+                    onClick={() => {
+                      setShowHourModal(false);
+                      if (tutorialRunning && stage === 'set-hours') {
+                        setStage('pick-appliance');
+                      }
+                    }}
                     aria-label="Tutup pop up"
                   >
                     ✕
                   </button>
                 </div>
+
+                {tutorialRunning && (
+                  <div className="outlet-modal-terra-hint">
+                    <TerraAvatar mood="mikir" size={32} />
+                    <div className="outlet-modal-terra-hint__body">
+                      <strong>Langkah 2/3 · Atur Jam Pakai</strong>
+                      <span>
+                        {selected.appliance.usage_pattern.always_on
+                          ? `${selected.appliance.name} aktif 24 jam penuh. Klik tombol simpan di bawah untuk melanjutkan.`
+                          : `Geser jam pakai per hari untuk ${selected.appliance.name}, lalu klik simpan.`}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <ApplianceControl
                   key={selected.uid}
@@ -1401,13 +1438,13 @@ function KiosPlay({
                   rpHour={result.per_slot[selected.uid]?.rp_hour ?? 0}
                   kwh={result.per_slot[selected.uid]?.kwh ?? 0}
                   removable={isKustom || state.slots.length > 1}
-                  showTutorialNext={tutorialRunning && stage === 'set-hours'}
-                  onNextAppliance={handleFinishCurrentApplianceHours}
-                  onInteractionCommit={
-                    tutorialRunning && stage === 'set-hours'
-                      ? handleFinishCurrentApplianceHours
-                      : undefined
+                  showTutorialNext={tutorialRunning}
+                  nextLabel={
+                    remainingCount > 1 || (remainingCount === 1 && !configuredUids.includes(selected.uid))
+                      ? 'Simpan & Pilih Alat Berikutnya'
+                      : 'Simpan & Lihat Ringkasan Tagihan'
                   }
+                  onNextAppliance={handleFinishCurrentApplianceHours}
                   onHours={(h) => onChange(setHours(state, selected.uid, h))}
                   onToggle={() => onChange(toggleSlot(state, selected.uid))}
                   onRemove={() => {
@@ -1450,9 +1487,9 @@ function KiosPlay({
                     const newest = next.slots[next.slots.length - 1]!;
                     setSelectedUid(newest.uid);
                     setShowCatalog(false);
+                    setShowHourModal(true);
                     if (tutorialRunning) {
                       setStage('set-hours');
-                      setPopupOpen(true);
                     }
                   }}
                 >
@@ -1547,8 +1584,6 @@ function KiosPlay({
 
       {/* ==================================================================== */}
       {/* TUTORIAL GAME TERRA (DIRENDER KE BODY DI ATAS NAVBAR)                */}
-      {/* Ketika klik Close (×), popupOpen=false tetapi tutorialRunning tetap   */}
-      {/* berjalan dan akan pop-up lagi saat user menyelesaikan tugasnya!      */}
       {/* ==================================================================== */}
       {stage === 'pick-appliance' && (
         <TerraGameTutorial
@@ -1563,41 +1598,11 @@ function KiosPlay({
           }
           message={
             nextUnconfiguredSlot
-              ? `Gerakkan karakter Terra mendekati "${nextUnconfiguredSlot.appliance.name}" atau ketuk langsung alatnya di denah outlet untuk mengatur jam pakainya.`
+              ? `Gerakkan karakter Terra mendekati "${nextUnconfiguredSlot.appliance.name}" atau ketuk langsung alatnya di denah untuk mengatur jam pakainya.`
               : 'Ketuk salah satu alat pada denah outlet di atas untuk mengatur jam pakainya.'
           }
           primaryLabel={configuredUids.length > 0 ? 'Selesai & Lihat Tagihan' : undefined}
           onPrimaryAction={configuredUids.length > 0 ? handleJumpToSummary : undefined}
-          onClose={() => setPopupOpen(false)}
-        />
-      )}
-
-      {stage === 'set-hours' && selected && (
-        <TerraGameTutorial
-          active={spotlightActive}
-          mood={mood === 'hemat' ? 'hore' : 'mikir'}
-          tone={mood === 'hemat' ? 'green' : 'blue'}
-          stepBadge="Tutorial 2/3 · Jam Pakai Per Hari"
-          title={`Atur penggunaan jam pakai per hari: ${selected.appliance.name}`}
-          message={
-            selected.appliance.usage_pattern.always_on
-              ? `${selected.appliance.name} bekerja 24 jam penuh (${formatRp(selectedStats?.rp_day ?? 0)}/hari). Klik tombol di bawah untuk memilih alat berikutnya!`
-              : `Geser slider "Jam pakai per hari" (${selected.on ? `${selected.hours} jam/hari` : 'Mati'} = ${formatRp(selectedStats?.rp_day ?? 0)}/hari), lalu simpan!`
-          }
-          secondaryLabel="Kembali ke Outlet"
-          onSecondaryAction={() => {
-            setStage('pick-appliance');
-            setPopupOpen(true);
-            setTimeout(() => {
-              sceneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 60);
-          }}
-          primaryLabel={
-            remainingCount > 1 || (remainingCount === 1 && !configuredUids.includes(selected.uid))
-              ? 'Simpan & Pilih Alat Berikutnya'
-              : 'Simpan & Lihat Total Tagihan'
-          }
-          onPrimaryAction={handleFinishCurrentApplianceHours}
           onClose={() => setPopupOpen(false)}
         />
       )}
@@ -1612,6 +1617,7 @@ function KiosPlay({
           message={`Total simulasi: ${formatRp(result.rp_day)}/hari (${formatKwh(result.kwh_day)}). Semua pengaturan alat ini sudah otomatis tersinkron ke Rincian Biaya, Beranda, dan Catat Data!`}
           secondaryLabel="Atur Ulang Alat"
           onSecondaryAction={() => {
+            setShowHourModal(false);
             setStage('pick-appliance');
             setPopupOpen(true);
             setTimeout(() => {
@@ -1635,8 +1641,8 @@ function ApplianceControl({
   kwh,
   removable,
   showTutorialNext,
+  nextLabel,
   onNextAppliance,
-  onInteractionCommit,
   onHours,
   onToggle,
   onRemove,
@@ -1648,8 +1654,8 @@ function ApplianceControl({
   kwh: number;
   removable: boolean;
   showTutorialNext?: boolean;
+  nextLabel?: string;
   onNextAppliance?: () => void;
-  onInteractionCommit?: () => void;
   onHours: (h: number) => void;
   onToggle: () => void;
   onRemove: () => void;
@@ -1660,23 +1666,6 @@ function ApplianceControl({
   const bounds = hourBounds(a);
   const alwaysOn = a.usage_pattern.always_on;
   const pct = bounds.max > bounds.min ? ((slot.hours - bounds.min) / (bounds.max - bounds.min)) * 100 : 100;
-  const commitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const dirtyRef = useRef(false);
-
-  useEffect(() => {
-    return () => {
-      if (commitTimerRef.current) clearTimeout(commitTimerRef.current);
-    };
-  }, []);
-
-  function scheduleCommit() {
-    if (!onInteractionCommit || !dirtyRef.current) return;
-    if (commitTimerRef.current) clearTimeout(commitTimerRef.current);
-    commitTimerRef.current = setTimeout(() => {
-      dirtyRef.current = false;
-      onInteractionCommit();
-    }, 550);
-  }
 
   return (
     <Bezel coreClassName="control">
@@ -1700,11 +1689,7 @@ function ApplianceControl({
             aria-checked={slot.on}
             aria-label={slot.on ? 'Matikan alat' : 'Nyalakan alat'}
             className={`switch ${slot.on ? 'is-on' : ''}`}
-            onClick={() => {
-              dirtyRef.current = true;
-              onToggle();
-              scheduleCommit();
-            }}
+            onClick={onToggle}
           >
             <span />
           </button>
@@ -1747,17 +1732,7 @@ function ApplianceControl({
             step={0.5}
             value={slot.hours}
             disabled={!slot.on}
-            onPointerDown={() => {
-              if (commitTimerRef.current) clearTimeout(commitTimerRef.current);
-            }}
-            onChange={(e) => {
-              dirtyRef.current = true;
-              if (commitTimerRef.current) clearTimeout(commitTimerRef.current);
-              onHours(Number(e.target.value));
-            }}
-            onMouseUp={scheduleCommit}
-            onTouchEnd={scheduleCommit}
-            onKeyUp={scheduleCommit}
+            onChange={(e) => onHours(Number(e.target.value))}
             style={{ ['--pct' as string]: `${pct}%` }}
           />
           <span className="row-between slider__scale">
@@ -1771,13 +1746,9 @@ function ApplianceControl({
         <div className="capture__actions">
           <IslandButton
             icon="check"
-            onClick={() => {
-              if (commitTimerRef.current) clearTimeout(commitTimerRef.current);
-              dirtyRef.current = false;
-              onNextAppliance();
-            }}
+            onClick={onNextAppliance}
           >
-            {t.kiosk.saveAndNext}
+            {nextLabel || t.kiosk.saveAndNext}
           </IslandButton>
         </div>
       )}

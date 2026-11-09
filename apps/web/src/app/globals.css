@@ -5218,6 +5218,37 @@ body.is-game-tutorial .topbar,
   transform: scale(1.08);
 }
 
+/* Petunjuk Terpadu Terra di Dalam Modal Pengaturan Jam Pakai */
+.outlet-modal-terra-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: #f0f7ff;
+  border-bottom: 1px solid #dbeafe;
+}
+
+.outlet-modal-terra-hint__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.outlet-modal-terra-hint__body strong {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.outlet-modal-terra-hint__body span {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
 .outlet-modal-dialog .control {
   border: none;
   box-shadow: none;
