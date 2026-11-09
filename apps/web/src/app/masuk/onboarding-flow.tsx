@@ -814,23 +814,19 @@ export function OnboardingFlow() {
                   <ul className="onboarding-plan-card__features" aria-label="Fitur Free Trial">
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
-                      <span><strong>Trial 30 Hari</strong> akses penuh uji coba</span>
+                      <span>Trial 30 hari akses uji coba</span>
                     </li>
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
-                      <span>Simulasi Kios Virtual 2D interaktif</span>
+                      <span>Simulasi Kios 2D & kalkulasi listrik</span>
                     </li>
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
-                      <span>Kalkulasi biaya energi listrik per alat</span>
+                      <span>Estimasi tagihan per alat</span>
                     </li>
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
-                      <span>Catat meteran mandiri harian</span>
-                    </li>
-                    <li className="onboarding-plan-card__feature-item">
-                      <span className="onboarding-plan-card__check"><Icon name="check" size={12} /></span>
-                      <span>3 rekomendasi efisiensi daya dasar</span>
+                      <span>Catat meter manual & label (5x/bulan)</span>
                     </li>
                   </ul>
                 </div>
@@ -878,27 +874,19 @@ export function OnboardingFlow() {
                   <ul className="onboarding-plan-card__features" aria-label="Fitur Voltra Plus">
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check is-plus"><Icon name="bolt" size={12} /></span>
-                      <span style={{ color: '#2DD4BF', fontWeight: 700 }}>⚡ Langsung Akses Semua Fitur</span>
+                      <span style={{ color: '#2DD4BF', fontWeight: 700 }}>Akses Penuh Tanpa Batas</span>
                     </li>
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
-                      <span>Tanpa batas durasi trial (Full Access)</span>
+                      <span>Foto meter & catatan suara tanpa batas</span>
                     </li>
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
-                      <span>AI OCR Foto Meteran Listrik otomatis</span>
+                      <span>Rekomendasi hemat otomatis per alat</span>
                     </li>
                     <li className="onboarding-plan-card__feature-item">
                       <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
-                      <span>AI Voice Input & Asisten Terra AI tanpa kuota</span>
-                    </li>
-                    <li className="onboarding-plan-card__feature-item">
-                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
-                      <span>Ekspor laporan PDF & Excel akuntansi lengkap</span>
-                    </li>
-                    <li className="onboarding-plan-card__feature-item">
-                      <span className="onboarding-plan-card__check is-plus"><Icon name="check" size={12} /></span>
-                      <span>Pengingat WhatsApp harian otomatis terjadwal</span>
+                      <span>Pengingat WhatsApp & ekspor PDF/Excel</span>
                     </li>
                   </ul>
                 </div>

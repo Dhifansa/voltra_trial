@@ -84,11 +84,11 @@ export function SettingsView() {
         <p className="hint">
           {profile.subscriptionPlan === 'plus'
             ? currentLang === 'id'
-              ? 'Akun Anda aktif pada paket Voltra Plus dengan akses penuh tak terbatas ke seluruh fitur AI Gateway, OCR meteran, asisten suara, dan ekspor akuntansi.'
-              : 'Your account is active on Voltra Plus with full unlimited access to all AI Gateway features, meter OCR, voice assistant, and report exports.'
+              ? 'Akun Anda aktif pada paket Voltra Plus dengan akses penuh ke seluruh fitur dan ekspor laporan.'
+              : 'Your account is active on Voltra Plus with full access to all features and report exports.'
             : currentLang === 'id'
-              ? 'Akun Anda saat ini aktif pada paket Free (Trial 30 Hari). Tingkatkan ke Voltra Plus untuk analitik mendalam, ekspor PDF/Excel tak terbatas, dan asisten AI tanpa batas kuota.'
-              : 'Your account is currently on the Free plan (30-day trial). Upgrade to Voltra Plus for comprehensive analytics, unlimited report exports, and unlimited AI access.'}
+              ? 'Akun Anda aktif pada paket Free Trial. Tingkatkan ke Voltra Plus untuk analitik mendalam dan kuota foto tanpa batas.'
+              : 'Your account is active on the Free plan trial. Upgrade to Voltra Plus for in-depth analytics and unlimited quota.'}
         </p>
         <div className="capture__actions">
           <IslandLink href="/langganan" variant="solid" icon="crown">
@@ -135,7 +135,7 @@ export function SettingsView() {
         </label>
       </Bezel>
 
-      {/* Tampilan & Mode AI Gateway */}
+      {/* Tampilan */}
       <Bezel coreClassName="result">
         <Eyebrow>{t.settings.displayTitle}</Eyebrow>
 
@@ -154,30 +154,6 @@ export function SettingsView() {
           >
             <span />
           </button>
-        </div>
-
-        <div className="field">
-          <span>{t.settings.aiMode}</span>
-          <div className="pillset" role="radiogroup" aria-label={t.settings.aiMode}>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={settings.aiMode === 'mock'}
-              className={settings.aiMode === 'mock' ? 'is-active' : ''}
-              onClick={() => updateSettings({ aiMode: 'mock' })}
-            >
-              {t.settings.aiModeMock}
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={settings.aiMode === 'hybrid'}
-              className={settings.aiMode === 'hybrid' ? 'is-active' : ''}
-              onClick={() => updateSettings({ aiMode: 'hybrid' })}
-            >
-              {t.settings.aiModeHybrid}
-            </button>
-          </div>
         </div>
       </Bezel>
 

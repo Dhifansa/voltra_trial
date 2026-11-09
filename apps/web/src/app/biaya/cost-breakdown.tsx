@@ -17,12 +17,12 @@ export function CostBreakdown() {
   const { profile, analytics, settings } = useVoltraApp();
   const template = getTemplate(profile.templateId);
   const t = getDictionary(settings.language || 'id');
-  const [id, setId] = useState<ScenarioId>('appliance');
+  const [id] = useState<ScenarioId>('appliance');
   const s = analytics.scenarios[id];
 
   return (
     <>
-      <div className="row-between kios-toolbar">
+      <div className="row-between kios-toolbar" style={{ marginBottom: '1.25rem' }}>
         <div className="row-gap">
           <span className="chip">{profile.businessName}</span>
           <span className="chip chip--high">{template.display_name}</span>
@@ -32,32 +32,6 @@ export function CostBreakdown() {
           {t.cost.manageKiosk}
         </IslandLink>
       </div>
-
-      <div className="segmented" role="tablist" aria-label="Pratinjau keadaan data">
-        {SCENARIO_ORDER.map((key) => {
-          const scenarioLabel =
-            key === 'appliance'
-              ? t.cost.tabAppliance
-              : key === 'category'
-                ? t.cost.tabCategory
-                : t.cost.tabInitial;
-          return (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={id === key}
-              className={`segmented__item ${id === key ? 'is-active' : ''}`}
-              onClick={() => setId(key)}
-            >
-              {scenarioLabel}
-            </button>
-          );
-        })}
-      </div>
-      <p className="segmented__hint">
-        <Icon name="info" size={14} /> Pratinjau keadaan UI: {s.hint}
-      </p>
 
       <div key={`${profile.templateId}-${id}`} className="swap">
         {s.display_level === 'insufficient_data' ? (
@@ -85,9 +59,6 @@ function Summary({ s, unitLabel }: { s: CostScenario; unitLabel: string }) {
     <Bezel tone="ink" coreClassName="summary">
       <div className="row-between">
         <Eyebrow tone="light">{t.cost.totalYesterday}</Eyebrow>
-        <div className="row-gap">
-          <MockBadge />
-        </div>
       </div>
       <p className="summary__rp">{s.total_rp !== null ? formatRp(s.total_rp) : '—'}</p>
       <p className="summary__meta">
@@ -110,7 +81,6 @@ function Summary({ s, unitLabel }: { s: CostScenario; unitLabel: string }) {
 
       <div className="row-between summary__foot">
         <ConfidenceBadge level={s.confidence} />
-        <span className="muted-light">mesin v{s.result.engine_version}</span>
       </div>
     </Bezel>
   );
@@ -207,7 +177,7 @@ function Breakdown({
                   <span className="cost-row__rp">{s.unexplained_rp !== null ? formatRp(s.unexplained_rp) : '—'}</span>
                 </div>
                 <p className="gap-row__note">
-                  Tidak kami bagi paksa ke alat lain. Tambahkan alat yang belum tercatat agar angka ini mengecil.
+                  Tambahkan alat yang belum tercatat agar angka selisih ini mengecil.
                 </p>
                 <div className="row-gap">
                   <IslandLink href="/catat" variant="ghost" icon="tag">
@@ -225,8 +195,7 @@ function Breakdown({
 
       <section className="section">
         <div className="section__head">
-          <Eyebrow>Yang bisa diubah di {templateName}</Eyebrow>
-          <span className="section__aside">maks. 3 saran</span>
+          <Eyebrow>Rekomendasi Hemat · {templateName}</Eyebrow>
         </div>
         <ol className="recs">
           {recommendations.map((rec, i) => (
@@ -247,7 +216,6 @@ function Breakdown({
             </Reveal>
           ))}
         </ol>
-        <p className="footnote">Saran tidak dijalankan otomatis. Anda yang memutuskan: setujui, tunda, atau tolak.</p>
       </section>
     </>
   );

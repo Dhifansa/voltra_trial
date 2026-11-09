@@ -66,18 +66,18 @@ export default function HomePage() {
                 <TerraAvatar mood="hallo" size={72} />
               </div>
               <div className="onboard-banner__text">
-                <Eyebrow>{isEn ? 'Onboarding with Terra' : 'Alur Pengenalan bersama Terra'}</Eyebrow>
-                <p className="twin__title">{isEn ? 'Not set up your business profile yet?' : 'Belum mengatur profil usaha Anda?'}</p>
+                <Eyebrow>{isEn ? 'Business Setup' : 'Profil Usaha'}</Eyebrow>
+                <p className="twin__title">{isEn ? 'Set up your business profile' : 'Atur profil usaha Anda'}</p>
                 <p className="hint">
                   {isEn
-                    ? 'Start from Login → Business Profiling → 2D Kiosk Simulation with Terra to customize all appliances.'
-                    : 'Mulai dari Login → Profiling Jenis Usaha → Simulasi Kios 2D bersama maskot Terra agar semua alat di aplikasi menyesuaikan usaha Anda.'}
+                    ? 'Choose your business type and customize your electrical appliances in the 2D Kiosk for accurate calculations.'
+                    : 'Pilih jenis usaha dan sesuaikan alat listrik di Kios 2D agar perhitungan biaya listrik akurat.'}
                 </p>
               </div>
             </div>
             <div className="capture__actions onboard-banner__actions">
               <IslandLink href="/masuk" icon="store">
-                {isEn ? 'Start Login & Profiling' : 'Mulai Login & Profiling'}
+                {isEn ? 'Start Setup' : 'Mulai Pengaturan'}
               </IslandLink>
               <IslandLink href="/kios" variant="ghost" icon="arrow">
                 {isEn ? 'Open 2D Kiosk' : 'Buka Kios 2D'}
@@ -200,16 +200,13 @@ export default function HomePage() {
               {today.unexplained_rp !== null ? formatRp(today.unexplained_rp) : '—'}
             </p>
             <p className="gap-card__note">
-              Selisih antara meter dan alat {template.display_name.toLowerCase()} yang tercatat. Kami tidak membaginya
-              paksa ke alat lain.
+              {isEn
+                ? 'Difference between meter log and recorded appliances.'
+                : 'Selisih antara catatan meter dan alat yang tercatat.'}
             </p>
           </Bezel>
         </Reveal>
       </section>
-
-      <p className="footnote">
-        Angka dihitung oleh mesin <code>energy-calc</code>. Wati hanya menjelaskan, tidak membuat angka.
-      </p>
     </main>
   );
 }

@@ -56,7 +56,7 @@ export function CaptureFlow() {
         </Link>
       </div>
 
-      <div className="modes" role="tablist" aria-label="Cara mencatat">
+      <div className="modes" role="tablist" aria-label="Cara mencatat" style={{ marginBottom: '1.25rem' }}>
         {MODES.map((m) => (
           <button
             key={m.id}
@@ -71,22 +71,6 @@ export function CaptureFlow() {
           </button>
         ))}
       </div>
-
-      {mode !== 'manual' && (
-        <div className="scenario">
-          <span>Skenario mock</span>
-          {SCENARIOS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={`scenario__chip ${scenario === s.id ? 'is-active' : ''}`}
-              onClick={() => setScenario(s.id)}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      )}
 
       <div key={`${profile.templateId}-${mode}`} className="swap">
         {mode === 'meter' && <PhotoCapture kind="meter" scenario={scenario} onManual={toManual} />}
@@ -114,12 +98,12 @@ type PhotoPhase =
 const PHOTO_COPY = {
   meter: {
     title: 'Foto meter listrik',
-    tips: ['Angka meter terlihat utuh', 'Hindari pantulan lampu/flash', 'Pegang ponsel lurus, tidak miring'],
+    hint: 'Arahkan kamera tegak lurus dan pastikan angka meter terbaca jelas.',
     action: 'Baca angka',
   },
   label: {
     title: 'Foto label alat',
-    tips: ['Label daya (W/watt) terbaca', 'Dekatkan kamera ke stiker label', 'Cukup satu alat per foto'],
+    hint: 'Dekatkan kamera ke stiker spesifikasi daya listrik (Watt) alat.',
     action: 'Baca label',
   },
 } as const;
@@ -186,13 +170,9 @@ function PhotoCapture({
           <Icon name={kind === 'meter' ? 'meter' : 'tag'} size={40} />
           <p>{copy.title}</p>
         </div>
-        <ul className="tips">
-          {copy.tips.map((t) => (
-            <li key={t}>
-              <Icon name="check" size={14} /> {t}
-            </li>
-          ))}
-        </ul>
+        <p className="hint" style={{ margin: '0.45rem 0 0.85rem', textAlign: 'center' }}>
+          {copy.hint}
+        </p>
         <div className="capture__actions">
           <IslandButton icon="capture" onClick={() => cameraRef.current?.click()}>
             Buka kamera
@@ -201,7 +181,7 @@ function PhotoCapture({
             Dari galeri
           </IslandButton>
           <IslandButton variant="ghost" icon="bolt" onClick={read}>
-            Simulasi langsung
+            Gunakan contoh
           </IslandButton>
         </div>
         <button type="button" className="textlink" onClick={() => onManual()}>

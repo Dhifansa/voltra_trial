@@ -1555,15 +1555,12 @@ function KiosPlay({
         <Bezel tone="moss" coreClassName="twin">
           <Eyebrow>{t.kiosk.syncTitle}</Eyebrow>
           <p className="twin__title">
-            {t.kiosk.syncHeader.replace('{template}', template.display_name)}
+            {t.kiosk.syncHeader}
           </p>
           <p className="hint">{t.kiosk.syncHint}</p>
           <div className="capture__actions">
             <IslandLink href="/biaya" icon="chart" onClick={handleCompleteTutorial}>
               {t.kiosk.viewCost}
-            </IslandLink>
-            <IslandLink href="/catat" variant="ghost" icon="capture" onClick={handleCompleteTutorial}>
-              {t.kiosk.recordReal}
             </IslandLink>
             <IslandLink href="/" variant="ghost" icon="home" onClick={handleCompleteTutorial}>
               {t.kiosk.toHome}
@@ -1571,14 +1568,6 @@ function KiosPlay({
           </div>
         </Bezel>
       </div>
-
-      <p className={`footnote ${spotlightActive ? 'tutorial-dim' : ''}`}>
-        {t.kiosk.footnotePre.replace('{tariff}', tariffName)}
-        <Link href="/catat" className="textlink">
-          {t.kiosk.footnoteLink}
-        </Link>
-        {t.kiosk.footnotePost}
-      </p>
     </div>
   </div>
 

@@ -218,43 +218,10 @@ export function SubscriptionPageContent() {
             </div>
           </section>
 
-          {/* FEATURE COMPARISON TABLE */}
+          {/* FEATURE COMPARISON TABLE (COLLAPSIBLE) */}
           <section className="sub-comparison-section" aria-label="Feature Comparison">
             <FeatureComparison lang={lang} />
           </section>
-
-          {/* BOTTOM UPGRADE CALL-TO-ACTION (CTA BANNER) */}
-          {status !== 'plus' && (
-            <Reveal delay={100}>
-              <Bezel tone="moss" coreClassName="sub-bottom-cta">
-                <div className="row-between sub-bottom-cta__inner">
-                  <div className="sub-bottom-cta__text">
-                    <Eyebrow>{isEn ? 'Scale Up Your Business' : 'Tingkatkan Skala Usaha'}</Eyebrow>
-                    <h3 className="sub-bottom-cta__title">
-                      {isEn
-                        ? `Ready to maximize electricity efficiency for ${profile.businessName}?`
-                        : `Siap pangkas tagihan listrik ${profile.businessName} hingga maksimal?`}
-                    </h3>
-                    <p className="hint">
-                      {isEn
-                        ? `Get unlimited AI OCR meter recognition, WhatsApp daily mission reminders, and instant expert insights.`
-                        : `Dapatkan otomasi AI OCR tanpa batas, pengingat harian WhatsApp, dan rekomendasi hemat presisi.`}
-                    </p>
-                  </div>
-                  <div className="sub-bottom-cta__btn-wrap">
-                    <button
-                      type="button"
-                      onClick={handleUpgradeClick}
-                      className="sub-pricing-card__btn sub-pricing-card__btn--upgrade"
-                    >
-                      <Icon name="arrowRight" size={15} />
-                      <span>{t.subscription.upgradeBtn}</span>
-                    </button>
-                  </div>
-                </div>
-              </Bezel>
-            </Reveal>
-          )}
 
           {/* FAQ SECTION (Clean & Essential) */}
           <section className="sub-faq-section" aria-label="Frequently Asked Questions">

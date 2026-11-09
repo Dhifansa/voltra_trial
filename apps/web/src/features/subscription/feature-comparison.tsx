@@ -15,10 +15,11 @@ interface FeatureComparisonProps {
 export function FeatureComparison({ lang = 'id' }: FeatureComparisonProps) {
   const isEn = lang === 'en';
   const [mobileTab, setMobileTab] = useState<'all' | 'free' | 'plus'>('all');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const categoryLabels: Record<PlanFeatureItem['category'], string> = {
-    core: isEn ? '2D Virtual Kiosk Simulation' : 'Simulasi Kios 2D & Energi',
-    ai: isEn ? 'AI Gateway Automation (OCR & Voice)' : 'Otomasi AI Gateway (OCR & Suara)',
+    core: isEn ? '2D Virtual Kiosk' : 'Simulasi Kios 2D & Energi',
+    ai: isEn ? 'AI Automation (OCR & Voice)' : 'Otomasi OCR & Suara',
     analytics: isEn ? 'Cost Analytics & Reports' : 'Analisis Biaya & Laporan',
     support: isEn ? 'Support & Assistance' : 'Layanan Dukungan & Bantuan',
   };
@@ -62,40 +63,63 @@ export function FeatureComparison({ lang = 'id' }: FeatureComparisonProps) {
             : 'Perbandingan detail kemampuan, kuota, dan fitur antar paket.'}
         </p>
 
-        {/* Mobile View Switcher (Khusus Tampilan Mobile / Layar Kecil) */}
-        <div className="sub-comp-mobile-tabs" role="tablist" aria-label="Tampilan perbandingan fitur">
+        <div style={{ marginTop: '0.85rem', display: 'flex', justifyContent: 'center' }}>
           <button
             type="button"
-            role="tab"
-            aria-selected={mobileTab === 'all'}
-            className={`sub-comp-mobile-tab ${mobileTab === 'all' ? 'is-active' : ''}`}
-            onClick={() => setMobileTab('all')}
+            className="sub-pricing-card__btn sub-pricing-card__btn--current"
+            style={{ width: 'auto', minHeight: '2.35rem', padding: '0.45rem 1.25rem', fontSize: '0.82rem', gap: '0.4rem' }}
+            onClick={() => setIsExpanded((v) => !v)}
           >
-            <span>{isEn ? 'Side-by-Side' : 'Berdampingan'}</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mobileTab === 'free'}
-            className={`sub-comp-mobile-tab ${mobileTab === 'free' ? 'is-active' : ''}`}
-            onClick={() => setMobileTab('free')}
-          >
-            <span>Free</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mobileTab === 'plus'}
-            className={`sub-comp-mobile-tab sub-comp-mobile-tab--plus ${mobileTab === 'plus' ? 'is-active' : ''}`}
-            onClick={() => setMobileTab('plus')}
-          >
-            <span>Plus</span>
+            <span>
+              {isExpanded
+                ? isEn
+                  ? 'Hide Comparison Table'
+                  : 'Sembunyikan Tabel Perbandingan'
+                : isEn
+                  ? 'View Detailed Comparison Table'
+                  : 'Buka Tabel Perbandingan Lengkap'}
+            </span>
+            <Icon name={isExpanded ? 'close' : 'arrow'} size={14} />
           </button>
         </div>
+
+        {isExpanded && (
+          <div className="sub-comp-mobile-tabs" role="tablist" aria-label="Tampilan perbandingan fitur">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mobileTab === 'all'}
+              className={`sub-comp-mobile-tab ${mobileTab === 'all' ? 'is-active' : ''}`}
+              onClick={() => setMobileTab('all')}
+            >
+              <span>{isEn ? 'Side-by-Side' : 'Berdampingan'}</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mobileTab === 'free'}
+              className={`sub-comp-mobile-tab ${mobileTab === 'free' ? 'is-active' : ''}`}
+              onClick={() => setMobileTab('free')}
+            >
+              <span>Free</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mobileTab === 'plus'}
+              className={`sub-comp-mobile-tab sub-comp-mobile-tab--plus ${mobileTab === 'plus' ? 'is-active' : ''}`}
+              onClick={() => setMobileTab('plus')}
+            >
+              <span>Plus</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* 1. TAMPILAN SIDE-BY-SIDE MATRIX TABLE (Desktop & Mobile Swipeable dengan Sticky Kolom Pertama) */}
-      <div className={`sub-comparison-table-wrap ${mobileTab !== 'all' ? 'is-mobile-hidden' : ''}`}>
+      {isExpanded && (
+        <>
+          {/* 1. TAMPILAN SIDE-BY-SIDE MATRIX TABLE (Desktop & Mobile Swipeable dengan Sticky Kolom Pertama) */}
+          <div className={`sub-comparison-table-wrap ${mobileTab !== 'all' ? 'is-mobile-hidden' : ''}`}>
         <div className="sub-table-scroll-hint">
           <Icon name="arrowRight" size={13} />
           <span>{isEn ? 'Swipe horizontally to compare columns' : 'Geser ke samping untuk melihat seluruh kolom'}</span>
@@ -197,6 +221,8 @@ export function FeatureComparison({ lang = 'id' }: FeatureComparisonProps) {
             );
           })}
         </div>
+      )}
+        </>
       )}
     </Bezel>
   );
