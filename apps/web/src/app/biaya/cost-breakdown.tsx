@@ -33,7 +33,7 @@ export function CostBreakdown() {
         </IslandLink>
       </div>
 
-      <div className="segmented" role="tablist" aria-label="Pratinjau keadaan data">
+      <div className="segmented" role="tablist" aria-label="Tampilan rincian biaya">
         {SCENARIO_ORDER.map((key) => {
           const scenarioLabel =
             key === 'appliance'
@@ -56,12 +56,21 @@ export function CostBreakdown() {
         })}
       </div>
       <p className="segmented__hint">
-        <Icon name="info" size={14} /> Pratinjau keadaan UI: {s.hint}
+        <Icon name="info" size={14} />{' '}
+        {id === 'appliance'
+          ? 'Rincian pemakaian listrik presisi dihitung per masing-masing alat.'
+          : id === 'category'
+            ? 'Pengelompokan pemakaian listrik berdasarkan kategori fungsi peralatan.'
+            : 'Simulasi tampilan data awal sebelum syarat histori 3 hari foto meter terpenuhi.'}
       </p>
 
       <div key={`${profile.templateId}-${id}`} className="swap">
         {s.display_level === 'insufficient_data' ? (
-          <Insufficient s={s} />
+          <Insufficient
+            s={s}
+            kiosEstimateRp={analytics.kiosResult.rp_day}
+            unitLabel={profile.unitLabel}
+          />
         ) : (
           <Breakdown
             s={s}
@@ -253,36 +262,68 @@ function Breakdown({
   );
 }
 
-function Insufficient({ s }: { s: CostScenario }) {
+function Insufficient({
+  s,
+  kiosEstimateRp,
+  unitLabel,
+}: {
+  s: CostScenario;
+  kiosEstimateRp: number;
+  unitLabel: string;
+}) {
   const days = 1;
   const need = 3;
+  const remainingDays = need - days;
+  const estimateTotal = kiosEstimateRp > 0 ? kiosEstimateRp : 38500;
+  const perUnit = Math.round(estimateTotal / Math.max(1, 30));
+
   return (
     <Reveal>
-      <Bezel coreClassName="empty">
-        <span className="empty__icon">
-          <Icon name="meter" size={28} />
-        </span>
-        <Eyebrow>Belum cukup data</Eyebrow>
-        <h2 className="empty__title">
-          Butuh <em>{need - days} hari</em> lagi
-        </h2>
-        <p className="empty__text">
-          Kami baru punya {days} hari foto meter. Rincian Rupiah per alat baru muncul setelah minimal {need} hari agar
-          tidak menebak.
-        </p>
-        <div className="dots" aria-label={`${days} dari ${need} hari`}>
-          {Array.from({ length: need }, (_, i) => (
-            <span key={i} className={i < days ? 'is-on' : ''} />
-          ))}
-        </div>
-        <div className="row-gap">
-          <ConfidenceBadge level={s.confidence} />
-          <MockBadge />
-        </div>
-        <IslandLink href="/catat" icon="capture">
-          Foto meter sekarang
-        </IslandLink>
-      </Bezel>
+      <div className="stack-gap">
+        {/* Kartu Ringkasan Total Biaya Sementara (Estimasi Awal) */}
+        <Bezel tone="ink" coreClassName="summary">
+          <div className="row-between">
+            <Eyebrow tone="light">Total Kemarin (Estimasi Sementara)</Eyebrow>
+            <span className="chip chip--mock">Data Awal ({days}/{need} Hari)</span>
+          </div>
+          <p className="summary__rp">{formatRp(estimateTotal)}</p>
+          <p className="summary__meta">
+            Estimasi awal · {formatRp(perUnit)}/{unitLabel.split(' ')[0]}
+          </p>
+
+          <div className="meter-line" aria-hidden="true" style={{ margin: '0.85rem 0 0.5rem' }}>
+            <span style={{ transform: `scaleX(${days / need})` }} />
+          </div>
+          <div className="row-between summary__foot">
+            <span className="muted-light">Progres data meter: {days} dari {need} hari tercatat</span>
+            <ConfidenceBadge level="low" />
+          </div>
+        </Bezel>
+
+        {/* Kartu Edukasi: Aturan Data Histori Wajib Minimal 3 Hari */}
+        <Bezel coreClassName="empty">
+          <span className="empty__icon">
+            <Icon name="meter" size={28} />
+          </span>
+          <Eyebrow>Aturan Data Histori</Eyebrow>
+          <h2 className="empty__title">
+            Butuh foto meter <em>{remainingDays} hari</em> lagi
+          </h2>
+          <p className="empty__text">
+            Total biaya di atas adalah estimasi awal. Sesuai aturan kalkulasi energi, <strong>rincian Rupiah per masing-masing alat baru dapat dibuka setelah minimal {need} hari data foto meter terkumpul</strong> agar angka tidak menebak dan benar-benar terverifikasi.
+          </p>
+          <div className="dots" aria-label={`${days} dari ${need} hari`}>
+            {Array.from({ length: need }, (_, i) => (
+              <span key={i} className={i < days ? 'is-on' : ''} />
+            ))}
+          </div>
+          <div className="capture__actions" style={{ marginTop: '0.65rem' }}>
+            <IslandLink href="/catat" icon="capture">
+              Foto Meter Sekarang (Hari ke-{days + 1})
+            </IslandLink>
+          </div>
+        </Bezel>
+      </div>
     </Reveal>
   );
 }
