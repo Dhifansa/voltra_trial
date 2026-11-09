@@ -3247,6 +3247,19 @@ em {
   transform: scale(0.96);
 }
 
+.stepper__item:disabled,
+.stepper__item.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.stepper__item:disabled:hover,
+.stepper__item.is-disabled:hover {
+  background: transparent;
+  color: var(--muted);
+}
+
 .stepper__label {
   display: inline-block;
   white-space: nowrap;

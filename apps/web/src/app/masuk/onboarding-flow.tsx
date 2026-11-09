@@ -62,6 +62,7 @@ export function OnboardingFlow() {
   const [showGooglePicker, setShowGooglePicker] = useState(false);
   const [profileTask, setProfileTask] = useState<1 | 2 | 3>(1);
   const [selectedPlan, setSelectedPlan] = useState<'free' | 'plus'>('free');
+  const [maxStepReached, setMaxStepReached] = useState<number>(1);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -96,6 +97,7 @@ export function OnboardingFlow() {
     setShowGooglePicker(false);
     setStep('profiling');
     setProfileTask(1);
+    setMaxStepReached((prev) => Math.max(prev, 2));
     scrollCardIntoView();
   }
 
@@ -110,6 +112,7 @@ export function OnboardingFlow() {
       setBusinessName(`${tpl.display_name} ${ownerName.trim() || 'Kita'}`);
     }
     setProfileTask(2);
+    setMaxStepReached((prev) => Math.max(prev, 3));
     scrollCardIntoView();
   }
 
@@ -171,6 +174,9 @@ export function OnboardingFlow() {
   }
 
   function handleJumpToStep(targetStep: 1 | 2 | 3 | 4) {
+    // Pengguna hanya bisa kembali ke langkah yang sudah dibuka/diselesaikan, tidak bisa loncat bebas ke langkah depan
+    if (targetStep > maxStepReached) return;
+
     if (targetStep === 1) {
       setStep('login');
     } else if (targetStep === 2) {
@@ -197,7 +203,7 @@ export function OnboardingFlow() {
 
   return (
     <div className="stack-gap onboarding-shell">
-      {/* Stepper ringkas & responsif: pas 1 frame, navigasi 2 arah, teks tidak kepotong */}
+      {/* Stepper terarah & terkontrol: hanya langkah yang sudah selesai/terbuka yang bisa diklik kembali */}
       <div className="stepper" aria-label="Tahap pengenalan">
         <button
           type="button"
@@ -212,12 +218,14 @@ export function OnboardingFlow() {
         <span className={`stepper__line ${activeStepNum > 1 ? 'is-done' : ''}`} />
         <button
           type="button"
+          disabled={maxStepReached < 2}
           className={`stepper__item ${
             activeStepNum === 2 ? 'is-active' : activeStepNum > 2 ? 'is-done' : ''
-          }`}
+          } ${maxStepReached < 2 ? 'is-disabled' : ''}`}
           onClick={() => handleJumpToStep(2)}
-          title="Langkah 2: Pilih Kios"
+          title={maxStepReached < 2 ? 'Selesaikan Langkah 1 terlebih dahulu' : 'Langkah 2: Pilih Kios'}
           aria-current={activeStepNum === 2 ? 'step' : undefined}
+          aria-disabled={maxStepReached < 2}
         >
           <span className="stepper__num">2</span>
           <span className="stepper__label">
@@ -227,12 +235,14 @@ export function OnboardingFlow() {
         <span className={`stepper__line ${activeStepNum > 2 ? 'is-done' : ''}`} />
         <button
           type="button"
+          disabled={maxStepReached < 3}
           className={`stepper__item ${
             activeStepNum === 3 ? 'is-active' : activeStepNum > 3 ? 'is-done' : ''
-          }`}
+          } ${maxStepReached < 3 ? 'is-disabled' : ''}`}
           onClick={() => handleJumpToStep(3)}
-          title="Langkah 3: Tarif PLN"
+          title={maxStepReached < 3 ? 'Selesaikan langkah sebelumnya terlebih dahulu' : 'Langkah 3: Tarif PLN'}
           aria-current={activeStepNum === 3 ? 'step' : undefined}
+          aria-disabled={maxStepReached < 3}
         >
           <span className="stepper__num">3</span>
           <span className="stepper__label">
@@ -242,10 +252,14 @@ export function OnboardingFlow() {
         <span className={`stepper__line ${activeStepNum > 3 ? 'is-done' : ''}`} />
         <button
           type="button"
-          className={`stepper__item ${activeStepNum === 4 ? 'is-active' : ''}`}
+          disabled={maxStepReached < 4}
+          className={`stepper__item ${activeStepNum === 4 ? 'is-active' : ''} ${
+            maxStepReached < 4 ? 'is-disabled' : ''
+          }`}
           onClick={() => handleJumpToStep(4)}
-          title="Langkah 4: Pilih Paket"
+          title={maxStepReached < 4 ? 'Selesaikan langkah sebelumnya terlebih dahulu' : 'Langkah 4: Pilih Paket'}
           aria-current={activeStepNum === 4 ? 'step' : undefined}
+          aria-disabled={maxStepReached < 4}
         >
           <span className="stepper__num">4</span>
           <span className="stepper__label">
@@ -595,6 +609,7 @@ export function OnboardingFlow() {
                 icon="arrow"
                 onClick={() => {
                   setProfileTask(2);
+                  setMaxStepReached((prev) => Math.max(prev, 3));
                   scrollCardIntoView();
                 }}
               >
@@ -726,6 +741,7 @@ export function OnboardingFlow() {
                 icon="arrow"
                 onClick={() => {
                   setProfileTask(3);
+                  setMaxStepReached((prev) => Math.max(prev, 4));
                   scrollCardIntoView();
                 }}
               >
@@ -757,6 +773,7 @@ export function OnboardingFlow() {
                 className="selected-tpl-pill"
                 onClick={() => {
                   setProfileTask(2);
+                  setMaxStepReached((prev) => Math.max(prev, 3));
                   scrollCardIntoView();
                 }}
                 title="Kembali ke langkah sebelumnya (Tarif PLN)"
@@ -932,6 +949,7 @@ export function OnboardingFlow() {
                 icon="retry"
                 onClick={() => {
                   setProfileTask(2);
+                  setMaxStepReached((prev) => Math.max(prev, 3));
                   scrollCardIntoView();
                 }}
               >
