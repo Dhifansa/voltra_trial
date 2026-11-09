@@ -5043,32 +5043,42 @@ body.is-game-tutorial .topbar,
 .outlet-dpad {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.22rem;
-  border-radius: 0.75rem;
+  gap: 0.3rem;
+  padding: 0.28rem;
+  border-radius: 0.85rem;
   background: #ffffff;
-  box-shadow: inset 0 0 0 1px var(--hair-strong);
+  box-shadow:
+    inset 0 0 0 1px var(--hair-strong),
+    0 2px 8px -2px rgba(15, 23, 42, 0.08);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 .outlet-dpad__vert {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.28rem;
 }
 
 .outlet-dpad__btn {
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 1.75rem;
-  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.2rem;
+  border-radius: 0.6rem;
   background: #f1f5f9;
   color: var(--ink);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    background-color 180ms var(--ease),
-    color 180ms var(--ease),
+    background-color 160ms var(--ease),
+    color 160ms var(--ease),
     transform 120ms var(--ease);
 }
 
@@ -5078,6 +5088,8 @@ body.is-game-tutorial .topbar,
 }
 
 .outlet-dpad__btn:active {
+  background: var(--blue);
+  color: #ffffff;
   transform: scale(0.92);
 }
 
@@ -5590,12 +5602,38 @@ body.is-game-tutorial .topbar,
   .outlet-controls {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.6rem;
-    padding: 0.6rem 0.75rem;
+    gap: 0.75rem;
+    padding: 0.75rem 0.75rem;
   }
 
   .outlet-dpad {
     align-self: center;
+    gap: 0.4rem;
+    padding: 0.38rem;
+    border-radius: 1rem;
+    box-shadow:
+      inset 0 0 0 1.5px var(--hair-strong),
+      0 4px 14px -4px rgba(15, 23, 42, 0.12);
+  }
+
+  .outlet-dpad__vert {
+    gap: 0.35rem;
+  }
+
+  .outlet-dpad__btn {
+    width: 3.35rem;
+    height: 2.85rem;
+    border-radius: 0.75rem;
+    background: #e9eef5;
+    color: var(--ink);
+    font-size: 1.15rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  }
+
+  .outlet-dpad__btn:active {
+    background: var(--blue);
+    color: #ffffff;
+    transform: scale(0.92);
   }
 
   .outlet-controls__actions {
@@ -5638,6 +5676,18 @@ body.is-game-tutorial .topbar,
   }
   .stepper__line {
     display: none;
+  }
+  .outlet-dpad {
+    gap: 0.3rem;
+    padding: 0.28rem;
+  }
+  .outlet-dpad__vert {
+    gap: 0.28rem;
+  }
+  .outlet-dpad__btn {
+    width: 2.9rem;
+    height: 2.55rem;
+    font-size: 1.05rem;
   }
 }
 
