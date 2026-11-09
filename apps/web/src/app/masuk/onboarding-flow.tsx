@@ -181,7 +181,7 @@ export function OnboardingFlow() {
 
   return (
     <div className="stack-gap onboarding-shell">
-      {/* Stepper ringkas & responsif untuk mobile */}
+      {/* Stepper ringkas & responsif untuk mobile: pas 1 frame tanpa perlu scroll/geser horizontal */}
       <div className="stepper" aria-label="Tahap pengenalan">
         <button
           type="button"
@@ -191,7 +191,7 @@ export function OnboardingFlow() {
           <span className="stepper__num">1</span>
           <span className="stepper__label">Masuk</span>
         </button>
-        <span className="stepper__line" />
+        <span className={`stepper__line ${activeStepNum > 1 ? 'is-done' : ''}`} />
         <button
           type="button"
           className={`stepper__item ${
@@ -203,9 +203,11 @@ export function OnboardingFlow() {
           }}
         >
           <span className="stepper__num">2</span>
-          <span className="stepper__label">Pilih Kios</span>
+          <span className="stepper__label">
+            <span className="stepper__label-long">Pilih </span>Kios
+          </span>
         </button>
-        <span className="stepper__line" />
+        <span className={`stepper__line ${activeStepNum > 2 ? 'is-done' : ''}`} />
         <button
           type="button"
           className={`stepper__item ${
@@ -217,9 +219,11 @@ export function OnboardingFlow() {
           }}
         >
           <span className="stepper__num">3</span>
-          <span className="stepper__label">Tarif PLN</span>
+          <span className="stepper__label">
+            Tarif<span className="stepper__label-long"> PLN</span>
+          </span>
         </button>
-        <span className="stepper__line" />
+        <span className={`stepper__line ${activeStepNum > 3 ? 'is-done' : ''}`} />
         <button
           type="button"
           className={`stepper__item ${activeStepNum === 4 ? 'is-active' : ''}`}
@@ -229,7 +233,9 @@ export function OnboardingFlow() {
           }}
         >
           <span className="stepper__num">4</span>
-          <span className="stepper__label">Pilih Paket</span>
+          <span className="stepper__label">
+            <span className="stepper__label-long">Pilih </span>Paket
+          </span>
         </button>
       </div>
 
