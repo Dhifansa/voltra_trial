@@ -170,6 +170,22 @@ export function OnboardingFlow() {
     router.push('/kios');
   }
 
+  function handleJumpToStep(targetStep: 1 | 2 | 3 | 4) {
+    if (targetStep === 1) {
+      setStep('login');
+    } else if (targetStep === 2) {
+      setStep('profiling');
+      setProfileTask(1);
+    } else if (targetStep === 3) {
+      setStep('profiling');
+      setProfileTask(2);
+    } else if (targetStep === 4) {
+      setStep('profiling');
+      setProfileTask(3);
+    }
+    scrollCardIntoView();
+  }
+
   const activeStepNum =
     step === 'login' || step === 'otp'
       ? 1
@@ -181,12 +197,14 @@ export function OnboardingFlow() {
 
   return (
     <div className="stack-gap onboarding-shell">
-      {/* Stepper ringkas & responsif untuk mobile: pas 1 frame tanpa perlu scroll/geser horizontal */}
+      {/* Stepper ringkas & responsif: pas 1 frame, navigasi 2 arah, teks tidak kepotong */}
       <div className="stepper" aria-label="Tahap pengenalan">
         <button
           type="button"
           className={`stepper__item ${activeStepNum === 1 ? 'is-active' : 'is-done'}`}
-          onClick={() => setStep('login')}
+          onClick={() => handleJumpToStep(1)}
+          title="Langkah 1: Masuk"
+          aria-current={activeStepNum === 1 ? 'step' : undefined}
         >
           <span className="stepper__num">1</span>
           <span className="stepper__label">Masuk</span>
@@ -197,10 +215,9 @@ export function OnboardingFlow() {
           className={`stepper__item ${
             activeStepNum === 2 ? 'is-active' : activeStepNum > 2 ? 'is-done' : ''
           }`}
-          onClick={() => {
-            setStep('profiling');
-            setProfileTask(1);
-          }}
+          onClick={() => handleJumpToStep(2)}
+          title="Langkah 2: Pilih Kios"
+          aria-current={activeStepNum === 2 ? 'step' : undefined}
         >
           <span className="stepper__num">2</span>
           <span className="stepper__label">
@@ -213,10 +230,9 @@ export function OnboardingFlow() {
           className={`stepper__item ${
             activeStepNum === 3 ? 'is-active' : activeStepNum > 3 ? 'is-done' : ''
           }`}
-          onClick={() => {
-            setStep('profiling');
-            setProfileTask(2);
-          }}
+          onClick={() => handleJumpToStep(3)}
+          title="Langkah 3: Tarif PLN"
+          aria-current={activeStepNum === 3 ? 'step' : undefined}
         >
           <span className="stepper__num">3</span>
           <span className="stepper__label">
@@ -227,10 +243,9 @@ export function OnboardingFlow() {
         <button
           type="button"
           className={`stepper__item ${activeStepNum === 4 ? 'is-active' : ''}`}
-          onClick={() => {
-            setStep('profiling');
-            setProfileTask(3);
-          }}
+          onClick={() => handleJumpToStep(4)}
+          title="Langkah 4: Pilih Paket"
+          aria-current={activeStepNum === 4 ? 'step' : undefined}
         >
           <span className="stepper__num">4</span>
           <span className="stepper__label">
@@ -585,6 +600,16 @@ export function OnboardingFlow() {
               >
                 Lanjut Atur Tarif ({selectedTemplate.display_name})
               </IslandButton>
+              <IslandButton
+                variant="ghost"
+                icon="retry"
+                onClick={() => {
+                  setStep('login');
+                  scrollCardIntoView();
+                }}
+              >
+                Kembali ke Masuk
+              </IslandButton>
             </div>
           </Bezel>
         </div>
@@ -714,7 +739,7 @@ export function OnboardingFlow() {
                   scrollCardIntoView();
                 }}
               >
-                Ganti Jenis Usaha
+                Kembali ke Pilih Kios
               </IslandButton>
             </div>
           </Bezel>
@@ -734,9 +759,9 @@ export function OnboardingFlow() {
                   setProfileTask(2);
                   scrollCardIntoView();
                 }}
+                title="Kembali ke langkah sebelumnya (Tarif PLN)"
               >
-                <span>{selectedTemplate.display_name}</span>
-                <em>Ubah Tarif/Kios</em>
+                <span>← Kembali ke Tarif PLN</span>
               </button>
             </div>
 
@@ -797,10 +822,15 @@ export function OnboardingFlow() {
                   className={`onboarding-plan-card__btn onboarding-plan-card__btn--free ${selectedPlan === 'free' ? 'is-active' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedPlan('free');
+                    if (selectedPlan === 'free') {
+                      handleFinishProfiling('free');
+                    } else {
+                      setSelectedPlan('free');
+                    }
                   }}
+                  title={selectedPlan === 'free' ? 'Klik untuk langsung membuka Kios 2D' : 'Pilih paket Free'}
                 >
-                  {selectedPlan === 'free' ? '✓ Paket Terpilih (Trial 30 Hari)' : 'Pilih Free (Trial 30 Hari)'}
+                  {selectedPlan === 'free' ? '✓ Paket Terpilih · Lanjut Buka Kios →' : 'Pilih Free (Trial 30 Hari)'}
                 </button>
               </div>
 
@@ -860,10 +890,15 @@ export function OnboardingFlow() {
                   className={`onboarding-plan-card__btn onboarding-plan-card__btn--plus ${selectedPlan === 'plus' ? 'is-active' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedPlan('plus');
+                    if (selectedPlan === 'plus') {
+                      handleFinishProfiling('plus');
+                    } else {
+                      setSelectedPlan('plus');
+                    }
                   }}
+                  title={selectedPlan === 'plus' ? 'Klik untuk langsung membuka Kios 2D' : 'Pilih paket Voltra Plus'}
                 >
-                  {selectedPlan === 'plus' ? '✓ Paket Terpilih (Akses Semua Fitur)' : 'Pilih Plus (Akses Semua Fitur)'}
+                  {selectedPlan === 'plus' ? '✓ Paket Terpilih · Lanjut Buka Kios →' : 'Pilih Plus (Akses Semua Fitur)'}
                 </button>
               </div>
             </div>
@@ -890,7 +925,7 @@ export function OnboardingFlow() {
                 icon="store"
                 onClick={() => handleFinishProfiling(selectedPlan)}
               >
-                Mulai Buka Kios 2D ({selectedPlan === 'plus' ? 'Paket Plus · Akses Penuh' : 'Free · Trial 30 Hari'})
+                Lanjut Buka Kios 2D ({selectedPlan === 'plus' ? 'Paket Plus · Akses Penuh' : 'Free · Trial 30 Hari'}) →
               </IslandButton>
               <IslandButton
                 variant="ghost"

@@ -8,7 +8,7 @@ export default function MasukPage() {
     <main className="page">
       <section className="page-head">
         <Reveal>
-          <Eyebrow>Pengenalan · 3 Langkah</Eyebrow>
+          <Eyebrow>Pengenalan · 4 Langkah</Eyebrow>
         </Reveal>
         <Reveal delay={60}>
           <h1 className="display">
