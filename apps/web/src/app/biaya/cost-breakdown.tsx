@@ -1,17 +1,49 @@
 'use client';
 
 import { useState } from 'react';
-import { Bezel, ConfidenceBadge, Eyebrow, IslandLink, MockBadge, Reveal } from '@/components/ui/primitives';
+import { Bezel, ConfidenceBadge, Eyebrow, IslandButton, IslandLink, MockBadge, Reveal } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/icon';
 import { useVoltraApp } from '@/context/app-context';
 import { getTemplate } from '@/features/kios/templates';
 import { formatKwh, formatRp } from '@/lib/format';
 import { getDictionary } from '@/lib/i18n';
-import type { CostScenario, ScenarioId } from '@/lib/mock-data';
+import type { CostRow, CostScenario, ScenarioId } from '@/lib/mock-data';
 
 const SCENARIO_ORDER: ScenarioId[] = ['appliance', 'category', 'insufficient'];
 const SEGMENT_TONES = ['seg-1', 'seg-2', 'seg-3', 'seg-4', 'seg-5'];
 const EFFORT_LABEL = { low: 'Mudah', medium: 'Sedang', high: 'Butuh usaha' } as const;
+
+function downloadCsvReport(businessName: string, tariffName: string, rows: CostRow[], totalRp: number | null) {
+  const dateStr = new Date().toISOString().split('T')[0];
+  const header = ['Nama Usaha', 'Tanggal Laporan', 'Tarif PLN', 'Nama Alat / Kelompok', 'Konsumsi (kWh)', 'Biaya (Rp)', 'Porsi (%)'];
+  const csvRows = [header.join(',')];
+
+  rows.forEach((r) => {
+    csvRows.push([
+      `"${businessName}"`,
+      dateStr,
+      `"${tariffName}"`,
+      `"${r.label}"`,
+      r.kwh.toFixed(2),
+      r.rp,
+      `${Math.round(r.share * 100)}%`,
+    ].join(','));
+  });
+
+  if (totalRp !== null) {
+    csvRows.push([`"${businessName}"`, dateStr, `"${tariffName}"`, '"TOTAL KESELURUHAN"', '', totalRp, '100%'].join(','));
+  }
+
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `Laporan_Listrik_${businessName.replace(/\s+/g, '_')}_${dateStr}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 
 export function CostBreakdown() {
   const { profile, analytics, settings } = useVoltraApp();
@@ -134,14 +166,50 @@ function Breakdown({
   templateName: string;
   recommendations: ReturnType<typeof useVoltraApp>['analytics']['recommendations'];
 }) {
+  const { profile } = useVoltraApp();
   const [openId, setOpenId] = useState<string | null>(null);
+  const [appliedRecs, setAppliedRecs] = useState<Record<string, boolean>>({});
+  const [notice, setNotice] = useState<string | null>(null);
   const isCategory = s.display_level === 'category';
+
+  function handleApplyRec(recId: string, title: string) {
+    setAppliedRecs((prev) => ({ ...prev, [recId]: true }));
+    setNotice(`Saran berhasil diterapkan ke Kios 2D: "${title}"`);
+    setTimeout(() => setNotice(null), 3500);
+  }
+
+  function handleExportCsv() {
+    downloadCsvReport(profile.businessName, profile.tariffName, s.rows, s.total_rp);
+    setNotice(`Laporan biaya ${profile.businessName} berhasil diunduh dalam format .CSV`);
+    setTimeout(() => setNotice(null), 3500);
+  }
 
   return (
     <>
+      {notice && (
+        <div className="notice" role="status">
+          <Icon name="check" size={18} />
+          <div>{notice}</div>
+        </div>
+      )}
+
       <Reveal>
         <Summary s={s} unitLabel={unitLabel} />
       </Reveal>
+
+      {/* Aksi Cepat: Ekspor Akuntansi & Laporan */}
+      <div className="row-between" style={{ margin: '0.25rem 0 1rem' }}>
+        <span className="hint">Data dihitung otomatis oleh mesin kalkulasi energi Voltess</span>
+        <button
+          type="button"
+          className="selected-tpl-pill"
+          onClick={handleExportCsv}
+          title="Unduh laporan ringkasan biaya per alat dalam format CSV"
+        >
+          <Icon name="tag" size={13} />
+          <span>Ekspor Laporan (.CSV)</span>
+        </button>
+      </div>
 
       {isCategory && (
         <Reveal delay={60}>
@@ -230,26 +298,40 @@ function Breakdown({
       <section className="section">
         <div className="section__head">
           <Eyebrow>Yang bisa diubah di {templateName}</Eyebrow>
-          <span className="section__aside">maks. 3 saran</span>
+          <span className="section__aside">maks. 3 saran AI</span>
         </div>
         <ol className="recs">
-          {recommendations.map((rec, i) => (
-            <Reveal as="li" key={rec.action_id} delay={i * 70}>
-              <Bezel coreClassName="rec-row">
-                <span className="rec-row__rank">{String(i + 1).padStart(2, '0')}</span>
-                <div className="rec-row__body">
-                  <p className="rec-row__title">{rec.title}</p>
-                  <p className="rec-row__save">
-                    {formatRp(rec.est_saving_rp.min)}–{formatRp(rec.est_saving_rp.max)} <span>/hari</span>
-                  </p>
-                  <div className="row-gap">
-                    <ConfidenceBadge level={rec.confidence} short />
-                    <span className="chip">{EFFORT_LABEL[rec.effort]}</span>
+          {recommendations.map((rec, i) => {
+            const isApplied = appliedRecs[rec.action_id];
+            return (
+              <Reveal as="li" key={rec.action_id} delay={i * 70}>
+                <Bezel coreClassName="rec-row">
+                  <span className="rec-row__rank">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="rec-row__body">
+                    <p className="rec-row__title">{rec.title}</p>
+                    <p className="rec-row__save">
+                      {formatRp(rec.est_saving_rp.min)}–{formatRp(rec.est_saving_rp.max)} <span>/hari</span>
+                    </p>
+                    <div className="row-between" style={{ marginTop: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div className="row-gap">
+                        <ConfidenceBadge level={rec.confidence} short />
+                        <span className="chip">{EFFORT_LABEL[rec.effort]}</span>
+                      </div>
+                      <button
+                        type="button"
+                        className={`selected-tpl-pill ${isApplied ? 'is-active' : ''}`}
+                        onClick={() => handleApplyRec(rec.action_id, rec.title)}
+                        style={{ fontSize: '0.8rem', padding: '0.25rem 0.65rem' }}
+                      >
+                        <Icon name={isApplied ? 'check' : 'bolt'} size={12} />
+                        <span>{isApplied ? 'Diterapkan ✓' : 'Terapkan Saran'}</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </Bezel>
-            </Reveal>
-          ))}
+                </Bezel>
+              </Reveal>
+            );
+          })}
         </ol>
         <p className="footnote">Saran tidak dijalankan otomatis. Anda yang memutuskan: setujui, tunda, atau tolak.</p>
       </section>

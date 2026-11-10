@@ -108,6 +108,34 @@ const PHOTO_COPY = {
   },
 } as const;
 
+const TEMPLATE_APPLIANCE_CATALOG: Record<string, Array<{ name: string; brand: string; power_w: number }>> = {
+  laundry: [
+    { name: 'Pengering Heavy Duty', brand: 'Speed Queen', power_w: 3200 },
+    { name: 'Setrika Uap Boiler', brand: 'Nagamoto', power_w: 1200 },
+    { name: 'Mesin Cuci Front Loading', brand: 'LG Inverter', power_w: 550 },
+    { name: 'Pompa Booster Air', brand: 'Shimizu', power_w: 250 },
+    { name: 'Exhaust Fan Kios', brand: 'Panasonic', power_w: 75 },
+  ],
+  warung: [
+    { name: 'Freezer Box Daging & Es', brand: 'RSA', power_w: 260 },
+    { name: 'Rice Cooker Jumbo 10L', brand: 'Miyako', power_w: 1250 },
+    { name: 'Showcase Cooler Minuman', brand: 'Polytron', power_w: 190 },
+    { name: 'Blender Komersial Sambal', brand: 'Philips', power_w: 350 },
+  ],
+  kafe: [
+    { name: 'Mesin Espresso 2 Group', brand: 'La Marzocco', power_w: 2800 },
+    { name: 'Coffee Grinder Otomatis', brand: 'Eureka', power_w: 350 },
+    { name: 'Ice Maker Machine 50kg', brand: 'Hoshizaki', power_w: 420 },
+    { name: 'Blender Ice Crusher', brand: 'Vitamix', power_w: 1100 },
+  ],
+  bengkel: [
+    { name: 'Kompresor Udara 2 HP', brand: 'Shark', power_w: 1500 },
+    { name: 'Mesin Las Inverter IGBT', brand: 'Lakoni', power_w: 900 },
+    { name: 'Gerinda Tangan 4 Inch', brand: 'Makita', power_w: 540 },
+    { name: 'Bor Duduk Bench Drill', brand: 'Modern', power_w: 375 },
+  ],
+};
+
 function PhotoCapture({
   kind,
   scenario,
@@ -117,7 +145,7 @@ function PhotoCapture({
   scenario: CaptureScenario;
   onManual: (prefill?: string) => void;
 }) {
-  const { analytics, addCustomAppliance, recordDataUpdate } = useVoltraApp();
+  const { profile, analytics, addCustomAppliance, recordDataUpdate } = useVoltraApp();
   const [phase, setPhase] = useState<PhotoPhase>({ kind: 'pick' });
   const [preview, setPreview] = useState<string | null>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -138,8 +166,45 @@ function PhotoCapture({
     setPhase({ kind: 'processing' });
     await wait(1400);
     if (scenario === 'provider_error') return setPhase({ kind: 'error' });
-    if (kind === 'meter') setPhase({ kind: 'meter', data: OCR_METER[scenario] });
-    else setPhase({ kind: 'label', data: analytics.ocrLabelExamples[scenario] });
+
+    if (kind === 'meter') {
+      const count = profile.recordCount ?? 1;
+      // Angka meter dinamis bertambah logis seiring pencatatan harian
+      const baseMeter = 12345.6;
+      const dynamicDelta = (count - 1) * 18.4 + (preview ? 3.2 : 0);
+      const computedKwh = Number((baseMeter + dynamicDelta).toFixed(1));
+
+      const meterResponse: OcrMeterResponse = {
+        request_id: `r_ocr_meter_${Date.now()}`,
+        engine_version: 'ocr-meter-0.1.0',
+        mode: 'hybrid',
+        confidence: scenario === 'low_confidence' ? 'low' : 'high',
+        warnings: scenario === 'low_confidence' ? ['decimal_digit_uncertain'] : [],
+        kwh: computedKwh,
+        unit: 'kWh',
+        digits_confidence: [0.99, 0.98, 0.97, 0.96, 0.92, 0.95],
+        needs_retake: scenario === 'low_confidence',
+      };
+      setPhase({ kind: 'meter', data: meterResponse });
+    } else {
+      const catalog = TEMPLATE_APPLIANCE_CATALOG[profile.templateId] ?? TEMPLATE_APPLIANCE_CATALOG.laundry!;
+      const count = profile.recordCount ?? 1;
+      const appIndex = (count - 1) % catalog.length;
+      const detectedApp = catalog[appIndex]!;
+
+      const labelResponse: OcrLabelResponse = {
+        request_id: `r_ocr_label_${Date.now()}`,
+        engine_version: 'ocr-label-0.1.0',
+        mode: 'hybrid',
+        confidence: scenario === 'low_confidence' ? 'low' : 'high',
+        warnings: scenario === 'low_confidence' ? ['power_unit_uncertain'] : [],
+        name: detectedApp.name,
+        brand: detectedApp.brand,
+        power_w: detectedApp.power_w,
+        needs_retake: scenario === 'low_confidence',
+      };
+      setPhase({ kind: 'label', data: labelResponse });
+    }
   }
 
   function reset() {

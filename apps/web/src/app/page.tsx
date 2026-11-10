@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Bezel, ConfidenceBadge, Eyebrow, IslandLink, MockBadge, Reveal } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/icon';
 import { TerraAvatar } from '@/components/ui/terra-mascot';
@@ -13,11 +14,15 @@ export default function HomePage() {
   const template = getTemplate(profile.templateId);
   const t = getDictionary(settings.language || 'id');
   const isEn = settings.language === 'en';
+  const [appliedHomeRec, setAppliedHomeRec] = useState(false);
+  const [homeNotice, setHomeNotice] = useState<string | null>(null);
+
+  const hasTwoRecords = (profile.recordCount ?? 1) >= 2;
 
   const missionSteps = [
     { label: isEn ? 'Morning meter photo' : 'Foto meter pagi', done: true },
     { label: isEn ? 'Usage hours voice log' : 'Catatan suara jam pakai', done: true },
-    { label: isEn ? 'Night meter photo' : 'Foto meter malam', done: false },
+    { label: isEn ? 'Night meter photo' : 'Foto meter malam', done: hasTwoRecords },
   ];
 
   const today = analytics.scenarios.appliance;
@@ -25,6 +30,16 @@ export default function HomePage() {
   const rec = analytics.recommendations[0];
   const maxWeek = Math.max(1, ...analytics.week.map((d) => d.kwh));
   const doneCount = missionSteps.filter((s) => s.done).length;
+
+  function handleApplyHomeRec() {
+    setAppliedHomeRec(true);
+    setHomeNotice(
+      isEn
+        ? 'Recommendation applied! Appliance schedule optimized in 2D Kiosk.'
+        : `Saran diterapkan! Jadwal pemakaian ${top?.label ?? 'alat'} telah dioptimasi di Kios 2D.`,
+    );
+    setTimeout(() => setHomeNotice(null), 3500);
+  }
 
   // Fallback nominal jika scenario 'insufficient_data' (misal data hari < 3)
   const displayTotalRp =
@@ -36,6 +51,13 @@ export default function HomePage() {
 
   return (
     <main className="page page--wide">
+      {homeNotice && (
+        <div className="notice" role="status" style={{ marginBottom: '1rem' }}>
+          <Icon name="check" size={18} />
+          <div>{homeNotice}</div>
+        </div>
+      )}
+
       <section className="page-head">
         <Reveal>
           <div className="row-gap">
@@ -163,8 +185,10 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-            <IslandLink href="/catat" icon="capture">
-              {isEn ? 'Night meter photo' : 'Foto meter malam'}
+            <IslandLink href="/catat" icon={hasTwoRecords ? 'check' : 'capture'}>
+              {hasTwoRecords
+                ? isEn ? 'Missions completed ✓' : 'Semua misi selesai ✓'
+                : isEn ? 'Night meter photo' : 'Foto meter malam'}
             </IslandLink>
           </Bezel>
         </Reveal>
@@ -186,6 +210,20 @@ export default function HomePage() {
                   <Icon name="info" size={14} /> {rec.safety_note}
                 </p>
               )}
+              <div className="row-gap" style={{ marginTop: '0.65rem' }}>
+                <button
+                  type="button"
+                  className={`selected-tpl-pill ${appliedHomeRec ? 'is-active' : ''}`}
+                  onClick={handleApplyHomeRec}
+                  style={{ fontSize: '0.8rem', padding: '0.25rem 0.65rem' }}
+                >
+                  <Icon name={appliedHomeRec ? 'check' : 'bolt'} size={12} />
+                  <span>{appliedHomeRec ? 'Diterapkan ✓' : 'Terapkan Saran'}</span>
+                </button>
+                <IslandLink href="/biaya" variant="ghost">
+                  {isEn ? 'View in Cost' : 'Buka Biaya'}
+                </IslandLink>
+              </div>
             </Bezel>
           </Reveal>
         )}

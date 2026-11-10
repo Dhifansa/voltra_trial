@@ -22,12 +22,22 @@ export function SettingsView() {
   } = useVoltraApp();
   const template = getTemplate(profile.templateId);
   const [notice, setNotice] = useState<string | null>(null);
+  const [showWaPreview, setShowWaPreview] = useState(false);
+  const [isSendingWa, setIsSendingWa] = useState(false);
   const currentLang = settings.language || 'id';
   const t = getDictionary(currentLang);
 
   function showNotice(msg: string) {
     setNotice(msg);
     setTimeout(() => setNotice(null), 3000);
+  }
+
+  function handleTestWhatsApp() {
+    setIsSendingWa(true);
+    setTimeout(() => {
+      setIsSendingWa(false);
+      setShowWaPreview(true);
+    }, 800);
   }
 
   return (
@@ -133,6 +143,19 @@ export function SettingsView() {
             />
           </div>
         </label>
+
+        <div className="capture__actions" style={{ marginTop: '0.75rem' }}>
+          <button
+            type="button"
+            className="selected-tpl-pill"
+            disabled={!settings.waReminder || isSendingWa}
+            onClick={handleTestWhatsApp}
+            title="Kirim pesan simulasi bot WhatsApp ke nomor Anda"
+          >
+            <Icon name="phone" size={13} />
+            <span>{isSendingWa ? 'Mengirim pesan…' : 'Uji Kirim Pengingat WhatsApp'}</span>
+          </button>
+        </div>
       </Bezel>
 
       {/* Tampilan */}
@@ -210,6 +233,56 @@ export function SettingsView() {
           </IslandButton>
         </div>
       </Bezel>
+
+      {/* MODAL SIMULASI NOTIFIKASI WHATSAPP */}
+      {showWaPreview && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="kios-modal-backdrop"
+          onClick={() => setShowWaPreview(false)}
+        >
+          <div
+            className="kios-modal"
+            style={{ maxWidth: '440px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="row-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem', marginBottom: '0.85rem' }}>
+              <div className="row-gap">
+                <span style={{ fontSize: '1.25rem' }}>💬</span>
+                <div>
+                  <strong style={{ fontSize: '0.95rem' }}>WhatsApp Official Bot</strong>
+                  <p className="hint" style={{ fontSize: '0.75rem', margin: 0 }}>Terkirim ke: {user.phone}</p>
+                </div>
+              </div>
+              <span className="chip chip--high" style={{ fontSize: '0.7rem' }}>Terverifikasi</span>
+            </div>
+
+            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '10px', padding: '1rem', borderLeft: '3px solid #25D366', marginBottom: '1rem' }}>
+              <p style={{ margin: '0 0 0.5rem', fontWeight: 600, color: '#25D366', fontSize: '0.85rem' }}>
+                [Voltess Energy Assistant]
+              </p>
+              <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>
+                Halo <strong>{user.ownerName}</strong>! ⚡<br /><br />
+                Waktu tutup operasional usaha <strong>{profile.businessName}</strong> telah tiba ({settings.reminderTime} WIB).
+                Jangan lupa ambil 1 foto meteran listrik malam ini di Voltess agar kalkulasi tagihan kemarin tercatat presisi dan rekomendasi penghematan besok pagi dapat dihitung otomatis!
+              </p>
+              <span className="hint" style={{ display: 'block', textAlign: 'right', marginTop: '0.5rem', fontSize: '0.75rem' }}>
+                {settings.reminderTime} WIB · Terbaca ✓✓
+              </span>
+            </div>
+
+            <div className="capture__actions">
+              <IslandLink href="/catat" icon="capture" onClick={() => setShowWaPreview(false)}>
+                Buka Catat Sekarang
+              </IslandLink>
+              <IslandButton variant="ghost" icon="close" onClick={() => setShowWaPreview(false)}>
+                Tutup
+              </IslandButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

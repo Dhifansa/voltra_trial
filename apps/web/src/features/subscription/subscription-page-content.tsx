@@ -25,6 +25,9 @@ export function SubscriptionPageContent() {
   );
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState<'method' | 'qris'>('method');
+  const [paymentMethod, setPaymentMethod] = useState<'qris' | 'bca_va'>('qris');
+  const [isVerifying, setIsVerifying] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   function triggerNotice(msg: string) {
@@ -53,22 +56,29 @@ export function SubscriptionPageContent() {
 
   function handleUpgradeClick() {
     setIsUpgrading(true);
-    // Simulasi inisialisasi checkout session (siap disambungkan ke Stripe / backend)
     setTimeout(() => {
       setIsUpgrading(false);
+      setCheckoutStep('method');
       setShowCheckoutModal(true);
-    }, 600);
+    }, 400);
   }
 
-  function handleConfirmPaymentSimulation() {
-    setShowCheckoutModal(false);
-    // Simulasi transisi ke status Pending pembayaran
-    handleStatusChange('pending');
-    triggerNotice(
-      isEn
-        ? 'Payment initiated! Verifying checkout with billing gateway...'
-        : 'Pembayaran diinisiasi! Menunggu konfirmasi gerbang pembayaran...',
-    );
+  function handleProceedToPayment() {
+    setCheckoutStep('qris');
+  }
+
+  function handleVerifyPayment() {
+    setIsVerifying(true);
+    setTimeout(() => {
+      setIsVerifying(false);
+      setShowCheckoutModal(false);
+      handleStatusChange('plus');
+      triggerNotice(
+        isEn
+          ? 'Payment successful! Your account is now upgraded to Voltra Plus.'
+          : 'Pembayaran berhasil diverifikasi! Akun Anda kini aktif di paket Voltra Plus ⚡',
+      );
+    }, 1200);
   }
 
   const plusPlan = SUBSCRIPTION_PLANS.plus;
@@ -293,7 +303,7 @@ export function SubscriptionPageContent() {
                   <div>
                     <h4 className="sub-checkout-plan-name">Voltra Plus ({isEn ? 'Monthly' : 'Bulanan'})</h4>
                     <p className="hint">
-                      {isEn ? 'Access to all business templates & unlimited AI Gateway' : 'Akses semua template usaha & AI Gateway unlimited'}
+                      {isEn ? 'Full access to all AI features & automatic savings' : 'Akses penuh ke semua fitur AI & rekomendasi hemat'}
                     </p>
                   </div>
                   <div className="sub-checkout-price">
@@ -303,43 +313,132 @@ export function SubscriptionPageContent() {
                 </div>
               </div>
 
-              <div className="sub-checkout-meta">
-                <div className="row-between sub-checkout-meta-row">
-                  <span>{isEn ? 'Business Name' : 'Nama Usaha'}</span>
-                  <strong>{profile.businessName}</strong>
-                </div>
-                <div className="row-between sub-checkout-meta-row">
-                  <span>{isEn ? 'Payment Gateway' : 'Gerbang Pembayaran'}</span>
-                  <span className="chip chip--mock">Stripe / QRIS Gateway</span>
-                </div>
-              </div>
+              {checkoutStep === 'method' ? (
+                <>
+                  <div className="field" style={{ margin: '1rem 0' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
+                      {isEn ? 'Select Payment Method' : 'Pilih Metode Pembayaran'}
+                    </span>
+                    <div className="pillset" role="radiogroup" aria-label="Metode pembayaran">
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={paymentMethod === 'qris'}
+                        className={paymentMethod === 'qris' ? 'is-active' : ''}
+                        onClick={() => setPaymentMethod('qris')}
+                      >
+                        ⚡ QRIS (Semua E-Wallet)
+                      </button>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={paymentMethod === 'bca_va'}
+                        className={paymentMethod === 'bca_va' ? 'is-active' : ''}
+                        onClick={() => setPaymentMethod('bca_va')}
+                      >
+                        🏦 BCA Virtual Account
+                      </button>
+                    </div>
+                  </div>
 
-              <div className="sub-checkout-notice">
-                <Icon name="shield" size={16} />
-                <p>
-                  {isEn
-                    ? 'This is a UI simulation. Clicking proceed will simulate a pending checkout verification.'
-                    : 'Ini adalah demonstrasi UI frontend. Menekan tombol di bawah akan menguji alur verifikasi transaksi.'}
-                </p>
-              </div>
+                  <div className="sub-checkout-meta">
+                    <div className="row-between sub-checkout-meta-row">
+                      <span>{isEn ? 'Business Name' : 'Nama Usaha'}</span>
+                      <strong>{profile.businessName}</strong>
+                    </div>
+                    <div className="row-between sub-checkout-meta-row">
+                      <span>{isEn ? 'Admin Fee' : 'Biaya Layanan'}</span>
+                      <strong style={{ color: '#2DD4BF' }}>Rp 0 (Bebas Biaya)</strong>
+                    </div>
+                  </div>
 
-              <div className="sub-checkout-actions">
-                <button
-                  type="button"
-                  className="sub-pricing-card__btn sub-pricing-card__btn--upgrade"
-                  onClick={handleConfirmPaymentSimulation}
-                >
-                  <Icon name="arrowRight" size={17} />
-                  <span>{t.subscription.checkoutProceed}</span>
-                </button>
-                <button
-                  type="button"
-                  className="textlink"
-                  onClick={() => setShowCheckoutModal(false)}
-                >
-                  {t.subscription.checkoutCancel}
-                </button>
-              </div>
+                  <div className="sub-checkout-actions">
+                    <button
+                      type="button"
+                      className="sub-pricing-card__btn sub-pricing-card__btn--upgrade"
+                      onClick={handleProceedToPayment}
+                    >
+                      <Icon name="arrowRight" size={17} />
+                      <span>{isEn ? 'Continue to Payment' : 'Lanjutkan Pembayaran'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="textlink"
+                      onClick={() => setShowCheckoutModal(false)}
+                    >
+                      {t.subscription.checkoutCancel}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {paymentMethod === 'qris' ? (
+                    <div style={{ textAlign: 'center', padding: '1rem 0', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', margin: '1rem 0' }}>
+                      <p style={{ margin: '0 0 0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>
+                        Pindai QRIS dengan GoPay, OVO, Dana, atau BCA Mobile
+                      </p>
+                      {/* Simbol QRIS Bersih */}
+                      <div style={{ display: 'inline-block', background: '#fff', padding: '12px', borderRadius: '8px' }}>
+                        <svg width="140" height="140" viewBox="0 0 100 100" fill="#0F172A">
+                          {/* Pola QR Dekoratif Modern */}
+                          <rect x="5" y="5" width="25" height="25" fill="#0F172A" />
+                          <rect x="10" y="10" width="15" height="15" fill="#FFF" />
+                          <rect x="14" y="14" width="7" height="7" fill="#0F172A" />
+
+                          <rect x="70" y="5" width="25" height="25" fill="#0F172A" />
+                          <rect x="75" y="10" width="15" height="15" fill="#FFF" />
+                          <rect x="79" y="14" width="7" height="7" fill="#0F172A" />
+
+                          <rect x="5" y="70" width="25" height="25" fill="#0F172A" />
+                          <rect x="10" y="75" width="15" height="15" fill="#FFF" />
+                          <rect x="14" y="79" width="7" height="7" fill="#0F172A" />
+
+                          <rect x="36" y="10" width="10" height="10" />
+                          <rect x="52" y="15" width="8" height="18" />
+                          <rect x="38" y="38" width="24" height="24" />
+                          <rect x="44" y="44" width="12" height="12" fill="#2DD4BF" />
+                          <rect x="70" y="42" width="12" height="8" />
+                          <rect x="75" y="60" width="18" height="14" />
+                          <rect x="38" y="72" width="14" height="18" />
+                          <rect x="58" y="80" width="10" height="10" />
+                        </svg>
+                      </div>
+                      <p className="hint" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
+                        Total Tagihan: <strong>{formatRp(plusPrice)}</strong> · Berlaku 15 menit
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', margin: '1rem 0' }}>
+                      <p className="hint" style={{ margin: 0 }}>Nomor Rekening Virtual Account BCA:</p>
+                      <p style={{ fontSize: '1.3rem', fontWeight: 700, letterSpacing: '2px', color: '#2DD4BF', margin: '0.4rem 0' }}>
+                        8000 8123 4567 890
+                      </p>
+                      <p className="hint" style={{ margin: 0 }}>Atas Nama: <strong>VOLTRA / {profile.businessName}</strong></p>
+                      <p className="hint" style={{ marginTop: '0.5rem' }}>Total Pembayaran: <strong>{formatRp(plusPrice)}</strong></p>
+                    </div>
+                  )}
+
+                  <div className="sub-checkout-actions">
+                    <button
+                      type="button"
+                      className="sub-pricing-card__btn sub-pricing-card__btn--upgrade"
+                      disabled={isVerifying}
+                      onClick={handleVerifyPayment}
+                    >
+                      <Icon name="check" size={17} />
+                      <span>{isVerifying ? 'Memverifikasi Pembayaran…' : 'Saya Sudah Bayar (Cek Status)'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="textlink"
+                      onClick={() => setCheckoutStep('method')}
+                      disabled={isVerifying}
+                    >
+                      ← Ganti Metode Pembayaran
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
