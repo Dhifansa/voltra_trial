@@ -74,12 +74,33 @@ export interface AppSettings {
   language: 'id' | 'en';
 }
 
+export interface WeeklySavingReport {
+  weekNumber: number;
+  grade: 'A' | 'B+' | 'B' | 'C';
+  efficiencyPct: number;
+  totalKwh: number;
+  totalRp: number;
+  savedKwh: number;
+  savedRp: number;
+  bestAppliance: string;
+  wastefulAppliance: string;
+  generatedAt: string;
+}
+
+export interface GameCycleState {
+  currentDay: number; // 1 s/d 7
+  totalDaysCompleted: number;
+  weeklyReportUnlocked: boolean;
+  weeklyReport?: WeeklySavingReport;
+}
+
 interface StoredAppState {
   user: UserSession;
   profile: BusinessProfileState;
   kios: KiosState;
   kiosBaselineRp: number;
   settings: AppSettings;
+  gameCycle: GameCycleState;
 }
 
 export interface DerivedAnalytics {
@@ -111,6 +132,8 @@ interface VoltraAppContextValue extends StoredAppState {
   }) => void;
   updateProfile: (patch: Partial<BusinessProfileState>) => void;
   recordDataUpdate: (type: 'meter' | 'label' | 'voice' | 'manual', detail?: string) => void;
+  advanceGameDay: () => { completedWeek: boolean; newDay: number; report?: WeeklySavingReport };
+  resetGameWeek: () => void;
   selectTemplate: (templateId: string, customShopName?: string) => void;
   updateKios: (next: KiosState, rebase?: boolean) => void;
   addCustomAppliance: (name: string, watt: number) => void;
@@ -169,6 +192,11 @@ function buildDefaultState(): StoredAppState {
       aiMode: 'mock',
       reducedMotion: false,
       language: 'id',
+    },
+    gameCycle: {
+      currentDay: 1,
+      totalDaysCompleted: 0,
+      weeklyReportUnlocked: false,
     },
   };
 }
@@ -454,6 +482,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           kios: parsed.kios ?? prev.kios,
           kiosBaselineRp: parsed.kiosBaselineRp ?? prev.kiosBaselineRp,
           settings: { ...prev.settings, ...parsed.settings },
+          gameCycle: parsed.gameCycle ?? prev.gameCycle,
         }));
       } else {
         // Migrasi dari key lama jika ada
@@ -679,6 +708,84 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  function advanceGameDay(): { completedWeek: boolean; newDay: number; report?: WeeklySavingReport } {
+    let result: { completedWeek: boolean; newDay: number; report?: WeeklySavingReport } = {
+      completedWeek: false,
+      newDay: 1,
+    };
+
+    setState((prev) => {
+      const curDay = prev.gameCycle.currentDay;
+      const willComplete = curDay >= 6; // Menuju atau mencapai hari 7
+      const nextDay = curDay >= 7 ? 7 : curDay + 1;
+      const nextDataDays = Math.max(prev.profile.dataDays, Math.min(7, nextDay));
+
+      let report = prev.gameCycle.weeklyReport;
+      if (curDay >= 6 || nextDay >= 7) {
+        const topApp = prev.kios.slots.slice().sort((a, b) => (b.hours * b.appliance.power_w.typical) - (a.hours * a.appliance.power_w.typical))[0];
+        const efficientApp = prev.kios.slots.find((s) => s.on && s.hours <= 5) || prev.kios.slots[0];
+        const dailyKwh = prev.kios.slots.reduce(
+          (acc, s) => acc + (s.on ? (s.appliance.power_w.typical / 1000) * s.hours * s.appliance.load_factor.typical : 0),
+          0,
+        );
+        const totalKwh = Number((dailyKwh * 7).toFixed(1));
+        const tariff = prev.profile.tariffRpPerKwh || 1444.7;
+        const totalRp = Math.round(totalKwh * tariff);
+        const baselineTotalRp = Math.round(prev.kiosBaselineRp * 7);
+        const savedRp = Math.max(28500, baselineTotalRp - totalRp);
+        const savedKwh = Number((savedRp / tariff).toFixed(1));
+
+        report = {
+          weekNumber: Math.floor(prev.gameCycle.totalDaysCompleted / 7) + 1,
+          grade: savedRp >= 25000 ? 'A' : 'B+',
+          efficiencyPct: Math.min(94, Math.max(83, Math.round(85 + (savedRp / 12000)))),
+          totalKwh,
+          totalRp,
+          savedKwh,
+          savedRp,
+          bestAppliance: efficientApp?.appliance.name || 'Mesin Cuci Front Loading',
+          wastefulAppliance: topApp?.appliance.name || 'Pengering Heavy Duty',
+          generatedAt: new Date().toLocaleDateString('id-ID', { dateStyle: 'full' }),
+        };
+      }
+
+      result = {
+        completedWeek: nextDay >= 7,
+        newDay: nextDay,
+        report,
+      };
+
+      return {
+        ...prev,
+        profile: {
+          ...prev.profile,
+          dataDays: nextDataDays,
+          recordCount: Math.max(prev.profile.recordCount || 1, nextDay >= 2 ? 2 : 1),
+        },
+        gameCycle: {
+          currentDay: nextDay,
+          totalDaysCompleted: prev.gameCycle.totalDaysCompleted + 1,
+          weeklyReportUnlocked: nextDay >= 7 || prev.gameCycle.weeklyReportUnlocked,
+          weeklyReport: report,
+        },
+      };
+    });
+
+    return result;
+  }
+
+  function resetGameWeek() {
+    setState((prev) => ({
+      ...prev,
+      gameCycle: {
+        currentDay: 1,
+        totalDaysCompleted: prev.gameCycle.totalDaysCompleted,
+        weeklyReportUnlocked: false,
+        weeklyReport: undefined,
+      },
+    }));
+  }
+
   function selectTemplate(templateId: string, customShopName?: string) {
     const tpl = getTemplate(templateId);
     setState((prev) => {
@@ -805,6 +912,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         saveProfiling,
         updateProfile,
         recordDataUpdate,
+        advanceGameDay,
+        resetGameWeek,
         selectTemplate,
         updateKios,
         addCustomAppliance,

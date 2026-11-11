@@ -46,7 +46,7 @@ function downloadCsvReport(businessName: string, tariffName: string, rows: CostR
 }
 
 export function CostBreakdown() {
-  const { profile, analytics, settings } = useVoltraApp();
+  const { profile, analytics, settings, gameCycle } = useVoltraApp();
   const template = getTemplate(profile.templateId);
   const t = getDictionary(settings.language || 'id');
   const [id, setId] = useState<ScenarioId>('appliance');
@@ -60,7 +60,41 @@ export function CostBreakdown() {
           <span className="chip chip--high">{template.display_name}</span>
           <span className="chip">{profile.tariffName}</span>
         </div>
+        <div className="row-gap">
+          <span className="chip" style={{ borderColor: '#2DD4BF', color: '#2DD4BF' }}>
+            📅 Hari {gameCycle.currentDay}/7 Game
+          </span>
+        </div>
       </div>
+
+      {(gameCycle.weeklyReportUnlocked || gameCycle.currentDay >= 7) && (
+        <div
+          style={{
+            background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.35), rgba(6, 78, 59, 0.45))',
+            border: '1px solid #2DD4BF',
+            borderRadius: '12px',
+            padding: '0.85rem 1.15rem',
+            marginBottom: '0.85rem',
+          }}
+        >
+          <div className="row-between" style={{ flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
+            <div className="row-gap" style={{ alignItems: 'center' }}>
+              <span style={{ fontSize: '1.25rem' }}>🏆</span>
+              <div>
+                <strong style={{ fontSize: '0.95rem', color: '#2DD4BF' }}>
+                  Laporan Mingguan Hemat Listrik (Siklus 7 Hari Selesai!)
+                </strong>
+                <p className="hint" style={{ fontSize: '0.8rem', margin: 0 }}>
+                  Efisiensi {gameCycle.weeklyReport?.efficiencyPct || 92}% · Potensi Hemat {formatRp(gameCycle.weeklyReport?.savedRp || 32500)} / minggu
+                </p>
+              </div>
+            </div>
+            <IslandLink href="/kios" icon="crown">
+              Buka Rapor di Kios 2D
+            </IslandLink>
+          </div>
+        </div>
+      )}
 
       <div className="segmented" role="tablist" aria-label="Tampilan rincian biaya">
         {SCENARIO_ORDER.map((key) => {

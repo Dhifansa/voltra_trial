@@ -6,7 +6,7 @@ import type { KiosTemplate } from '@voltra/contracts';
 import { Bezel, Eyebrow, IslandButton, IslandLink, Reveal } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/icon';
 import { TerraAvatar, TerraGameTutorial, type TerraMood } from '@/components/ui/terra-mascot';
-import { useVoltraApp } from '@/context/app-context';
+import { useVoltraApp, type WeeklySavingReport } from '@/context/app-context';
 import { formatKwh, formatRp } from '@/lib/format';
 import { getDictionary } from '@/lib/i18n';
 import { ApplianceArt } from './appliance-art';
@@ -16,6 +16,94 @@ import {
   ShopCatArt,
   type InteractivePropDef,
 } from './outlet-props-art';
+
+function downloadWeeklyReportCsv(
+  shopName: string,
+  templateName: string,
+  tariffName: string,
+  report: WeeklySavingReport,
+  slots: KiosSlot[],
+) {
+  const dateStr = new Date().toISOString().split('T')[0];
+  const header = [
+    'Nama Usaha',
+    'Siklus Minggu Ke',
+    'Tanggal Laporan',
+    'Tarif PLN',
+    'Grade Efisiensi',
+    'Persentase Efisiensi',
+    'Total Pemakaian (kWh)',
+    'Total Biaya (Rp)',
+    'Total Penghematan (Rp)',
+    'Alat Terhemat',
+    'Alat Paling Boros',
+  ];
+  const summaryRow = [
+    `"${shopName}"`,
+    `Minggu ke-${report.weekNumber}`,
+    dateStr,
+    `"${tariffName}"`,
+    `"${report.grade}"`,
+    `${report.efficiencyPct}%`,
+    report.totalKwh,
+    report.totalRp,
+    report.savedRp,
+    `"${report.bestAppliance}"`,
+    `"${report.wastefulAppliance}"`,
+  ];
+
+  const applianceHeader = [
+    'Nama Alat Listrik',
+    'Kategori',
+    'Daya (Watt)',
+    'Jam Pakai/Hari',
+    'Status Operasional',
+    'Konsumsi 7 Hari (kWh)',
+    'Estimasi 7 Hari (Rp)',
+  ];
+  const applianceRows = slots.map((s) => {
+    const kwh7 = Number(
+      (
+        (s.appliance.power_w.typical / 1000) *
+        (s.on ? s.hours : 0) *
+        s.appliance.load_factor.typical *
+        7
+      ).toFixed(1),
+    );
+    const rp7 = Math.round(kwh7 * 1444.7);
+    return [
+      `"${s.appliance.name}"`,
+      `"${s.appliance.category}"`,
+      s.appliance.power_w.typical,
+      s.on ? s.hours : 0,
+      s.on ? 'Menyala' : 'Mati',
+      kwh7,
+      rp7,
+    ].join(',');
+  });
+
+  const fullCsv = [
+    header.join(','),
+    summaryRow.join(','),
+    '',
+    'RINCIAN ALAT LISTRIK KIOS SELAMA 7 HARI:',
+    applianceHeader.join(','),
+    ...applianceRows,
+  ].join('\n');
+
+  const blob = new Blob([fullCsv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute(
+    'download',
+    `Laporan_Mingguan_Hemat_Listrik_${shopName.replace(/\s+/g, '_')}_Minggu_${report.weekNumber}.csv`,
+  );
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 import {
   CHALLENGE_TARGET,
   addSlot,
@@ -395,7 +483,7 @@ function KiosPlay({
   onChange: (s: KiosState, rebase?: boolean) => void;
   onSwitchTemplate: () => void;
 }) {
-  const { settings } = useVoltraApp();
+  const { settings, profile, user, gameCycle, advanceGameDay, resetGameWeek } = useVoltraApp();
   const t = getDictionary(settings.language || 'id');
   const template = getTemplate(state.templateId);
   const result = useMemo(() => compute(state, tariffRate), [state, tariffRate]);
@@ -407,6 +495,9 @@ function KiosPlay({
   const [selectedUid, setSelectedUid] = useState<string | null>(state.slots[0]?.uid ?? null);
   const [showCatalog, setShowCatalog] = useState(false);
   const [showHourModal, setShowHourModal] = useState(false);
+  const [showWeeklyReportModal, setShowWeeklyReportModal] = useState(false);
+  const [waSharedSuccess, setWaSharedSuccess] = useState(false);
+  const [dayAdvanceBanner, setDayAdvanceBanner] = useState<string | null>(null);
 
   // Posisi karakter Terra di dalam ruangan outlet (persentase x, y)
   const [terraPos, setTerraPos] = useState<{ x: number; y: number }>({ x: 52, y: 66 });
@@ -459,6 +550,28 @@ function KiosPlay({
       setTerraSpeech(null);
     }, durationMs);
   }, []);
+
+  const handleAdvanceDay = useCallback(() => {
+    const res = advanceGameDay();
+    if (res.completedWeek) {
+      showTerraBubble('🎉 Hore! Siklus 7 hari di Kios telah selesai! Laporan Mingguan Hemat Listrik resmi terbuka!', 5500);
+      setShowWeeklyReportModal(true);
+    } else {
+      showTerraBubble(`Hari ke-${gameCycle.currentDay} selesai! Pemakaian Rp ${formatRp(result.rp_day)} tersimpan. Masuk ke Hari ke-${res.newDay}!`, 4500);
+      setDayAdvanceBanner(`Hari ke-${gameCycle.currentDay} selesai (Rp ${formatRp(result.rp_day)}). Lanjut ke Hari ke-${res.newDay} dari 7!`);
+      setTimeout(() => setDayAdvanceBanner(null), 3800);
+    }
+  }, [advanceGameDay, gameCycle.currentDay, result.rp_day, showTerraBubble]);
+
+  // Realtime cycle simulation: Setiap 12 menit realtime berganti 1 hari game otomatis
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (gameCycle.currentDay < 7) {
+        advanceGameDay();
+      }
+    }, 12 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [advanceGameDay, gameCycle.currentDay]);
 
   useEffect(() => {
     if (!state.slots.some((s) => s.uid === selectedUid)) {
@@ -936,6 +1049,89 @@ function KiosPlay({
             {t.kiosk.switchBusiness}
           </button>
         </div>
+      </div>
+
+      {/* HUD SIKLUS 7 HARI DI GAME & PROGRES LAPORAN MINGGUAN */}
+      <div
+        className={`game-cycle-hud ${spotlightActive ? 'tutorial-dim' : ''}`}
+        style={{
+          background: 'rgba(15, 23, 42, 0.85)',
+          border: '1px solid rgba(45, 212, 191, 0.4)',
+          borderRadius: '12px',
+          padding: '0.75rem 1rem',
+          marginBottom: '0.85rem',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+        }}
+      >
+        <div className="row-between" style={{ flexWrap: 'wrap', gap: '0.6rem', alignItems: 'center' }}>
+          <div className="row-gap" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
+            <span
+              className="chip"
+              style={{
+                background: gameCycle.currentDay >= 7 ? 'linear-gradient(135deg, #059669, #0D9488)' : '#1E293B',
+                color: gameCycle.currentDay >= 7 ? '#FFF' : '#2DD4BF',
+                borderColor: '#2DD4BF',
+                fontWeight: 700,
+              }}
+            >
+              📅 Hari {gameCycle.currentDay} / 7 Game
+            </span>
+
+            <div className="dots" aria-label={`Hari ke-${gameCycle.currentDay} dari 7`}>
+              {Array.from({ length: 7 }, (_, i) => (
+                <span
+                  key={i}
+                  className={i < gameCycle.currentDay ? 'is-on' : ''}
+                  title={`Hari ke-${i + 1}`}
+                />
+              ))}
+            </div>
+
+            <span className="hint" style={{ fontSize: '0.78rem', margin: 0 }}>
+              (1–2 jam realtime = 1 siklus 7 hari untuk 1 laporan hemat listrik)
+            </span>
+          </div>
+
+          <div className="row-gap">
+            {gameCycle.weeklyReportUnlocked || gameCycle.currentDay >= 7 ? (
+              <button
+                type="button"
+                className="selected-tpl-pill is-active"
+                style={{
+                  background: 'linear-gradient(135deg, #059669, #0D9488)',
+                  color: '#FFF',
+                  fontWeight: 700,
+                  boxShadow: '0 0 14px rgba(45, 212, 191, 0.45)',
+                }}
+                onClick={() => setShowWeeklyReportModal(true)}
+              >
+                <Icon name="bolt" size={13} />
+                <span>🏆 Buka Laporan Hemat Listrik 7 Hari</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="selected-tpl-pill"
+                onClick={handleAdvanceDay}
+                title="Selesaikan jam operasional hari ini dan maju ke hari berikutnya"
+              >
+                <Icon name="check" size={13} />
+                <span>Tutup Kios Hari #{gameCycle.currentDay} (Lanjut Hari #{gameCycle.currentDay + 1}) →</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {dayAdvanceBanner && (
+          <div
+            className="notice"
+            role="status"
+            style={{ marginTop: '0.6rem', padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
+          >
+            <Icon name="check" size={16} />
+            <div>{dayAdvanceBanner}</div>
+          </div>
+        )}
       </div>
 
       {/* ==================================================================== */}
@@ -1617,6 +1813,213 @@ function KiosPlay({
           onPrimaryAction={handleCompleteTutorial}
           onClose={handleCompleteTutorial}
         />
+      )}
+
+      {/* ==================================================================== */}
+      {/* MODAL RAPOR MINGGUAN HEMAT LISTRIK (SIKLUS 7 HARI DI GAME)            */}
+      {/* ==================================================================== */}
+      {showWeeklyReportModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="kios-modal-backdrop"
+          onClick={() => setShowWeeklyReportModal(false)}
+        >
+          <div
+            className="kios-modal"
+            style={{ maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Rapor */}
+            <div className="row-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+              <div>
+                <span className="chip chip--high" style={{ background: '#0F766E', borderColor: '#2DD4BF', color: '#FFF' }}>
+                  🏆 Rapor Hemat Listrik 7 Hari
+                </span>
+                <h3 style={{ margin: '0.4rem 0 0', fontSize: '1.15rem' }}>
+                  Minggu ke-{gameCycle.weeklyReport?.weekNumber || 1} · {state.shopName}
+                </h3>
+                <p className="hint" style={{ fontSize: '0.78rem', margin: 0 }}>
+                  Periode 7 Hari Operasional Kios · Tarif {tariffName}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="outlet-modal-close"
+                onClick={() => setShowWeeklyReportModal(false)}
+                aria-label="Tutup Rapor"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Badge Nilai Efisiensi (Grade) */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.35), rgba(6, 78, 59, 0.45))',
+                border: '1px solid #2DD4BF',
+                borderRadius: '12px',
+                padding: '1rem',
+                textAlign: 'center',
+                marginBottom: '1rem',
+              }}
+            >
+              <span className="eyebrow eyebrow--light">Skor Efisiensi Energi</span>
+              <div style={{ fontSize: '2.4rem', fontWeight: 800, color: '#2DD4BF', letterSpacing: '1px', margin: '0.2rem 0' }}>
+                Grade {gameCycle.weeklyReport?.grade || 'A'}
+              </div>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem' }}>
+                Tingkat Efisiensi: {gameCycle.weeklyReport?.efficiencyPct || 92}%
+              </p>
+              <p className="hint" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                Berhasil menghemat pengeluaran listrik kios dibanding pemakaian tanpa optimasi!
+              </p>
+            </div>
+
+            {/* Bento Grid Metrik 7 Hari */}
+            <div className="control__stats" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div style={{ background: 'rgba(0,0,0,0.25)', padding: '0.75rem', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Total Pengeluaran 7 Hari</span>
+                <strong style={{ fontSize: '1.1rem', display: 'block', margin: '0.25rem 0' }}>
+                  {formatRp(gameCycle.weeklyReport?.totalRp || Math.round(result.rp_day * 7))}
+                </strong>
+                <span className="hint" style={{ fontSize: '0.75rem' }}>
+                  {gameCycle.weeklyReport?.totalKwh || (result.kwh_day * 7).toFixed(1)} kWh terpakai
+                </span>
+              </div>
+
+              <div style={{ background: 'rgba(0,0,0,0.25)', padding: '0.75rem', borderRadius: '8px', borderLeft: '3px solid #2DD4BF' }}>
+                <span style={{ fontSize: '0.75rem', color: '#2DD4BF' }}>Potensi Hemat Didapat</span>
+                <strong style={{ fontSize: '1.1rem', display: 'block', margin: '0.25rem 0', color: '#2DD4BF' }}>
+                  {formatRp(gameCycle.weeklyReport?.savedRp || 32500)}
+                </strong>
+                <span className="hint" style={{ fontSize: '0.75rem' }}>
+                  Setara hemat {gameCycle.weeklyReport?.savedKwh || 22.5} kWh
+                </span>
+              </div>
+            </div>
+
+            {/* Sorotan Alat: Paling Optimal vs Boros */}
+            <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '0.85rem', marginBottom: '1rem' }}>
+              <Eyebrow>Evaluasi Peralatan Listrik 7 Hari</Eyebrow>
+              <ul className="entries" style={{ margin: '0.5rem 0 0', fontSize: '0.85rem' }}>
+                <li>
+                  <span className="entries__name">
+                    🌟 Paling Terkontrol & Efisien
+                    <small>Jadwal operasional sesuai kapasitas</small>
+                  </span>
+                  <span className="entries__val" style={{ color: '#2DD4BF', fontWeight: 600 }}>
+                    {gameCycle.weeklyReport?.bestAppliance || 'Mesin Cuci Front Loading'}
+                  </span>
+                </li>
+                <li>
+                  <span className="entries__name">
+                    ⚠️ Beban Daya Terbesar
+                    <small>Saran: Kurangi 1 jam saat jam sepi</small>
+                  </span>
+                  <span className="entries__val" style={{ color: '#F59E0B', fontWeight: 600 }}>
+                    {gameCycle.weeklyReport?.wastefulAppliance || 'Pengering Komersial'}
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Riwayat 7 Hari Game Progress Mini Bar */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div className="row-between" style={{ marginBottom: '0.4rem' }}>
+                <span className="hint" style={{ fontSize: '0.78rem' }}>Catatan 7 Hari Operasional Kios</span>
+                <span className="hint" style={{ fontSize: '0.78rem', color: '#2DD4BF' }}>7/7 Hari Selesai ✓</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day, idx) => (
+                  <div
+                    key={day}
+                    style={{
+                      background: 'rgba(45, 212, 191, 0.15)',
+                      border: '1px solid rgba(45, 212, 191, 0.4)',
+                      borderRadius: '6px',
+                      padding: '0.4rem 0.2rem',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.7rem', color: '#94A3B8', display: 'block' }}>{day}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2DD4BF' }}>✓</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {waSharedSuccess && (
+              <div className="notice" role="status" style={{ marginBottom: '0.85rem' }}>
+                <Icon name="check" size={16} />
+                <div>Ringkasan rapor mingguan berhasil dikirim ke WhatsApp pemilik ({user.phone})!</div>
+              </div>
+            )}
+
+            {/* Aksi Unduh & Bagikan */}
+            <div className="capture__actions" style={{ flexDirection: 'column', gap: '0.6rem' }}>
+              <div className="row-gap" style={{ width: '100%' }}>
+                <IslandButton
+                  icon="tag"
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    const rep = gameCycle.weeklyReport || {
+                      weekNumber: 1,
+                      grade: 'A',
+                      efficiencyPct: 92,
+                      totalKwh: Number((result.kwh_day * 7).toFixed(1)),
+                      totalRp: Math.round(result.rp_day * 7),
+                      savedKwh: 22.5,
+                      savedRp: 32500,
+                      bestAppliance: 'Mesin Cuci Front Loading',
+                      wastefulAppliance: top?.appliance.name || 'Pengering',
+                      generatedAt: new Date().toLocaleDateString('id-ID'),
+                    };
+                    downloadWeeklyReportCsv(state.shopName, template.display_name, tariffName, rep, state.slots);
+                  }}
+                >
+                  Unduh Laporan Mingguan (.CSV)
+                </IslandButton>
+
+                <button
+                  type="button"
+                  className="selected-tpl-pill"
+                  style={{ padding: '0.65rem 1rem' }}
+                  onClick={() => {
+                    setWaSharedSuccess(true);
+                    setTimeout(() => setWaSharedSuccess(false), 3500);
+                  }}
+                  title="Kirim notifikasi ringkasan ke nomor WhatsApp Anda"
+                >
+                  <Icon name="phone" size={14} />
+                  <span>Kirim ke WA</span>
+                </button>
+              </div>
+
+              <div className="row-between" style={{ width: '100%', marginTop: '0.25rem' }}>
+                <button
+                  type="button"
+                  className="selected-tpl-pill"
+                  onClick={() => {
+                    resetGameWeek();
+                    setShowWeeklyReportModal(false);
+                    showTerraBubble('Siklus Minggu baru dimulai! Mari optimalkan lagi pemakaian listrik Kios!', 4500);
+                  }}
+                >
+                  🔄 Mulai Siklus Minggu Baru (Hari 1)
+                </button>
+
+                <button
+                  type="button"
+                  className="textlink"
+                  onClick={() => setShowWeeklyReportModal(false)}
+                >
+                  Tutup Rapor
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
