@@ -1827,141 +1827,157 @@ function KiosPlay({
         >
           <div
             className="kios-modal"
-            style={{ maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header Rapor */}
-            <div className="row-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+            <div className="row-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.45rem', marginBottom: '0.55rem' }}>
               <div>
-                <span className="chip chip--high" style={{ background: '#0F766E', borderColor: '#2DD4BF', color: '#FFF' }}>
-                  🏆 Rapor Hemat Listrik 7 Hari
-                </span>
-                <h3 style={{ margin: '0.4rem 0 0', fontSize: '1.15rem' }}>
+                <div className="row-gap" style={{ alignItems: 'center', gap: '0.35rem' }}>
+                  <span className="chip chip--high" style={{ background: 'rgba(15, 118, 110, 0.45)', borderColor: '#2DD4BF', color: '#2DD4BF', fontSize: '0.72rem', padding: '0.15rem 0.5rem', fontWeight: 700 }}>
+                    🏆 Rapor Hemat Listrik 7 Hari
+                  </span>
+                  <span className="chip" style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', opacity: 0.85 }}>
+                    Tarif {tariffName}
+                  </span>
+                </div>
+                <h3 style={{ margin: '0.2rem 0 0', fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>
                   Minggu ke-{gameCycle.weeklyReport?.weekNumber || 1} · {state.shopName}
                 </h3>
-                <p className="hint" style={{ fontSize: '0.78rem', margin: 0 }}>
-                  Periode 7 Hari Operasional Kios · Tarif {tariffName}
-                </p>
               </div>
               <button
                 type="button"
                 className="outlet-modal-close"
                 onClick={() => setShowWeeklyReportModal(false)}
                 aria-label="Tutup Rapor"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#94A3B8',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  width: '1.6rem',
+                  height: '1.6rem',
+                }}
               >
                 ✕
               </button>
             </div>
 
-            {/* Badge Nilai Efisiensi (Grade) */}
-            <div
-              style={{
-                background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.35), rgba(6, 78, 59, 0.45))',
-                border: '1px solid #2DD4BF',
-                borderRadius: '12px',
-                padding: '1rem',
-                textAlign: 'center',
-                marginBottom: '1rem',
-              }}
-            >
-              <span className="eyebrow eyebrow--light">Skor Efisiensi Energi</span>
-              <div style={{ fontSize: '2.4rem', fontWeight: 800, color: '#2DD4BF', letterSpacing: '1px', margin: '0.2rem 0' }}>
-                Grade {gameCycle.weeklyReport?.grade || 'A'}
-              </div>
-              <p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem' }}>
-                Tingkat Efisiensi: {gameCycle.weeklyReport?.efficiencyPct || 92}%
-              </p>
-              <p className="hint" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                Berhasil menghemat pengeluaran listrik kios dibanding pemakaian tanpa optimasi!
-              </p>
-            </div>
-
-            {/* Bento Grid Metrik 7 Hari */}
-            <div className="control__stats" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div style={{ background: 'rgba(0,0,0,0.25)', padding: '0.75rem', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Total Pengeluaran 7 Hari</span>
-                <strong style={{ fontSize: '1.1rem', display: 'block', margin: '0.25rem 0' }}>
-                  {formatRp(gameCycle.weeklyReport?.totalRp || Math.round(result.rp_day * 7))}
-                </strong>
-                <span className="hint" style={{ fontSize: '0.75rem' }}>
-                  {gameCycle.weeklyReport?.totalKwh || (result.kwh_day * 7).toFixed(1)} kWh terpakai
+            {/* Skor Efisiensi & Metrik Utama (1 Baris Grid Dua Kolom) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.35fr', gap: '0.5rem', marginBottom: '0.55rem' }}>
+              {/* Box Grade */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.25), rgba(6, 78, 59, 0.35))',
+                  border: '1px solid rgba(45, 212, 191, 0.35)',
+                  borderRadius: '10px',
+                  padding: '0.5rem 0.4rem',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <span className="eyebrow eyebrow--light" style={{ fontSize: '0.66rem', letterSpacing: '0.04em' }}>
+                  SKOR EFISIENSI
+                </span>
+                <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#2DD4BF', lineHeight: 1.1, margin: '0.1rem 0' }}>
+                  Grade {gameCycle.weeklyReport?.grade || 'A'}
+                </div>
+                <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#E2E8F0' }}>
+                  Efisiensi {gameCycle.weeklyReport?.efficiencyPct || 92}%
                 </span>
               </div>
 
-              <div style={{ background: 'rgba(0,0,0,0.25)', padding: '0.75rem', borderRadius: '8px', borderLeft: '3px solid #2DD4BF' }}>
-                <span style={{ fontSize: '0.75rem', color: '#2DD4BF' }}>Potensi Hemat Didapat</span>
-                <strong style={{ fontSize: '1.1rem', display: 'block', margin: '0.25rem 0', color: '#2DD4BF' }}>
-                  {formatRp(gameCycle.weeklyReport?.savedRp || 32500)}
-                </strong>
-                <span className="hint" style={{ fontSize: '0.75rem' }}>
-                  Setara hemat {gameCycle.weeklyReport?.savedKwh || 22.5} kWh
-                </span>
+              {/* 2 Metrik Ringkas Pengeluaran & Hemat */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <div style={{ background: 'rgba(26, 41, 69, 0.55)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '8px', padding: '0.4rem 0.6rem' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>Pengeluaran 7 Hari</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: '0.1rem' }}>
+                    <strong style={{ fontSize: '0.95rem', color: '#FFFFFF' }}>
+                      {formatRp(gameCycle.weeklyReport?.totalRp || Math.round(result.rp_day * 7))}
+                    </strong>
+                    <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>
+                      {gameCycle.weeklyReport?.totalKwh || (result.kwh_day * 7).toFixed(1)} kWh
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(26, 41, 69, 0.55)', border: '1px solid rgba(45, 212, 191, 0.3)', borderLeft: '3px solid #2DD4BF', borderRadius: '8px', padding: '0.4rem 0.6rem' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#2DD4BF' }}>Potensi Hemat Didapat</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: '0.1rem' }}>
+                    <strong style={{ fontSize: '0.95rem', color: '#2DD4BF' }}>
+                      {formatRp(gameCycle.weeklyReport?.savedRp || 32500)}
+                    </strong>
+                    <span style={{ fontSize: '0.7rem', color: '#2DD4BF' }}>
+                      Hemat {gameCycle.weeklyReport?.savedKwh || 22.5} kWh
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Sorotan Alat: Paling Optimal vs Boros */}
-            <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '0.85rem', marginBottom: '1rem' }}>
-              <Eyebrow>Evaluasi Peralatan Listrik 7 Hari</Eyebrow>
-              <ul className="entries" style={{ margin: '0.5rem 0 0', fontSize: '0.85rem' }}>
-                <li>
-                  <span className="entries__name">
-                    🌟 Paling Terkontrol & Efisien
-                    <small>Jadwal operasional sesuai kapasitas</small>
-                  </span>
-                  <span className="entries__val" style={{ color: '#2DD4BF', fontWeight: 600 }}>
+            {/* Sorotan Alat: Paling Optimal vs Boros (2 Kolom Compact) */}
+            <div style={{ background: 'rgba(26, 41, 69, 0.45)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '8px', padding: '0.45rem 0.65rem', marginBottom: '0.55rem' }}>
+              <div className="row-between" style={{ fontSize: '0.68rem', marginBottom: '0.3rem' }}>
+                <span style={{ color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  Evaluasi Peralatan Listrik
+                </span>
+                <span style={{ color: '#2DD4BF', fontSize: '0.68rem', fontWeight: 600 }}>Terkontrol</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.45rem' }}>
+                <div style={{ background: 'rgba(45, 212, 191, 0.08)', borderRadius: '6px', padding: '0.35rem 0.5rem', border: '1px solid rgba(45, 212, 191, 0.2)' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#2DD4BF', display: 'block' }}>🌟 Paling Efisien</span>
+                  <strong style={{ color: '#FFFFFF', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                     {gameCycle.weeklyReport?.bestAppliance || 'Mesin Cuci Front Loading'}
-                  </span>
-                </li>
-                <li>
-                  <span className="entries__name">
-                    ⚠️ Beban Daya Terbesar
-                    <small>Saran: Kurangi 1 jam saat jam sepi</small>
-                  </span>
-                  <span className="entries__val" style={{ color: '#F59E0B', fontWeight: 600 }}>
+                  </strong>
+                </div>
+                <div style={{ background: 'rgba(245, 158, 11, 0.08)', borderRadius: '6px', padding: '0.35rem 0.5rem', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#F59E0B', display: 'block' }}>⚠️ Beban Terbesar</span>
+                  <strong style={{ color: '#FFFFFF', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                     {gameCycle.weeklyReport?.wastefulAppliance || 'Pengering Komersial'}
-                  </span>
-                </li>
-              </ul>
+                  </strong>
+                </div>
+              </div>
             </div>
 
-            {/* Riwayat 7 Hari Game Progress Mini Bar */}
-            <div style={{ marginBottom: '1.25rem' }}>
-              <div className="row-between" style={{ marginBottom: '0.4rem' }}>
-                <span className="hint" style={{ fontSize: '0.78rem' }}>Catatan 7 Hari Operasional Kios</span>
-                <span className="hint" style={{ fontSize: '0.78rem', color: '#2DD4BF' }}>7/7 Hari Selesai ✓</span>
+            {/* Riwayat 7 Hari Operasional Mini Strip */}
+            <div style={{ marginBottom: '0.65rem' }}>
+              <div className="row-between" style={{ marginBottom: '0.25rem', fontSize: '0.68rem' }}>
+                <span style={{ color: '#94A3B8' }}>Catatan 7 Hari Operasional Kios</span>
+                <span style={{ color: '#2DD4BF', fontWeight: 600 }}>7/7 Hari Selesai ✓</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
-                {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day, idx) => (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
+                {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day) => (
                   <div
                     key={day}
                     style={{
-                      background: 'rgba(45, 212, 191, 0.15)',
-                      border: '1px solid rgba(45, 212, 191, 0.4)',
-                      borderRadius: '6px',
-                      padding: '0.4rem 0.2rem',
+                      background: 'rgba(45, 212, 191, 0.12)',
+                      border: '1px solid rgba(45, 212, 191, 0.3)',
+                      borderRadius: '5px',
+                      padding: '0.25rem 0.15rem',
                       textAlign: 'center',
                     }}
                   >
-                    <span style={{ fontSize: '0.7rem', color: '#94A3B8', display: 'block' }}>{day}</span>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2DD4BF' }}>✓</span>
+                    <span style={{ fontSize: '0.64rem', color: '#94A3B8', display: 'block' }}>{day}</span>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2DD4BF' }}>✓</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {waSharedSuccess && (
-              <div className="notice" role="status" style={{ marginBottom: '0.85rem' }}>
-                <Icon name="check" size={16} />
-                <div>Ringkasan rapor mingguan berhasil dikirim ke WhatsApp pemilik ({user.phone})!</div>
+              <div className="notice" role="status" style={{ marginBottom: '0.55rem', padding: '0.35rem 0.6rem', fontSize: '0.76rem' }}>
+                <Icon name="check" size={14} />
+                <div>Ringkasan rapor berhasil dikirim ke WhatsApp ({user.phone})!</div>
               </div>
             )}
 
-            {/* Aksi Unduh & Bagikan */}
-            <div className="capture__actions" style={{ flexDirection: 'column', gap: '0.6rem' }}>
-              <div className="row-gap" style={{ width: '100%' }}>
+            {/* Aksi Unduh, Kirim WA, & Mulai Siklus Baru */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '0.45rem' }}>
                 <IslandButton
                   icon="tag"
-                  style={{ flex: 1 }}
+                  style={{ padding: '0.45rem 0.75rem', fontSize: '0.78rem', justifyContent: 'center' }}
                   onClick={() => {
                     const rep = gameCycle.weeklyReport || {
                       weekNumber: 1,
@@ -1978,40 +1994,49 @@ function KiosPlay({
                     downloadWeeklyReportCsv(state.shopName, template.display_name, tariffName, rep, state.slots);
                   }}
                 >
-                  Unduh Laporan Mingguan (.CSV)
+                  Unduh CSV
                 </IslandButton>
 
                 <button
                   type="button"
                   className="selected-tpl-pill"
-                  style={{ padding: '0.65rem 1rem' }}
+                  style={{
+                    padding: '0.45rem 0.75rem',
+                    fontSize: '0.78rem',
+                    justifyContent: 'center',
+                    color: '#2DD4BF',
+                    borderColor: 'rgba(45, 212, 191, 0.4)',
+                    background: 'rgba(45, 212, 191, 0.1)',
+                  }}
                   onClick={() => {
                     setWaSharedSuccess(true);
                     setTimeout(() => setWaSharedSuccess(false), 3500);
                   }}
                   title="Kirim notifikasi ringkasan ke nomor WhatsApp Anda"
                 >
-                  <Icon name="phone" size={14} />
-                  <span>Kirim ke WA</span>
+                  <Icon name="phone" size={13} />
+                  <span>Kirim WA</span>
                 </button>
               </div>
 
-              <div className="row-between" style={{ width: '100%', marginTop: '0.25rem' }}>
+              <div className="row-between" style={{ alignItems: 'center', marginTop: '0.15rem' }}>
                 <button
                   type="button"
-                  className="selected-tpl-pill"
+                  className="textlink"
+                  style={{ fontSize: '0.76rem', color: '#2DD4BF' }}
                   onClick={() => {
                     resetGameWeek();
                     setShowWeeklyReportModal(false);
                     showTerraBubble('Siklus Minggu baru dimulai! Mari optimalkan lagi pemakaian listrik Kios!', 4500);
                   }}
                 >
-                  🔄 Mulai Siklus Minggu Baru (Hari 1)
+                  🔄 Mulai Minggu Baru
                 </button>
 
                 <button
                   type="button"
                   className="textlink"
+                  style={{ fontSize: '0.76rem', color: '#94A3B8' }}
                   onClick={() => setShowWeeklyReportModal(false)}
                 >
                   Tutup Rapor
