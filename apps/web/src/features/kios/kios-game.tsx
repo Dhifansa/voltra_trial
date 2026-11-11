@@ -1830,13 +1830,13 @@ function KiosPlay({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header Rapor */}
-            <div className="row-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.45rem', marginBottom: '0.55rem' }}>
+            <div className="row-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: '0.45rem', marginBottom: '0.55rem' }}>
               <div>
                 <div className="row-gap" style={{ alignItems: 'center', gap: '0.35rem' }}>
-                  <span className="chip chip--high" style={{ background: 'rgba(15, 118, 110, 0.45)', borderColor: '#2DD4BF', color: '#2DD4BF', fontSize: '0.72rem', padding: '0.15rem 0.5rem', fontWeight: 700 }}>
+                  <span className="chip" style={{ background: '#10B981', color: '#FFFFFF', border: '1px solid #059669', fontSize: '0.72rem', padding: '0.15rem 0.55rem', fontWeight: 700 }}>
                     🏆 Rapor Hemat Listrik 7 Hari
                   </span>
-                  <span className="chip" style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', opacity: 0.85 }}>
+                  <span className="chip" style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.18)', fontSize: '0.7rem', padding: '0.15rem 0.45rem', fontWeight: 600 }}>
                     Tarif {tariffName}
                   </span>
                 </div>
@@ -1850,9 +1850,9 @@ function KiosPlay({
                 onClick={() => setShowWeeklyReportModal(false)}
                 aria-label="Tutup Rapor"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  color: '#94A3B8',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: '#FFFFFF',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
                   width: '1.6rem',
                   height: '1.6rem',
                 }}
@@ -1863,11 +1863,11 @@ function KiosPlay({
 
             {/* Skor Efisiensi & Metrik Utama (1 Baris Grid Dua Kolom) */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.35fr', gap: '0.5rem', marginBottom: '0.55rem' }}>
-              {/* Box Grade */}
+              {/* Box Grade (Gradasi Hijau Segar) */}
               <div
                 style={{
-                  background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.25), rgba(6, 78, 59, 0.35))',
-                  border: '1px solid rgba(45, 212, 191, 0.35)',
+                  background: 'linear-gradient(135deg, #059669, #10B981)',
+                  border: '1px solid #34D399',
                   borderRadius: '10px',
                   padding: '0.5rem 0.4rem',
                   textAlign: 'center',
@@ -1875,23 +1875,24 @@ function KiosPlay({
                   flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  boxShadow: '0 4px 14px -2px rgba(16, 185, 129, 0.35)',
                 }}
               >
-                <span className="eyebrow eyebrow--light" style={{ fontSize: '0.66rem', letterSpacing: '0.04em' }}>
+                <span className="eyebrow" style={{ fontSize: '0.66rem', letterSpacing: '0.04em', color: '#FFFFFF', opacity: 0.9 }}>
                   SKOR EFISIENSI
                 </span>
-                <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#2DD4BF', lineHeight: 1.1, margin: '0.1rem 0' }}>
+                <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1, margin: '0.1rem 0' }}>
                   Grade {gameCycle.weeklyReport?.grade || 'A'}
                 </div>
-                <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#E2E8F0' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#FFFFFF' }}>
                   Efisiensi {gameCycle.weeklyReport?.efficiencyPct || 92}%
                 </span>
               </div>
 
               {/* 2 Metrik Ringkas Pengeluaran & Hemat */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <div style={{ background: 'rgba(26, 41, 69, 0.55)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '8px', padding: '0.4rem 0.6rem' }}>
-                  <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>Pengeluaran 7 Hari</span>
+                <div style={{ background: 'rgba(0, 0, 0, 0.22)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', padding: '0.4rem 0.6rem' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#CBD5E1' }}>Pengeluaran 7 Hari</span>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: '0.1rem' }}>
                     <strong style={{ fontSize: '0.95rem', color: '#FFFFFF' }}>
                       {formatRp(gameCycle.weeklyReport?.totalRp || Math.round(result.rp_day * 7))}
@@ -1902,13 +1903,13 @@ function KiosPlay({
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(26, 41, 69, 0.55)', border: '1px solid rgba(45, 212, 191, 0.3)', borderLeft: '3px solid #2DD4BF', borderRadius: '8px', padding: '0.4rem 0.6rem' }}>
-                  <span style={{ fontSize: '0.68rem', color: '#2DD4BF' }}>Potensi Hemat Didapat</span>
+                <div style={{ background: 'rgba(16, 185, 129, 0.16)', border: '1px solid rgba(16, 185, 129, 0.45)', borderLeft: '3.5px solid #10B981', borderRadius: '8px', padding: '0.4rem 0.6rem' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#34D399', fontWeight: 600 }}>Potensi Hemat Didapat</span>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: '0.1rem' }}>
-                    <strong style={{ fontSize: '0.95rem', color: '#2DD4BF' }}>
+                    <strong style={{ fontSize: '0.95rem', color: '#FFFFFF' }}>
                       {formatRp(gameCycle.weeklyReport?.savedRp || 32500)}
                     </strong>
-                    <span style={{ fontSize: '0.7rem', color: '#2DD4BF' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 700 }}>
                       Hemat {gameCycle.weeklyReport?.savedKwh || 22.5} kWh
                     </span>
                   </div>
@@ -1917,22 +1918,22 @@ function KiosPlay({
             </div>
 
             {/* Sorotan Alat: Paling Optimal vs Boros (2 Kolom Compact) */}
-            <div style={{ background: 'rgba(26, 41, 69, 0.45)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '8px', padding: '0.45rem 0.65rem', marginBottom: '0.55rem' }}>
+            <div style={{ background: 'rgba(0, 0, 0, 0.25)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '0.45rem 0.65rem', marginBottom: '0.55rem' }}>
               <div className="row-between" style={{ fontSize: '0.68rem', marginBottom: '0.3rem' }}>
-                <span style={{ color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <span style={{ color: '#FFFFFF', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   Evaluasi Peralatan Listrik
                 </span>
-                <span style={{ color: '#2DD4BF', fontSize: '0.68rem', fontWeight: 600 }}>Terkontrol</span>
+                <span style={{ color: '#10B981', fontSize: '0.68rem', fontWeight: 700 }}>Terkontrol</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.45rem' }}>
-                <div style={{ background: 'rgba(45, 212, 191, 0.08)', borderRadius: '6px', padding: '0.35rem 0.5rem', border: '1px solid rgba(45, 212, 191, 0.2)' }}>
-                  <span style={{ fontSize: '0.66rem', color: '#2DD4BF', display: 'block' }}>🌟 Paling Efisien</span>
+                <div style={{ background: 'rgba(16, 185, 129, 0.18)', borderRadius: '6px', padding: '0.35rem 0.5rem', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#34D399', fontWeight: 600, display: 'block' }}>🌟 Paling Efisien</span>
                   <strong style={{ color: '#FFFFFF', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                     {gameCycle.weeklyReport?.bestAppliance || 'Mesin Cuci Front Loading'}
                   </strong>
                 </div>
-                <div style={{ background: 'rgba(245, 158, 11, 0.08)', borderRadius: '6px', padding: '0.35rem 0.5rem', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-                  <span style={{ fontSize: '0.66rem', color: '#F59E0B', display: 'block' }}>⚠️ Beban Terbesar</span>
+                <div style={{ background: 'rgba(255, 255, 255, 0.06)', borderRadius: '6px', padding: '0.35rem 0.5rem', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#F59E0B', fontWeight: 600, display: 'block' }}>⚠️ Beban Terbesar</span>
                   <strong style={{ color: '#FFFFFF', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                     {gameCycle.weeklyReport?.wastefulAppliance || 'Pengering Komersial'}
                   </strong>
@@ -1943,30 +1944,30 @@ function KiosPlay({
             {/* Riwayat 7 Hari Operasional Mini Strip */}
             <div style={{ marginBottom: '0.65rem' }}>
               <div className="row-between" style={{ marginBottom: '0.25rem', fontSize: '0.68rem' }}>
-                <span style={{ color: '#94A3B8' }}>Catatan 7 Hari Operasional Kios</span>
-                <span style={{ color: '#2DD4BF', fontWeight: 600 }}>7/7 Hari Selesai ✓</span>
+                <span style={{ color: '#CBD5E1' }}>Catatan 7 Hari Operasional Kios</span>
+                <span style={{ color: '#10B981', fontWeight: 700 }}>7/7 Hari Selesai ✓</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
                 {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day) => (
                   <div
                     key={day}
                     style={{
-                      background: 'rgba(45, 212, 191, 0.12)',
-                      border: '1px solid rgba(45, 212, 191, 0.3)',
+                      background: 'rgba(16, 185, 129, 0.16)',
+                      border: '1px solid rgba(16, 185, 129, 0.4)',
                       borderRadius: '5px',
                       padding: '0.25rem 0.15rem',
                       textAlign: 'center',
                     }}
                   >
-                    <span style={{ fontSize: '0.64rem', color: '#94A3B8', display: 'block' }}>{day}</span>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2DD4BF' }}>✓</span>
+                    <span style={{ fontSize: '0.64rem', color: '#CBD5E1', display: 'block' }}>{day}</span>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#10B981' }}>✓</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {waSharedSuccess && (
-              <div className="notice" role="status" style={{ marginBottom: '0.55rem', padding: '0.35rem 0.6rem', fontSize: '0.76rem' }}>
+              <div className="notice" role="status" style={{ marginBottom: '0.55rem', padding: '0.35rem 0.6rem', fontSize: '0.76rem', background: 'rgba(16, 185, 129, 0.2)', borderColor: '#10B981', color: '#FFFFFF' }}>
                 <Icon name="check" size={14} />
                 <div>Ringkasan rapor berhasil dikirim ke WhatsApp ({user.phone})!</div>
               </div>
@@ -1975,9 +1976,23 @@ function KiosPlay({
             {/* Aksi Unduh, Kirim WA, & Mulai Siklus Baru */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '0.45rem' }}>
-                <IslandButton
-                  icon="tag"
-                  style={{ padding: '0.45rem 0.75rem', fontSize: '0.78rem', justifyContent: 'center' }}
+                <button
+                  type="button"
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    justifyContent: 'center',
+                    background: '#10B981',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '0.6rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    boxShadow: '0 2px 10px rgba(16, 185, 129, 0.35)',
+                  }}
                   onClick={() => {
                     const rep = gameCycle.weeklyReport || {
                       weekNumber: 1,
@@ -1994,19 +2009,25 @@ function KiosPlay({
                     downloadWeeklyReportCsv(state.shopName, template.display_name, tariffName, rep, state.slots);
                   }}
                 >
-                  Unduh CSV
-                </IslandButton>
+                  <Icon name="tag" size={13} />
+                  <span>Unduh CSV</span>
+                </button>
 
                 <button
                   type="button"
                   className="selected-tpl-pill"
                   style={{
-                    padding: '0.45rem 0.75rem',
+                    padding: '0.5rem 0.75rem',
                     fontSize: '0.78rem',
+                    fontWeight: 700,
                     justifyContent: 'center',
-                    color: '#2DD4BF',
-                    borderColor: 'rgba(45, 212, 191, 0.4)',
-                    background: 'rgba(45, 212, 191, 0.1)',
+                    color: '#FFFFFF',
+                    borderColor: '#10B981',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '0.6rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
                   }}
                   onClick={() => {
                     setWaSharedSuccess(true);
@@ -2023,7 +2044,7 @@ function KiosPlay({
                 <button
                   type="button"
                   className="textlink"
-                  style={{ fontSize: '0.76rem', color: '#2DD4BF' }}
+                  style={{ fontSize: '0.76rem', color: '#10B981', fontWeight: 700 }}
                   onClick={() => {
                     resetGameWeek();
                     setShowWeeklyReportModal(false);
@@ -2036,7 +2057,7 @@ function KiosPlay({
                 <button
                   type="button"
                   className="textlink"
-                  style={{ fontSize: '0.76rem', color: '#94A3B8' }}
+                  style={{ fontSize: '0.76rem', color: '#CBD5E1' }}
                   onClick={() => setShowWeeklyReportModal(false)}
                 >
                   Tutup Rapor
