@@ -466,20 +466,6 @@ em {
   max-width: 100%;
 }
 
-.page--kios {
-  padding-top: calc(3.2rem + var(--safe-t));
-  padding-bottom: calc(3.6rem + var(--safe-b));
-  max-width: 76rem;
-  margin: 0 auto;
-}
-
-@media (min-width: 960px) {
-  .page--kios {
-    padding-top: calc(3.6rem + var(--safe-t));
-    padding-bottom: calc(3.6rem + var(--safe-b));
-  }
-}
-
 .page-head {
   padding: 0.5rem 0.1rem 1.25rem;
 }
@@ -2605,9 +2591,7 @@ em {
   position: relative;
   padding: 0;
   overflow: hidden;
-  background: var(--paper, #162238);
-  border-radius: 1rem;
-  border: 1px solid var(--hair, rgba(255, 255, 255, 0.08));
+  background: #ffffff;
 }
 
 .scene__awning {
@@ -2622,7 +2606,7 @@ em {
 }
 
 .scene__awning span:nth-child(even) {
-  background: rgba(255, 255, 255, 0.12);
+  background: #ffffff;
   box-shadow: inset 0 -1px 0 var(--hair);
 }
 
@@ -4376,13 +4360,13 @@ body.is-game-tutorial .topbar,
 .outlet-arena {
   position: relative;
   width: 100%;
-  height: clamp(16.5rem, 30vw, 20.5rem);
+  height: clamp(21.5rem, 42vw, 25.5rem);
   overflow: hidden;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   touch-action: pan-y;
-  background: #0f172a;
+  background: #e2e8f0;
   transition: filter 450ms var(--ease);
 }
 
@@ -5052,8 +5036,8 @@ body.is-game-tutorial .topbar,
   flex-wrap: wrap;
   gap: 0.65rem;
   padding: 0.65rem 0.9rem;
-  background: var(--paper, #1A2945);
-  border-top: 1px solid var(--hair, rgba(255, 255, 255, 0.08));
+  background: #f8fafc;
+  border-top: 1px solid var(--hair-strong);
 }
 
 .outlet-dpad {
@@ -5062,8 +5046,10 @@ body.is-game-tutorial .topbar,
   gap: 0.3rem;
   padding: 0.28rem;
   border-radius: 0.85rem;
-  background: rgba(0, 0, 0, 0.25);
-  box-shadow: inset 0 0 0 1px var(--hair, rgba(255, 255, 255, 0.1));
+  background: #ffffff;
+  box-shadow:
+    inset 0 0 0 1px var(--hair-strong),
+    0 2px 8px -2px rgba(15, 23, 42, 0.08);
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -5081,9 +5067,8 @@ body.is-game-tutorial .topbar,
   width: 2.5rem;
   height: 2.2rem;
   border-radius: 0.6rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--ink, #FFFFFF);
+  background: #f1f5f9;
+  color: var(--ink);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -5098,14 +5083,13 @@ body.is-game-tutorial .topbar,
 }
 
 .outlet-dpad__btn:hover {
-  background: var(--teal, #2DD4BF);
-  color: #0F172A;
-  border-color: #2DD4BF;
+  background: var(--blue);
+  color: #ffffff;
 }
 
 .outlet-dpad__btn:active {
-  background: var(--teal, #2DD4BF);
-  color: #0F172A;
+  background: var(--blue);
+  color: #ffffff;
   transform: scale(0.92);
 }
 
@@ -5147,7 +5131,7 @@ body.is-game-tutorial .topbar,
 .outlet-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(10, 16, 28, 0.78);
+  background: rgba(15, 23, 42, 0.62);
   -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   z-index: 50;
@@ -5176,12 +5160,10 @@ body.is-game-tutorial .topbar,
   overflow-y: auto;
   overscroll-behavior: contain;
   border-radius: 1.15rem;
-  background: var(--paper, #162238);
-  color: var(--ink, #FFFFFF);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 20px 40px -10px rgba(0, 0, 0, 0.6);
+    0 0 0 1.5px rgba(26, 41, 69, 0.18),
+    0 20px 40px -10px rgba(15, 23, 42, 0.5);
   animation: modal-pop-up 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -5200,39 +5182,6 @@ body.is-game-tutorial .topbar,
   animation: modal-fade-in 160ms var(--ease);
 }
 
-/* Modal Rapor Mingguan Hemat Listrik Kios */
-.kios-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 16, 28, 0.78);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 0.85rem;
-  animation: modal-fade-in 160ms var(--ease);
-}
-
-.kios-modal {
-  position: relative;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  background: var(--paper, #162238);
-  color: var(--ink, #FFFFFF);
-  border: 1px solid rgba(45, 212, 191, 0.25);
-  border-radius: 1.15rem;
-  padding: 1.25rem;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 24px 48px -12px rgba(0, 0, 0, 0.7);
-  animation: modal-pop-up 220ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 @keyframes modal-pop-up {
   from {
     transform: translateY(14px) scale(0.96);
@@ -5249,15 +5198,15 @@ body.is-game-tutorial .topbar,
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem 0.55rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--hair-strong);
+  background: #f8fafc;
   border-radius: 1.15rem 1.15rem 0 0;
 }
 
 .outlet-modal-title {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--ink, #FFFFFF);
+  color: var(--ink);
   letter-spacing: -0.01em;
 }
 
@@ -5267,18 +5216,17 @@ body.is-game-tutorial .topbar,
   width: 1.65rem;
   height: 1.65rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--muted, #94A3B8);
+  background: #ffffff;
+  color: var(--muted);
   font-size: 0.75rem;
   font-weight: 700;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px var(--hair-strong);
   cursor: pointer;
-  transition: transform 160ms var(--ease), color 160ms var(--ease), background 160ms var(--ease);
+  transition: transform 160ms var(--ease), color 160ms var(--ease);
 }
 
 .outlet-modal-close:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.16);
+  color: var(--ink);
   transform: scale(1.08);
 }
 
@@ -5288,8 +5236,8 @@ body.is-game-tutorial .topbar,
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 1rem;
-  background: rgba(45, 212, 191, 0.08);
-  border-bottom: 1px solid rgba(45, 212, 191, 0.2);
+  background: #f0f7ff;
+  border-bottom: 1px solid #dbeafe;
 }
 
 .outlet-modal-terra-hint__body {
@@ -5302,7 +5250,7 @@ body.is-game-tutorial .topbar,
 .outlet-modal-terra-hint__body strong {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #2DD4BF;
+  color: var(--blue);
   letter-spacing: -0.01em;
   text-transform: uppercase;
 }
@@ -5310,7 +5258,7 @@ body.is-game-tutorial .topbar,
 .outlet-modal-terra-hint__body span {
   font-size: 0.78rem;
   line-height: 1.35;
-  color: #E2E8F0;
+  color: var(--ink);
 }
 
 .outlet-modal-dialog .control {
@@ -5591,7 +5539,7 @@ body.is-game-tutorial .topbar,
   }
 
   .outlet-arena {
-    height: clamp(13.5rem, 50vw, 16.5rem);
+    height: clamp(18.5rem, 74vw, 22rem);
   }
 
   .outlet-prop__art {
@@ -5663,10 +5611,9 @@ body.is-game-tutorial .topbar,
     gap: 0.4rem;
     padding: 0.38rem;
     border-radius: 1rem;
-    background: rgba(0, 0, 0, 0.25);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-      0 4px 14px -4px rgba(0, 0, 0, 0.25);
+      inset 0 0 0 1.5px var(--hair-strong),
+      0 4px 14px -4px rgba(15, 23, 42, 0.12);
   }
 
   .outlet-dpad__vert {
@@ -5677,17 +5624,15 @@ body.is-game-tutorial .topbar,
     width: 3.35rem;
     height: 2.85rem;
     border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--ink, #FFFFFF);
+    background: #e9eef5;
+    color: var(--ink);
     font-size: 1.15rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
 
   .outlet-dpad__btn:active {
-    background: var(--teal, #2DD4BF);
-    color: #0F172A;
-    border-color: #2DD4BF;
+    background: var(--blue);
+    color: #ffffff;
     transform: scale(0.92);
   }
 

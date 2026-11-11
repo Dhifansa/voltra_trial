@@ -1010,90 +1010,17 @@ function KiosPlay({
 
   return (
     <div className={`swap ${spotlightActive ? 'has-game-tutorial' : ''}`}>
-      {/* Bar Status Ringkas Kios & Siklus 7 Hari (Single-Page Viewport) */}
-      <div
-        className={`kios-compact-bar ${spotlightActive ? 'tutorial-dim' : ''}`}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.6rem',
-          background: 'var(--paper, #162238)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '0.85rem',
-          padding: '0.55rem 0.85rem',
-          marginBottom: '0.75rem',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-          <span
-            className="chip"
-            style={{
-              background: gameCycle.currentDay >= 7 ? 'linear-gradient(135deg, #059669, #0D9488)' : 'rgba(45, 212, 191, 0.12)',
-              color: gameCycle.currentDay >= 7 ? '#FFF' : '#2DD4BF',
-              borderColor: 'rgba(45, 212, 191, 0.35)',
-              fontWeight: 700,
-              fontSize: '0.76rem',
-              padding: '0.2rem 0.6rem',
-            }}
-          >
-            Hari {gameCycle.currentDay}/7
-          </span>
-
-          <div className="dots" aria-label={`Hari ke-${gameCycle.currentDay} dari 7`}>
-            {Array.from({ length: 7 }, (_, i) => (
-              <span
-                key={i}
-                className={i < gameCycle.currentDay ? 'is-on' : ''}
-                title={`Hari ke-${i + 1}`}
-              />
-            ))}
-          </div>
-
-          <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--ink, #FFFFFF)' }}>
-            {state.shopName}
-          </span>
-          <span className="chip" style={{ fontSize: '0.74rem', padding: '0.15rem 0.45rem', opacity: 0.85 }}>
-            {template.display_name}
-          </span>
+      {/* Toolbar atas (ikut ngeblur saat pop-up tutorial aktif) */}
+      <div className={`row-between kios-toolbar ${spotlightActive ? 'tutorial-dim' : ''}`}>
+        <div className="row-gap">
+          <span className="chip chip--mock">{t.kiosk.sim2d}</span>
+          <span className="chip">{template.display_name}</span>
+          <span className="chip">{tariffName}</span>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {gameCycle.weeklyReportUnlocked || gameCycle.currentDay >= 7 ? (
-            <button
-              type="button"
-              className="selected-tpl-pill is-active"
-              style={{
-                background: 'linear-gradient(135deg, #059669, #0D9488)',
-                color: '#FFF',
-                fontWeight: 700,
-                fontSize: '0.78rem',
-                padding: '0.35rem 0.75rem',
-                boxShadow: '0 0 12px rgba(45, 212, 191, 0.4)',
-              }}
-              onClick={() => setShowWeeklyReportModal(true)}
-            >
-              <Icon name="bolt" size={13} />
-              <span>🏆 Rapor 7 Hari</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="selected-tpl-pill"
-              style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
-              onClick={handleAdvanceDay}
-              title="Selesaikan hari ini dan lanjut ke hari berikutnya"
-            >
-              <Icon name="check" size={13} />
-              <span>Tutup Hari #{gameCycle.currentDay} →</span>
-            </button>
-          )}
-
+        <div className="row-gap">
           <button
             type="button"
             className="terra-pill-trigger"
-            style={{ padding: '0.25rem 0.6rem', fontSize: '0.76rem' }}
             onClick={() => {
               setShowHourModal(false);
               setTutorialRunning(true);
@@ -1111,29 +1038,97 @@ function KiosPlay({
               }
             }}
           >
-            <TerraAvatar mood={roomTerraMood} size={18} />
+            <TerraAvatar mood={roomTerraMood} size={20} />
             <span>
-              {configuredUids.length}/{state.slots.length} Alat
+              {t.kiosk.terraTutorial
+                .replace('{done}', String(configuredUids.length))
+                .replace('{total}', String(state.slots.length))}
             </span>
           </button>
-
-          <button
-            type="button"
-            className="textlink"
-            style={{ fontSize: '0.76rem' }}
-            onClick={onSwitchTemplate}
-          >
-            Ganti Denah
+          <button type="button" className="textlink" onClick={onSwitchTemplate}>
+            {t.kiosk.switchBusiness}
           </button>
+        </div>
+      </div>
+
+      {/* HUD SIKLUS 7 HARI DI GAME & PROGRES LAPORAN MINGGUAN */}
+      <div
+        className={`game-cycle-hud ${spotlightActive ? 'tutorial-dim' : ''}`}
+        style={{
+          background: 'rgba(15, 23, 42, 0.85)',
+          border: '1px solid rgba(45, 212, 191, 0.4)',
+          borderRadius: '12px',
+          padding: '0.75rem 1rem',
+          marginBottom: '0.85rem',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+        }}
+      >
+        <div className="row-between" style={{ flexWrap: 'wrap', gap: '0.6rem', alignItems: 'center' }}>
+          <div className="row-gap" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
+            <span
+              className="chip"
+              style={{
+                background: gameCycle.currentDay >= 7 ? 'linear-gradient(135deg, #059669, #0D9488)' : '#1E293B',
+                color: gameCycle.currentDay >= 7 ? '#FFF' : '#2DD4BF',
+                borderColor: '#2DD4BF',
+                fontWeight: 700,
+              }}
+            >
+              📅 Hari {gameCycle.currentDay} / 7 Game
+            </span>
+
+            <div className="dots" aria-label={`Hari ke-${gameCycle.currentDay} dari 7`}>
+              {Array.from({ length: 7 }, (_, i) => (
+                <span
+                  key={i}
+                  className={i < gameCycle.currentDay ? 'is-on' : ''}
+                  title={`Hari ke-${i + 1}`}
+                />
+              ))}
+            </div>
+
+            <span className="hint" style={{ fontSize: '0.78rem', margin: 0 }}>
+              (1–2 jam realtime = 1 siklus 7 hari untuk 1 laporan hemat listrik)
+            </span>
+          </div>
+
+          <div className="row-gap">
+            {gameCycle.weeklyReportUnlocked || gameCycle.currentDay >= 7 ? (
+              <button
+                type="button"
+                className="selected-tpl-pill is-active"
+                style={{
+                  background: 'linear-gradient(135deg, #059669, #0D9488)',
+                  color: '#FFF',
+                  fontWeight: 700,
+                  boxShadow: '0 0 14px rgba(45, 212, 191, 0.45)',
+                }}
+                onClick={() => setShowWeeklyReportModal(true)}
+              >
+                <Icon name="bolt" size={13} />
+                <span>🏆 Buka Laporan Hemat Listrik 7 Hari</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="selected-tpl-pill"
+                onClick={handleAdvanceDay}
+                title="Selesaikan jam operasional hari ini dan maju ke hari berikutnya"
+              >
+                <Icon name="check" size={13} />
+                <span>Tutup Kios Hari #{gameCycle.currentDay} (Lanjut Hari #{gameCycle.currentDay + 1}) →</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {dayAdvanceBanner && (
           <div
             className="notice"
             role="status"
-            style={{ width: '100%', marginTop: '0.35rem', padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+            style={{ marginTop: '0.6rem', padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
           >
-            <Icon name="check" size={14} />
+            <Icon name="check" size={16} />
             <div>{dayAdvanceBanner}</div>
           </div>
         )}
@@ -1706,7 +1701,8 @@ function KiosPlay({
       )}
     </div>
 
-    {/* BAGIAN SCREEN 3: Tagihan Simulasi & Lanjutkan (Single Compact Panel) */}
+    {/* BAGIAN SCREEN 3: Tagihan Simulasi & Lanjutkan ke Aplikasi Utama      */}
+    {/* Pop-out tajam saat `stage === 'summary'`, ngeblur saat tahap 1 & 2    */}
     <div className="kios-stage-grid__summary">
       <div
         ref={summaryRef}
@@ -1719,44 +1715,46 @@ function KiosPlay({
         }`}
       >
         <Bezel tone="ink" coreClassName="bill">
-          <div className="row-between" style={{ alignItems: 'center' }}>
-            <span className="eyebrow eyebrow--light" style={{ fontSize: '0.74rem', letterSpacing: '0.04em' }}>
-              {t.kiosk.billTitle}
-            </span>
+          <div className="row-between">
+            <Eyebrow tone="light">{t.kiosk.billTitle}</Eyebrow>
             <span className={`mood mood--${mood}`}>{MOOD_COPY[mood].label}</span>
           </div>
+          <p className="bill__rp">{formatRp(result.rp_day)}</p>
+          <p className="bill__meta">
+            {formatKwh(result.kwh_day)} · {t.kiosk.billMetaStart.replace('{baseline}', formatRp(baseline))} ·{' '}
+            <strong className={changePct > 0 ? 'is-down' : changePct < 0 ? 'is-up' : ''}>
+              {changePct > 0
+                ? t.kiosk.billDown.replace('{pct}', String(changePct))
+                : changePct < 0
+                  ? t.kiosk.billUp.replace('{pct}', String(Math.abs(changePct)))
+                  : t.kiosk.billSame}
+            </strong>
+          </p>
 
-          <div style={{ margin: '0.5rem 0 0.25rem' }}>
-            <p className="bill__rp" style={{ fontSize: '1.75rem', lineHeight: 1.1, margin: 0 }}>
-              {formatRp(result.rp_day)}
-              <span style={{ fontSize: '0.82rem', fontWeight: 500, opacity: 0.7, marginLeft: '0.35rem' }}>/ hari</span>
-            </p>
-            <p className="bill__meta" style={{ fontSize: '0.8rem', marginTop: '0.35rem' }}>
-              {formatKwh(result.kwh_day)} · Baseline: {formatRp(baseline)} ·{' '}
-              <strong className={changePct > 0 ? 'is-down' : changePct < 0 ? 'is-up' : ''}>
-                {changePct > 0
-                  ? t.kiosk.billDown.replace('{pct}', String(changePct))
-                  : changePct < 0
-                    ? t.kiosk.billUp.replace('{pct}', String(Math.abs(changePct)))
-                    : t.kiosk.billSame}
-              </strong>
-            </p>
-          </div>
-
-          <div className="challenge" style={{ padding: '0.55rem 0.75rem', margin: '0.5rem 0' }}>
-            <div className="row-between" style={{ fontSize: '0.8rem' }}>
-              <span className="challenge__title" style={{ gap: '0.35rem' }}>
-                <Icon name="leaf" size={14} />{' '}
+          <div className="challenge">
+            <div className="row-between">
+              <span className="challenge__title">
+                <Icon name="leaf" size={16} />{' '}
                 {t.kiosk.challengeTitle.replace('{pct}', String(Math.round(CHALLENGE_TARGET * 100)))}
               </span>
-              <span className="challenge__pct" style={{ fontWeight: 700 }}>{Math.round(progress * 100)}%</span>
+              <span className="challenge__pct">{Math.round(progress * 100)}%</span>
             </div>
-            <div className="meter-line" style={{ height: '6px', margin: '0.35rem 0 0.15rem' }} aria-hidden="true">
+            <div className="meter-line" aria-hidden="true">
               <span style={{ transform: `scaleX(${progress})` }} />
             </div>
+            <p className="hint">
+              {t.kiosk.challengeHint.replace('{hours}', String(OPEN_HOURS))}
+            </p>
           </div>
+        </Bezel>
 
-          <div className="capture__actions" style={{ marginTop: '0.65rem', gap: '0.5rem' }}>
+        <Bezel tone="moss" coreClassName="twin">
+          <Eyebrow>{t.kiosk.syncTitle}</Eyebrow>
+          <p className="twin__title">
+            {t.kiosk.syncHeader}
+          </p>
+          <p className="hint">{t.kiosk.syncHint}</p>
+          <div className="capture__actions">
             <IslandLink href="/biaya" icon="chart" onClick={handleCompleteTutorial}>
               {t.kiosk.viewCost}
             </IslandLink>
