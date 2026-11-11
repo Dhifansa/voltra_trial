@@ -5193,7 +5193,7 @@ body.is-game-tutorial .topbar,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
+  padding: calc(1.5rem + var(--safe-t)) 0.75rem calc(1.5rem + var(--safe-b));
   animation: modal-fade-in 160ms var(--ease);
 }
 
@@ -5202,6 +5202,7 @@ body.is-game-tutorial .topbar,
   width: 100%;
   max-width: 31rem;
   max-height: 96vh;
+  margin-bottom: clamp(2.5rem, 9vh, 5rem);
   background: var(--paper, #162238);
   color: var(--ink, #FFFFFF);
   border: 1px solid rgba(45, 212, 191, 0.32);
