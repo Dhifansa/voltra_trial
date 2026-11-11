@@ -5182,7 +5182,7 @@ body.is-game-tutorial .topbar,
   animation: modal-fade-in 160ms var(--ease);
 }
 
-/* Modal Rapor Mingguan Hemat Listrik 7 Hari (Single Screen Viewport No Scroll) */
+/* Modal Rapor Mingguan Hemat Listrik 7 Hari (Single Screen Viewport No Scroll - Top Aligned) */
 .kios-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -5191,9 +5191,12 @@ body.is-game-tutorial .topbar,
   backdrop-filter: blur(8px);
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: calc(1.5rem + var(--safe-t)) 0.75rem calc(1.5rem + var(--safe-b));
+  padding-top: calc(3.85rem + var(--safe-t));
+  padding-bottom: calc(1rem + var(--safe-b));
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   animation: modal-fade-in 160ms var(--ease);
 }
 
@@ -5201,8 +5204,7 @@ body.is-game-tutorial .topbar,
   position: relative;
   width: 100%;
   max-width: 31rem;
-  max-height: 96vh;
-  margin-bottom: clamp(2.5rem, 9vh, 5rem);
+  max-height: calc(100vh - 5rem);
   background: var(--paper, #162238);
   color: var(--ink, #FFFFFF);
   border: 1px solid rgba(45, 212, 191, 0.32);
